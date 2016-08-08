@@ -6,9 +6,9 @@ It is based on a core project containing the base classes to define your user in
 
 Here some features:
 
-- it is for bussiness applications (not for building websites. For doing that please check mateu-cms)
+- it is for building bussiness applications (not for building websites. For doing that please check mateu-cms)
 - it is for developers
-- you only need to know basic java
+- you only need to know basic java (not html, no javascript, no ...)
 
 
 It aims to reach several goals:

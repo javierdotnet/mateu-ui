@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mateu-ui.iml" filepath="$PROJECT_DIR$/mateu-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/port-android/port-android.iml" filepath="$PROJECT_DIR$/port-android/port-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/port-vaadin/port-vaadin.iml" filepath="$PROJECT_DIR$/port-vaadin/port-vaadin.iml" />
+    </modules>
+  </component>
+</project>

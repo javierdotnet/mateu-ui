@@ -3,5 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/port-android" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/port-javafx" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sample-app" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sample-runner-javafx" charset="UTF-8" />
   </component>
 </project>

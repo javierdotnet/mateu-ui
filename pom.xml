@@ -16,6 +16,9 @@
         <module>port-vaadin</module>
         <module>port-openui</module>
         <module>port-android</module>
+        <module>port-javafx</module>
+        <module>sample-app</module>
+        <module>sample-runner-javafx</module>
     </modules>
 
 </project>

@@ -24,14 +24,22 @@
         <processorPath useClasspath="true" />
         <module name="core" />
         <module name="port-android" />
+        <module name="port-javafx" />
+        <module name="port-openui" />
         <module name="port-vaadin" />
+        <module name="sample-app" />
+        <module name="sample-runner-javafx" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="core" target="1.5" />
       <module name="mateu-ui" target="1.5" />
       <module name="port-android" target="1.5" />
+      <module name="port-javafx" target="1.8" />
+      <module name="port-openui" target="1.5" />
       <module name="port-vaadin" target="1.5" />
+      <module name="sample-app" target="1.7" />
+      <module name="sample-runner-javafx" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

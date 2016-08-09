@@ -1,7 +1,9 @@
 package mateu.ui.javafx.app;
 
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import mateu.ui.core.app.AbstractAction;
 import mateu.ui.core.app.AbstractMenu;
 import mateu.ui.core.app.AbstractModule;
 import mateu.ui.core.app.MenuEntry;
@@ -25,8 +27,10 @@ public class MenuNode extends VBox {
         if (a instanceof AbstractMenu) {
             getChildren().add(new Label(">" + a.getName()));
             ((AbstractMenu)a).getEntries().forEach(e -> addMenuEntry(e));
-        } else {
-            getChildren().add(new Label("" + a.getName()));
+        } else if (a instanceof AbstractAction) {
+            Hyperlink l;
+            getChildren().add(l = new Hyperlink("" + a.getName()));
+            l.setOnAction(e -> ((AbstractAction) a).run());
         }
     }
 }

@@ -5,6 +5,14 @@ package mateu.ui.core.views;
  */
 public abstract class AbstractView {
 
+    private AbstractForm form;
+
     public abstract String getTitle();
 
+    public abstract AbstractForm createForm();
+
+    public AbstractForm getForm() {
+        if (form == null) form = createForm();
+        return form;
+    }
 }

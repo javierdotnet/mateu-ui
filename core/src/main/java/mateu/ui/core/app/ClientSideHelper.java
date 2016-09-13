@@ -5,8 +5,6 @@ import mateu.ui.core.views.AbstractView;
 /**
  * Created by miguel on 9/8/16.
  */
-public class ClientSideHelper {
-    public static void openView(AbstractView abstractView) {
-
-    }
+public interface ClientSideHelper {
+    public void openView(AbstractView abstractView);
 }

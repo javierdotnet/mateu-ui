@@ -1,0 +1,10 @@
+.label {
+    -fx-pref-width: 200px;
+    -fx-font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+    -fx-font-size: 40px;
+}
+
+* {
+-fx-font-family: Lato Regular;
+-fx-font-size: 40px;
+}

@@ -22,3 +22,22 @@ It aims to reach several goals:
 
 I hope you like it ;)
 
+Building blocks
+---
+
+For every user interface framework you have the building blocks (aka components).
+
+These are ours:
+
+- app
+- views
+- components
+
+And here are some class diagrams:
+
+http://yuml.me/3fb671cf
+
+http://yuml.me/43de1929
+
+http://yuml.me/a48f9dec
+

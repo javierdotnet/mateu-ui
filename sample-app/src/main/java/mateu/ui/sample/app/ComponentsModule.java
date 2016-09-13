@@ -1,9 +1,6 @@
 package mateu.ui.sample.app;
 
-import mateu.ui.core.app.AbstractAction;
-import mateu.ui.core.app.AbstractMenu;
-import mateu.ui.core.app.AbstractModule;
-import mateu.ui.core.app.MenuEntry;
+import mateu.ui.core.app.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -129,7 +126,27 @@ public class ComponentsModule extends AbstractModule {
 
                     @Override
                     public void run() {
+                        MateuUI.getClientSideHelper().openView(new TextFieldView());
+                    }
+                });
+            }
+        }, (MenuEntry) new AbstractMenu() {
+            @Override
+            public String getName() {
+                return "Components";
+            }
 
+            @Override
+            public List<MenuEntry> getEntries() {
+                return Arrays.asList((MenuEntry) new AbstractAction() {
+                    @Override
+                    public String getName() {
+                        return "Complex form";
+                    }
+
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new ComplexFormView());
                     }
                 });
             }

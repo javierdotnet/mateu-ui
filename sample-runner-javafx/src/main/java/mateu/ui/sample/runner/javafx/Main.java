@@ -15,4 +15,8 @@ public class Main extends Application {
         new JavafxPort(new SampleApp()).start(primaryStage);
 
     }
+
+    public static void main(String... args) {
+        launch(args);
+    }
 }

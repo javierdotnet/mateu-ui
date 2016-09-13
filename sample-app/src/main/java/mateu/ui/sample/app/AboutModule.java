@@ -1,9 +1,6 @@
 package mateu.ui.sample.app;
 
-import mateu.ui.core.app.AbstractAction;
-import mateu.ui.core.app.AbstractModule;
-import mateu.ui.core.app.ClientSideHelper;
-import mateu.ui.core.app.MenuEntry;
+import mateu.ui.core.app.*;
 import mateu.ui.core.views.AbstractView;
 
 import java.util.ArrayList;
@@ -23,7 +20,7 @@ public class AboutModule extends AbstractModule {
 
             @Override
             public void run() {
-                ClientSideHelper.openView(new AboutView());
+                MateuUI.getClientSideHelper().openView(new AboutView());
             }
         });
         return l;

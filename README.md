@@ -33,11 +33,21 @@ These are ours:
 - views
 - components
 
-And here are some class diagrams:
+UML diagrams
+---
+
+
+App class diagram:
 
 ![alt text](http://yuml.me/3fb671cf.svg, "app class diagram")
 
+
+Views class diagram:
+
 ![alt text](http://yuml.me/43de1929.svg, "views class diagram")
+
+
+Components class diagram:
 
 ![alt text](http://yuml.me/a48f9dec.svg, "components class diagram")
 

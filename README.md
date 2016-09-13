@@ -34,9 +34,12 @@ These are ours:
  - AbstractArea
  - AbstractModule
  - MenuEntry
-  - AbstractMenu
-  - AbstractAction
+ - AbstractMenu
+ - AbstractAction
 - views
+ - AbstractView
+ - AbstractSearcher
+ - AbstractEditor
 - components
 
 UML diagrams

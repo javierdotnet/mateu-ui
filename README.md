@@ -35,9 +35,9 @@ These are ours:
 
 And here are some class diagrams:
 
-http://yuml.me/3fb671cf
+![alt text](http://yuml.me/3fb671cf, "app class diagram")
 
-http://yuml.me/43de1929
+![alt text](http://yuml.me/43de1929, "views class diagram")
 
-http://yuml.me/a48f9dec
+![alt text](http://yuml.me/a48f9dec, "components class diagram")
 

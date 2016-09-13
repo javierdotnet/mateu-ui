@@ -30,6 +30,12 @@ For every user interface framework you have the building blocks (aka components)
 These are ours:
 
 - app
+-- AbstractApplication
+-- AbstractArea
+-- AbstractModule
+-- MenuEntry
+--- AbstractMenu
+--- AbstractAction
 - views
 - components
 

@@ -11,8 +11,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
-    <orderEntry type="library" name="Maven: mateu.ui:port-javafx:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: mateu.ui:core:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: mateu.ui:sample-app:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="port-javafx" />
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="sample-app" />
   </component>
 </module>

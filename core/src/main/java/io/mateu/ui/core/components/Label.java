@@ -14,4 +14,5 @@ public class Label extends BaseComponent {
     public String getText() {
         return text;
     }
+
 }

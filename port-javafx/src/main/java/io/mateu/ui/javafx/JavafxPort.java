@@ -1,9 +1,12 @@
 package io.mateu.ui.javafx;
 
 import io.mateu.ui.core.app.AbstractApplication;
+import io.mateu.ui.core.data.DataContainer;
 import io.mateu.ui.javafx.app.AppNode;
+import io.mateu.ui.javafx.data.DataContainerImpl;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import io.mateu.ui.core.app.ClientSideHelper;
@@ -26,8 +29,16 @@ public class JavafxPort extends Application {
 
     public void start(Stage primaryStage) throws Exception {
 
-        Font.loadFont(JavafxPort.class.getResource("/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm(), 10);
-        Font.loadFont(JavafxPort.class.getResource("/mateu/ui/javafx/fonts/lato/Lato-Regular.ttf").toExternalForm(), 10);
+        System.out.println("JavafxPort.start()");
+
+        try {
+            System.out.println("Loading font " + JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm());
+
+            Font.loadFont(JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm(), 10);
+            Font.loadFont(JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/lato/Lato-Regular.ttf").toExternalForm(), 10);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         //primaryStage.setFullScreen(true);
@@ -39,6 +50,35 @@ public class JavafxPort extends Application {
             @Override
             public void openView(AbstractView view) {
                 AppNode.get().getViewNode().setView(view);
+            }
+
+            @Override
+            public DataContainer getNewDataContainer() {
+                return new DataContainerImpl();
+            }
+
+            @Override
+            public <T> T create(Class<?> serviceInterface) {
+                try {
+                    return (T) Class.forName(serviceInterface.getName().replaceAll("\\.shared\\.", ".client.") + "ClientSideImpl").newInstance();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            public void alert(String msg) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Dialog");
+                alert.setHeaderText("Look, an Error Dialog");
+                alert.setContentText(msg);
+
+                alert.showAndWait();
             }
         });
 

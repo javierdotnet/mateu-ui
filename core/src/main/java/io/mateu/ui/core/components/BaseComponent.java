@@ -31,7 +31,6 @@ public class BaseComponent implements Component {
 
 
 
-
     public int getColsXs() {
         return colsXs;
     }

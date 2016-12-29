@@ -1,6 +1,8 @@
 package io.mateu.ui.javafx.views;
 
 import io.mateu.ui.core.components.*;
+import io.mateu.ui.core.components.fields.TextField;
+import io.mateu.ui.javafx.data.DataContainerImpl;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -74,10 +76,14 @@ public class ViewNode extends BorderPane {
             }
             if (((TextField) c).getLabel() != null) {
                 Label l;
-                donde.getChildren().add(l = new Label(((TextField) c).getLabel()));
+                donde.getChildren().add(l = new Label(((TextField) c).getLabel().getText()));
                 l.getStyleClass().add("label");
             }
-            donde.getChildren().add(new javafx.scene.control.TextField());
+            javafx.scene.control.TextField tf;
+            donde.getChildren().add(tf = new javafx.scene.control.TextField());
+
+            tf.textProperty().bindBidirectional(((DataContainerImpl)view.getData()).getStringProperty(((TextField) c).getId()));
+
         } else if (c instanceof io.mateu.ui.core.components.Label) {
             Pane donde = container;
             if (donde instanceof VBox) {
@@ -85,6 +91,8 @@ public class ViewNode extends BorderPane {
             }
             donde.getChildren().add(new Label(((io.mateu.ui.core.components.Label) c).getText()));
         }
+
+
 
     }
 }

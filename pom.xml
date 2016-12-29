@@ -12,13 +12,14 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>code-generation</module>
         <module>core</module>
         <module>port-vaadin</module>
         <module>port-openui</module>
         <module>port-android</module>
         <module>port-javafx</module>
         <module>sample-app</module>
-        <module>sample-runner-javafx</module>
+        <module>code-generation</module>
     </modules>
 
 </project>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="gwt" url="file://$PROJECT_DIR$/port-vaadin" />
     <file type="web" url="file://$PROJECT_DIR$/port-openui" />
     <file type="web" url="file://$PROJECT_DIR$/port-vaadin" />
   </component>
@@ -16,7 +17,6 @@
     </option>
     <option name="ignoredFiles">
       <set>
-        <option value="$PROJECT_DIR$/port-vaadin/pom.xml" />
         <option value="$PROJECT_DIR$/sample-runner-javafx/pom.xml" />
       </set>
     </option>

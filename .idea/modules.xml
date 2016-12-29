@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/port-android/port-android.iml" filepath="$PROJECT_DIR$/port-android/port-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/port-javafx/port-javafx.iml" filepath="$PROJECT_DIR$/port-javafx/port-javafx.iml" />
       <module fileurl="file://$PROJECT_DIR$/port-openui/port-openui.iml" filepath="$PROJECT_DIR$/port-openui/port-openui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/port-vaadin/port-vaadin.iml" filepath="$PROJECT_DIR$/port-vaadin/port-vaadin.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-app/sample-app.iml" filepath="$PROJECT_DIR$/sample-app/sample-app.iml" />
     </modules>
   </component>

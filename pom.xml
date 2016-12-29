@@ -14,12 +14,12 @@
     <modules>
         <module>code-generation</module>
         <module>core</module>
-        <module>port-vaadin</module>
         <module>port-openui</module>
         <module>port-android</module>
         <module>port-javafx</module>
         <module>sample-app</module>
         <module>code-generation</module>
+        <module>port-vaadin</module>
     </modules>
 
 </project>

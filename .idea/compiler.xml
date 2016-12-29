@@ -9,6 +9,7 @@
         <module name="core" />
         <module name="port-android" />
         <module name="port-openui" />
+        <module name="port-vaadin" />
         <module name="sample-app" />
       </profile>
     </annotationProcessing>
@@ -20,7 +21,7 @@
       <module name="port-android" target="1.5" />
       <module name="port-javafx" target="1.8" />
       <module name="port-openui" target="1.5" />
-      <module name="port-vaadin" target="1.5" />
+      <module name="port-vaadin" target="1.8" />
       <module name="sample-app" target="1.8" />
       <module name="sample-runner-javafx" target="1.5" />
     </bytecodeTargetLevel>

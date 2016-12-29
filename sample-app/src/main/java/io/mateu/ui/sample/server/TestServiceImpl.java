@@ -10,6 +10,6 @@ import io.mateu.ui.sample.shared.TestService;
 public class TestServiceImpl implements TestService {
     @Override
     public String echo(String msg) {
-        return "Hola " + msg + ".";
+        return "Hola xxxx " + msg + ".";
     }
 }

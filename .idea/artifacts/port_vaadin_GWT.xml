@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact name="port-vaadin:GWT">
+    <output-path>$PROJECT_DIR$/port-vaadin/target/classes/VAADIN/widgetsets</output-path>
+    <root id="root">
+      <element id="directory" name="VAADIN">
+        <element id="directory" name="widgetsets">
+          <element id="gwt-compiler-output" facet="port-vaadin/gwt/GWT" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

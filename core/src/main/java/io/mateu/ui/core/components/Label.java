@@ -5,7 +5,8 @@ package io.mateu.ui.core.components;
  */
 public class Label extends BaseComponent {
 
-    private final String text;
+    private String text;
+    private Alignment alignment = Alignment.LEFT;
 
     public Label(String text) {
         this.text = text;
@@ -15,4 +16,13 @@ public class Label extends BaseComponent {
         return text;
     }
 
+
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    public Label setAlignment(Alignment alignment) {
+        this.alignment = alignment;
+        return this;
+    }
 }

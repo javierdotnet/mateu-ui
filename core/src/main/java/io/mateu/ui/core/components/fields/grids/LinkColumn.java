@@ -1,0 +1,14 @@
+package io.mateu.ui.core.components.fields.grids;
+
+import io.mateu.ui.core.app.ActionOnRow;
+
+/**
+ * Created by miguel on 23/10/16.
+ */
+public abstract class LinkColumn extends AbstractColumn implements ActionOnRow {
+
+    public LinkColumn(String id, String label, int width) {
+        super(id, label, width, false);
+    }
+
+}

@@ -1,10 +1,11 @@
 package io.mateu.ui.javafx;
 
 import io.mateu.ui.core.app.AbstractApplication;
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.app.AbstractExecutable;
+import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.app.AppNode;
-import io.mateu.ui.javafx.data.DataContainerImpl;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.text.Font;
@@ -49,12 +50,12 @@ public class JavafxPort extends Application {
         MateuUI.setClientSideHelper(new ClientSideHelper() {
             @Override
             public void openView(AbstractView view) {
-                AppNode.get().getViewNode().setView(view);
+                AppNode.get().getViewsNode().addView(view);
             }
 
             @Override
-            public DataContainer getNewDataContainer() {
-                return new DataContainerImpl();
+            public Data getNewDataContainer() {
+                return new Data();
             }
 
             @Override
@@ -79,6 +80,11 @@ public class JavafxPort extends Application {
                 alert.setContentText(msg);
 
                 alert.showAndWait();
+            }
+
+            @Override
+            public void run(Runnable runnable) {
+                Platform.runLater(runnable);
             }
         });
 

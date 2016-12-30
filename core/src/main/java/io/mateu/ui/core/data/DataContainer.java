@@ -1,63 +1,40 @@
 package io.mateu.ui.core.data;
 
-import java.util.Collection;
+import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.Pair;
+
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Created by miguel on 21/10/16.
+ * Created by miguel on 29/12/16.
  */
 public interface DataContainer {
+    String getString(String property);
 
-    public String getString(String property);
+    double getDouble(String property);
 
-    public double getDouble(String property);
+    boolean getBoolean(String property);
 
-    public boolean getBoolean(String property);
+    Date getDate(String property);
 
-    public Date getDate(String property);
+    int getInt(String property);
 
-    public int getInt(String property);
+    long getLong(String property);
 
-    public long getLong(String property);
+    List<Data> getList(String property);
 
-    public List<DataContainer> getList(String property);
+    Data getData(String property);
 
-    public DataContainer getFila(String property);
+    List<Pair> getPairList(String property);
 
-    public void copiar(DataContainer modelo);
+    <X> X set(String name, X value);
 
-    public List<Pair> getListaPares(String property);
+    <X> X get(String property);
 
-    public <X> X set(String name, X value);
+    <X> X get(String property, X valueWhenNull);
 
-    public <X> X get(String property);
+    boolean isEmpty(String property);
 
-    public <X> X get(String property, X valueWhenNull);
-
-    public Collection<String> getPropertyNames();
-
-    public Map<String, Object> getProperties();
-
-    public void putAll(Map<? extends String, ? extends Object> m);
-
-    public void clear();
-
-    public void remover(String property);
-
-    public boolean igual(DataContainer data);
-
-    public boolean estaVacio(String property);
-
-    public void addListener(String propertyName, ChangeListener listener);
-
-    public void removeListener(ChangeListener listener);
-
-    public void removeListeners(String propertyName);
-
-    public void removeAllListeners();
-
-    public Object clone();
 
 }

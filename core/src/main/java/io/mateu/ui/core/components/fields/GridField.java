@@ -5,7 +5,7 @@ import io.mateu.ui.core.app.AbstractExecutable;
 import io.mateu.ui.core.components.fields.grids.AbstractColumn;
 import io.mateu.ui.core.components.fields.grids.GriRowFormatter;
 import io.mateu.ui.core.components.fields.grids.GridFieldHelper;
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.data.GridFilter;
 
 import java.util.ArrayList;
@@ -18,6 +18,10 @@ import static io.mateu.ui.core.Mateu.getHelper;
  * Created by miguel on 23/10/16.
  */
 public class GridField extends AbstractField implements GriRowFormatter {
+
+    private boolean expandable = true;
+
+    private boolean paginated = false;
 
     private List<AbstractColumn> columns = new ArrayList<AbstractColumn>();
 
@@ -34,15 +38,69 @@ public class GridField extends AbstractField implements GriRowFormatter {
         super(id);
     }
 
+    public GridField(String id, String label)
+    {
+        super(id, label);
+    }
+
     public GridField(String id, AbstractColumn[] columnas)
     {
-        super(id);
-        this.columns.addAll(Arrays.asList(columnas));
+        this(id, Arrays.asList(columnas));
+    }
+
+    public GridField(String id, List<AbstractColumn> columnas)
+    {
+        this(id, null, columnas);
+    }
+
+    public GridField(String id, List<AbstractColumn> columnas, boolean paginated)
+    {
+        this(id, null, columnas, paginated);
+    }
+
+    public GridField(String id, String label, AbstractColumn[] columnas)
+    {
+        this(id, label, columnas, false);
+    }
+
+    public GridField(String id, String label, List<AbstractColumn> columnas)
+    {
+        this(id, label, columnas, false);
+    }
+
+    public GridField(String id, String label, AbstractColumn[] columnas, boolean paginated)
+    {
+        this(id, label, Arrays.asList(columnas), paginated);
+    }
+
+    public GridField(String id, String label, List<AbstractColumn> columnas, boolean paginated)
+    {
+        super(id, label);
+        this.columns.addAll(columnas);
+        this.paginated = paginated;
     }
 
     public GridField addAccion(AbstractAction accion)
     {
         getActions().add(accion);
+        return this;
+    }
+
+    public boolean isPaginated() {
+        return paginated;
+    }
+
+    public GridField setPaginated(boolean paginated) {
+        this.paginated = paginated;
+        return this;
+    }
+
+    public boolean isExpandable() {
+        return expandable;
+    }
+
+    public GridField setExpandable(boolean expandable) {
+        this.expandable = expandable;
         return this;
     }
 
@@ -79,21 +137,21 @@ public class GridField extends AbstractField implements GriRowFormatter {
     }
 
     @Override
-    public String getRowColor(DataContainer m)
+    public String getRowColor(Data m)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public String getRowBackgroundColor(DataContainer m)
+    public String getRowBackgroundColor(Data m)
     {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public String getRowExtraStyleAttributes(DataContainer m)
+    public String getRowExtraStyleAttributes(Data m)
     {
         // TODO Auto-generated method stub
         return null;

@@ -29,6 +29,10 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
         this.id = id;
     }
 
+    public AbstractField(String id, String label) {
+        this.id = id;
+        this.label = new Label(label);
+    }
 
     public List<String> validate() {
         List<String> errors = new ArrayList<>();

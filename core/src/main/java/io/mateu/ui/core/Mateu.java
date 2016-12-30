@@ -1,8 +1,7 @@
 package io.mateu.ui.core;
 
-import io.mateu.ui.core.communication.Service;
-import io.mateu.ui.core.data.DataContainer;
-import io.mateu.ui.core.data.Pair;
+import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.Pair;
 
 /**
  * Created by miguel on 23/10/16.
@@ -19,7 +18,7 @@ public class Mateu {
         h = helper;
     }
 
-    public static DataContainer createNewDataContainer() {
+    public static Data createNewDataContainer() {
         return h.createNewDataContainer();
     }
 

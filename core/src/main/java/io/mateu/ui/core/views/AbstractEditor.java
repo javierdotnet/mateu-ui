@@ -2,7 +2,7 @@ package io.mateu.ui.core.views;
 
 import io.mateu.ui.core.app.AbstractAction;
 import io.mateu.ui.core.app.AsyncCallback;
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.shared.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +40,8 @@ public abstract class AbstractEditor extends AbstractView {
         return errors;
     }
 
-    public abstract void save(DataContainer data, AsyncCallback<DataContainer> callback);
+    public abstract void save(Data data, AsyncCallback<Data> callback);
 
-    public abstract void load(String id, AsyncCallback<DataContainer> callback);
+    public abstract void load(String id, AsyncCallback<Data> callback);
 
 }

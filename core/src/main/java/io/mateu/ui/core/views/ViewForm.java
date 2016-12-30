@@ -1,6 +1,6 @@
 package io.mateu.ui.core.views;
 
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.shared.Data;
 
 /**
  * Created by miguel on 8/12/16.
@@ -13,8 +13,9 @@ public class ViewForm extends AbstractForm {
         this.view = view;
     }
 
+
     @Override
-    public DataContainer getData() {
-        return view.getData();
+    public Data initializeData() {
+        return view.initializeData();
     }
 }

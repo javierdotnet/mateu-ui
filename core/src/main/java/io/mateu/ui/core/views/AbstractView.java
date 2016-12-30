@@ -1,9 +1,8 @@
 package io.mateu.ui.core.views;
 
-import io.mateu.ui.core.MateuHelper;
 import io.mateu.ui.core.app.AbstractAction;
 import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.shared.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +11,6 @@ import java.util.List;
  * Created by miguel on 8/8/16.
  */
 public abstract class AbstractView {
-
-    private DataContainer data;
 
     private AbstractForm form;
     private List<AbstractAction> actions;
@@ -27,14 +24,7 @@ public abstract class AbstractView {
         return form;
     }
 
-    public DataContainer initializeData() {
-        return MateuUI.getNewDataContainer();
-    }
 
-    public DataContainer getData() {
-        if (data == null) data = initializeData();
-        return data;
-    }
 
     public List<AbstractAction> createActions() {
         return new ArrayList<>();
@@ -43,5 +33,14 @@ public abstract class AbstractView {
     public List<AbstractAction> getActions() {
         if (actions == null) actions = createActions();
         return actions;
+    }
+
+
+    public String getId() {
+        return getClass().getCanonicalName();
+    }
+
+    public Data initializeData() {
+        return new Data();
     }
 }

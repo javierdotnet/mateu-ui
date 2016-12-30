@@ -1,6 +1,6 @@
 package io.mateu.ui.core.app;
 
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.views.AbstractView;
 
 /**
@@ -8,8 +8,10 @@ import io.mateu.ui.core.views.AbstractView;
  */
 public interface ClientSideHelper {
     public void openView(AbstractView abstractView);
-    public DataContainer getNewDataContainer();
+    public Data getNewDataContainer();
 
     public <T> T create(java.lang.Class<?> serviceInterface);
     public void alert(String msg);
+
+    void run(Runnable runnable);
 }

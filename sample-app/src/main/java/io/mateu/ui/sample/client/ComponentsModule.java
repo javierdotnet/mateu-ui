@@ -71,12 +71,12 @@ public class ComponentsModule extends AbstractModule {
                 }, (MenuEntry) new AbstractAction() {
                     @Override
                     public String getName() {
-                        return "AbstractSearcher";
+                        return "AbstractListView";
                     }
 
                     @Override
                     public void run() {
-
+                        MateuUI.openView(new ListView());
                     }
                 }, (MenuEntry) new AbstractAction() {
                     @Override

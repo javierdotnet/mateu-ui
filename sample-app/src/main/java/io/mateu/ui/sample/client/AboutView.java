@@ -1,5 +1,6 @@
 package io.mateu.ui.sample.client;
 
+import io.mateu.ui.core.components.Alignment;
 import io.mateu.ui.core.components.Label;
 import io.mateu.ui.core.views.AbstractForm;
 import io.mateu.ui.core.views.AbstractView;
@@ -16,6 +17,6 @@ public class AboutView extends AbstractView {
 
     @Override
     public AbstractForm createForm() {
-        return new ViewForm(this).add(new Label("Sobre nosotros"));
+        return new ViewForm(this).setLastFieldMaximized(true).add(new Label("Sobre nosotros").setAlignment(Alignment.CENTER));
     }
 }

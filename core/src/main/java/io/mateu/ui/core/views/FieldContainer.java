@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class FieldContainer implements Component {
 
+    private boolean lastFieldMaximized;
 
     private LabelDisposition labelDisposition = LabelDisposition.ABOVE;
 
@@ -33,6 +34,15 @@ public class FieldContainer implements Component {
 
     public FieldContainer add(Component component) {
         componentsSequence.add(component);
+        return this;
+    }
+
+    public boolean isLastFieldMaximized() {
+        return lastFieldMaximized;
+    }
+
+    public FieldContainer setLastFieldMaximized(boolean lastFieldMaximized) {
+        this.lastFieldMaximized = lastFieldMaximized;
         return this;
     }
 

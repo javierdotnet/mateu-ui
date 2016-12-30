@@ -1,6 +1,7 @@
 package io.mateu.ui.core.app;
 
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.views.AbstractView;
 
 /**
  * Created by miguel on 9/8/16.
@@ -23,7 +24,7 @@ public class MateuUI {
         MateuUI.clientSideHelper = clientSideHelper;
     }
 
-    public static DataContainer getNewDataContainer() {
+    public static Data getNewDataContainer() {
         return getClientSideHelper().getNewDataContainer();
     }
 
@@ -35,4 +36,11 @@ public class MateuUI {
     }
 
 
+    public static void run(Runnable runnable) {
+        getClientSideHelper().run(runnable);
+    }
+
+    public static void openView(AbstractView view) {
+        getClientSideHelper().openView(view);
+    }
 }

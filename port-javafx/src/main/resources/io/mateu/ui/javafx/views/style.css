@@ -1,10 +1,40 @@
-.label {
-    -fx-pref-width: 200px;
-    -fx-font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
-    -fx-font-size: 40px;
+
+.mateu-view {
+    -fx-background-color: white;
+    -fx-border-insets: 10, 5, 10, 5;
 }
 
+.mateu-view-scroll {
+    -fx-background-color: white;
+    -fx-border-insets: 10, 5, 10, 5;
+    -fx-border-style: none;
+}
+
+.label {
+    -fx-min-width: 200px;
+    -fx-alignment: baseline-right;
+}
+
+/*
 * {
 -fx-font-family: Lato Regular;
 -fx-font-size: 40px;
 }
+*/
+
+.table-row-cell .hyperlink {
+    -fx-text-fill: blue;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.table-row-cell .hyperlink:hover {
+    -fx-text-fill: red;
+}
+
+/*
+.table-row-cell .hyperlink:visited, .table-row-cell .hyperlink:hover {
+    -fx-text-fill: red;
+    -fx-underline: true;
+}
+*/

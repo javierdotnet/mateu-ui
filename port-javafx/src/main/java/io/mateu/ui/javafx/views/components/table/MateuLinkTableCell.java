@@ -25,13 +25,11 @@
 
 package io.mateu.ui.javafx.views.components.table;
 
-import io.mateu.ui.core.app.AbstractExecutable;
-import io.mateu.ui.core.app.ActionOnRow;
+import io.mateu.ui.core.client.app.ActionOnRow;
 import io.mateu.ui.javafx.data.DataStore;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -41,7 +39,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
 
 /**
  * A class containing a {@link TableCell} implementation that draws a

@@ -1,9 +1,9 @@
 package io.mateu.ui.javafx.app;
 
-import io.mateu.ui.core.app.AbstractAction;
-import io.mateu.ui.core.app.AbstractMenu;
-import io.mateu.ui.core.app.AbstractModule;
-import io.mateu.ui.core.app.MenuEntry;
+import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.AbstractMenu;
+import io.mateu.ui.core.client.app.AbstractModule;
+import io.mateu.ui.core.client.app.MenuEntry;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;

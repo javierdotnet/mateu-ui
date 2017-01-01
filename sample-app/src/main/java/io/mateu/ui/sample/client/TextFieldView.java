@@ -1,9 +1,9 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.views.AbstractView;
-import io.mateu.ui.core.components.fields.TextField;
-import io.mateu.ui.core.views.AbstractForm;
-import io.mateu.ui.core.views.ViewForm;
+import io.mateu.ui.core.client.views.AbstractView;
+import io.mateu.ui.core.client.components.fields.TextField;
+import io.mateu.ui.core.client.views.AbstractForm;
+import io.mateu.ui.core.client.views.ViewForm;
 
 /**
  * Created by miguel on 10/8/16.

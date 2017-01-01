@@ -1,12 +1,12 @@
 package io.mateu.ui.javafx.views;
 
-import io.mateu.ui.core.app.AbstractAction;
-import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.components.*;
-import io.mateu.ui.core.components.fields.GridField;
-import io.mateu.ui.core.components.fields.TextField;
+import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.components.*;
+import io.mateu.ui.core.client.components.fields.GridField;
+import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.views.*;
+import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.data.ViewNodeDataStore;
 import io.mateu.ui.javafx.views.components.GridNode;
@@ -28,10 +28,19 @@ import java.util.List;
 /**
  * Created by miguel on 9/8/16.
  */
-public class ViewNode extends BorderPane {
+public class ViewNode extends StackPane {
 
     private AbstractView view;
     private DataStore dataStore;
+    private BorderPane bp;
+    private ProgressIndicator progressIndicator;
+    private Pane componentsCotainer;
+    private boolean minsFixed;
+    private Node lastNode;
+
+    public ProgressIndicator getProgressIndicator() {
+        return progressIndicator;
+    }
 
     public ViewNode() {
         setStyle("-fx-background-color: #eaeaff;");
@@ -58,19 +67,41 @@ public class ViewNode extends BorderPane {
         return view;
     }
 
+    public void startWaiting() {
+        MateuUI.runInUIThread(new Runnable() {
+            @Override
+            public void run() {
+                getChildren().add(progressIndicator = new ProgressIndicator());
+            }
+        });
+    }
+
+    public void endWaiting() {
+        MateuUI.runInUIThread(new Runnable() {
+            @Override
+            public void run() {
+                getChildren().remove(progressIndicator);
+            }
+        });
+    }
+
     public void build() {
         getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        getChildren().clear();
-        setTop(createToolBar(view.getActions()));
-        Pane p;
-        ScrollPane sp = new ScrollPane(p = new Pane());
+
+        setStyle("-fx-background-color: white;");
+
+        bp = new BorderPane();
+        bp.setTop(createToolBar(view.getActions()));
+        ScrollPane sp = new ScrollPane(componentsCotainer = new Pane());
         sp.getStyleClass().add("mateu-view-scroll");
-        setCenter(sp);
-        p.getStyleClass().add("mateu-view");
+        bp.setCenter(sp);
+        componentsCotainer.getStyleClass().add("mateu-view");
         if (false) addEventHandler(Event.ANY, e -> {
             System.out.println("caught " + e.getEventType().getName());
         });
-        build(p, view.getForm());
+        build(componentsCotainer, view.getForm());
+
+        getChildren().add(bp);
     }
 
     private Node createToolBar(List<AbstractAction> actions) {
@@ -94,12 +125,7 @@ public class ViewNode extends BorderPane {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            MateuUI.run(a);
-                        }
-                    });
+                    a.run();
                 }
             });
         }
@@ -121,8 +147,55 @@ public class ViewNode extends BorderPane {
         List<Pane> panels = new ArrayList<>();
         panels.add(new VBox(2));
 
+        if (view instanceof AbstractEditorView) {
+            AbstractEditorView ev = (AbstractEditorView) view;
+            ev.addEditorViewListener(new EditorViewListener() {
+                @Override
+                public void onLoad() {
+                    startWaiting();
+                }
+
+                @Override
+                public void onSave() {
+                    startWaiting();
+                }
+
+                @Override
+                public void onSuccess() {
+                    endWaiting();
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    endWaiting();
+                }
+            });
+            if (ev.getInitialId() != null) ev.load();
+        }
+
         if (view instanceof AbstractListView) {
             AbstractListView lv = (AbstractListView) view;
+            lv.addListViewListener(new ListViewListener() {
+                @Override
+                public void onReset() {
+
+                }
+
+                @Override
+                public void onSearch() {
+                    startWaiting();
+                }
+
+                @Override
+                public void onSuccess() {
+                    endWaiting();
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    endWaiting();
+                }
+            });
             addComponent(overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true);
         } else {
             int pos = 0;
@@ -137,6 +210,29 @@ public class ViewNode extends BorderPane {
         }
 
         overallContainer.getChildren().addAll(panels);
+
+        if (!form.isLastFieldMaximized()) ((ScrollPane)bp.getCenter()).viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                fixMins();
+                //System.out.println("bounds changed to " + newValue.toString());
+                overallContainer.setPrefHeight(newValue.getHeight());
+                overallContainer.setPrefWidth(newValue.getWidth());
+
+            }
+        });
+    }
+
+    private void fixMins() {
+
+        if ((true || !minsFixed) && lastNode != null && lastNode instanceof Region) {
+            Region r = (Region) lastNode;
+            componentsCotainer.setMinWidth(r.getBoundsInParent().getWidth() + r.getLocalToSceneTransform().transform(0, 0).getX() - componentsCotainer.getLocalToSceneTransform().transform(0, 0).getX());
+            componentsCotainer.setMinHeight(r.getBoundsInParent().getHeight() + r.getLocalToSceneTransform().transform(0, 0).getY() - componentsCotainer.getLocalToSceneTransform().transform(0, 0).getY());
+            //System.out.println("mins=" + componentsCotainer.getMinWidth() + "," + componentsCotainer.getMinHeight());
+        }
+
+        minsFixed = true;
     }
 
     private void addComponent(Pane overallContainer, Pane container, Component c, boolean maximize) {
@@ -159,14 +255,14 @@ public class ViewNode extends BorderPane {
 
             tf.textProperty().bindBidirectional(dataStore.getStringProperty(((TextField) c).getId()));
             n = tf;
-        } else if (c instanceof io.mateu.ui.core.components.Label) {
+        } else if (c instanceof io.mateu.ui.core.client.components.Label) {
             Pane donde = container;
             if (donde instanceof VBox) {
                 ((VBox) donde).getChildren().add(donde = new FlowPane());
             }
             Label l;
-            donde.getChildren().add(n = l = new Label(((io.mateu.ui.core.components.Label) c).getText()));
-            l.setStyle("-fx-alignment: baseline-" + getAlignmentString(((io.mateu.ui.core.components.Label) c).getAlignment()) + ";");
+            donde.getChildren().add(n = l = new Label(((io.mateu.ui.core.client.components.Label) c).getText()));
+            l.setStyle("-fx-alignment: baseline-" + getAlignmentString(((io.mateu.ui.core.client.components.Label) c).getAlignment()) + ";");
         } else if (c instanceof GridField) {
             Pane donde = container;
             if (donde instanceof VBox) {
@@ -180,12 +276,15 @@ public class ViewNode extends BorderPane {
             donde.getChildren().add(n = new GridNode(this, (GridField) c));
         }
 
+        lastNode = n;
+
         if (maximize && n != null && n instanceof Region) {
             Region r = (Region) n;
 
-            ((ScrollPane)getCenter()).viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            ((ScrollPane)bp.getCenter()).viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
                 @Override
                 public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                    fixMins();
                     //System.out.println("bounds changed to " + newValue.toString());
                     fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
                 }

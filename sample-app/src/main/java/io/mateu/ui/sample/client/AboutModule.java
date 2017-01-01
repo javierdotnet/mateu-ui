@@ -1,9 +1,9 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.app.AbstractAction;
-import io.mateu.ui.core.app.AbstractModule;
-import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.app.MenuEntry;
+import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.AbstractModule;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.app.MenuEntry;
 
 import java.util.ArrayList;
 import java.util.List;

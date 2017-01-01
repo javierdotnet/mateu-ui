@@ -1,7 +1,7 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.app.AbstractArea;
-import io.mateu.ui.core.app.AbstractModule;
+import io.mateu.ui.core.client.app.AbstractArea;
+import io.mateu.ui.core.client.app.AbstractModule;
 
 import java.util.Arrays;
 import java.util.List;

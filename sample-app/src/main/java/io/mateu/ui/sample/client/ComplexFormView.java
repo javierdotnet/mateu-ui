@@ -1,16 +1,16 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.app.AbstractAction;
-import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.components.fields.GridField;
-import io.mateu.ui.core.components.fields.TextField;
-import io.mateu.ui.core.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.components.fields.grids.LinkColumn;
-import io.mateu.ui.core.components.fields.grids.TextColumn;
+import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.components.fields.GridField;
+import io.mateu.ui.core.client.components.fields.TextField;
+import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.LinkColumn;
+import io.mateu.ui.core.client.components.fields.grids.TextColumn;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.views.AbstractForm;
-import io.mateu.ui.core.views.AbstractView;
-import io.mateu.ui.core.views.ViewForm;
+import io.mateu.ui.core.client.views.AbstractForm;
+import io.mateu.ui.core.client.views.AbstractView;
+import io.mateu.ui.core.client.views.ViewForm;
 
 import java.util.List;
 

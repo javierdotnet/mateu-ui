@@ -1,9 +1,7 @@
 package io.mateu.ui.javafx.data;
 
-import io.mateu.ui.core.data.ChangeListener;
-import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.client.data.ChangeListener;
 import io.mateu.ui.javafx.views.ViewNode;
-import javafx.beans.value.ObservableValue;
 
 /**
  * Created by miguel on 30/12/16.

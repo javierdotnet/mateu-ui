@@ -1,6 +1,6 @@
 package io.mateu.ui.javafx.app;
 
-import io.mateu.ui.core.views.AbstractView;
+import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.scene.control.Tab;
 
@@ -19,6 +19,6 @@ public class ViewTab extends Tab {
     }
 
     public String getKey() {
-        return view.getId();
+        return view.getViewId();
     }
 }

@@ -1,8 +1,9 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.app.*;
+import io.mateu.ui.core.client.app.*;
+import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.BaseService;
-import io.mateu.ui.core.shared.BaseServiceAsync;
+import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.sample.shared.TestService;
 import io.mateu.ui.sample.shared.TestServiceAsync;
 
@@ -45,14 +46,14 @@ public class CommunicationModule extends AbstractModule {
             @Override
             public void run() {
                 BaseServiceAsync s = MateuUI.create(BaseService.class);
-                s.sql("Hola!!", new AsyncCallback<String[][]>() {
+                s.select("Hola!!", new AsyncCallback<Object[][]>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         MateuUI.alert("error!");
                     }
 
                     @Override
-                    public void onSuccess(String[][] result) {
+                    public void onSuccess(Object[][] result) {
                         MateuUI.alert("resultado: " + result);
                     }
                 });

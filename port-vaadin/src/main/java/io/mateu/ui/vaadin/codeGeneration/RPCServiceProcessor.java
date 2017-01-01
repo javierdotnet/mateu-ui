@@ -19,7 +19,7 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-@SupportedAnnotationTypes({ "io.mateu.ui.core.communication.Service" })
+@SupportedAnnotationTypes({ "io.mateu.ui.core.client.communication.Service" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class RPCServiceProcessor extends AbstractProcessor {
 
@@ -41,7 +41,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
         // generate code for annotated elements
         Set<? extends Element> annotatedElements;
         try {
-            annotatedElements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("io.mateu.ui.core.communication.Service"));
+            annotatedElements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("io.mateu.ui.core.client.communication.Service"));
             for (TypeElement element : ElementFilter.typesIn(annotatedElements)) {
                 generateInterfazAsincrona(element);
                 //generateHessian(element);

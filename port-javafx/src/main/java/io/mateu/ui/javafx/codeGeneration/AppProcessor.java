@@ -19,7 +19,7 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-@SupportedAnnotationTypes({ "io.mateu.ui.core.app.App" })
+@SupportedAnnotationTypes({ "io.mateu.ui.core.client.app.App" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class AppProcessor extends AbstractProcessor {
 
@@ -41,7 +41,7 @@ public class AppProcessor extends AbstractProcessor {
         // generate code for annotated elements
         Set<? extends Element> annotatedElements;
         try {
-            annotatedElements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("io.mateu.ui.core.app.App"));
+            annotatedElements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("io.mateu.ui.core.client.app.App"));
             for (TypeElement element : ElementFilter.typesIn(annotatedElements)) {
                 generateMainClass(element);
             }

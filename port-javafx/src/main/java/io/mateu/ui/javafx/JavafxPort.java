@@ -1,18 +1,20 @@
 package io.mateu.ui.javafx;
 
-import io.mateu.ui.core.app.AbstractApplication;
-import io.mateu.ui.core.app.AbstractExecutable;
+import io.mateu.ui.core.client.app.AbstractApplication;
+import io.mateu.ui.core.client.BaseServiceClientSideImpl;
+import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.app.AppNode;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import io.mateu.ui.core.app.ClientSideHelper;
-import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.views.AbstractView;
+import io.mateu.ui.core.client.app.ClientSideHelper;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.views.AbstractView;
 
 /**
  * Created by miguel on 9/8/16.
@@ -48,6 +50,9 @@ public class JavafxPort extends Application {
         primaryStage.setScene(new Scene(new AppNode()));
 
         MateuUI.setClientSideHelper(new ClientSideHelper() {
+
+            public BaseServiceAsync baseServiceImpl = new BaseServiceClientSideImpl();
+
             @Override
             public void openView(AbstractView view) {
                 AppNode.get().getViewsNode().addView(view);
@@ -84,7 +89,30 @@ public class JavafxPort extends Application {
 
             @Override
             public void run(Runnable runnable) {
+
+                Task task = new Task<Void>() {
+                    @Override public Void call() {
+
+                        runnable.run();
+
+                        return null;
+                    }
+                };
+
+                new Thread(task).start();
+
+                //Platform.runLater(runnable);
+
+            }
+
+            @Override
+            public void runInUIThread(Runnable runnable) {
                 Platform.runLater(runnable);
+            }
+
+            @Override
+            public BaseServiceAsync getBaseService() {
+                return baseServiceImpl;
             }
         });
 

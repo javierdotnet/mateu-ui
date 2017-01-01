@@ -80,7 +80,9 @@ public class RPCServiceProcessor extends AbstractProcessor {
 
             pw.println("package " + pnc + ";");
             pw.println("");
-            pw.println("import io.mateu.ui.core.app.AsyncCallback;");
+            pw.println("import io.mateu.ui.core.shared.AsyncCallback;");
+            pw.println("import javafx.application.Platform;");
+            pw.println("import io.mateu.ui.core.client.app.MateuUI;");
             pw.println("");
             pw.println("/**");
             pw.println(" * Generated class creating a default implementation the");
@@ -109,7 +111,13 @@ public class RPCServiceProcessor extends AbstractProcessor {
                 s += ")";
 
                 s += " {\n\n";
+
+                s += "MateuUI.run(new Runnable() {\n" +
+                        "            @Override\n" +
+                        "            public void run() {";
+
                 s += "\t\ttry {\n\n\t\t\t\t";
+
 
                 if (!TypeKind.VOID.equals(m.getReturnType().getKind())) s += getTipoCallback(m.getReturnType()) + " r = ";
                 //s += "new " + pns + "." + simpleName + "Impl().";
@@ -128,11 +136,30 @@ public class RPCServiceProcessor extends AbstractProcessor {
 
                 s += "\n\n";
 
-                s += "\t\t\t\tcallback.onSuccess(r);";
+                s += "Platform.runLater(new Runnable() {\n" +
+                        "                        @Override\n" +
+                        "                        public void run() {\n" +
+                        "\n" +
+                        "                            callback.onSuccess(r);\n" +
+                        "\n" +
+                        "                        }\n" +
+                        "                    });";
 
                 s += "\n\n\t\t} catch (Exception e) {";
-                s += "\n\n\t\t\t\te.printStackTrace();";
+
+                s += "Platform.runLater(new Runnable() {\n" +
+                        "                        @Override\n" +
+                        "                        public void run() {\n" +
+                        "\n" +
+                        "                            callback.onFailure(e);\n" +
+                        "\n" +
+                        "                        }\n" +
+                        "                    });";
+
                 s += "\n\n\t\t}";
+
+                s += "            }\n" +
+                        "        });";
 
                 pw.println(s);
                 pw.println("\n\n\t}");
@@ -254,7 +281,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
 
             pw.println("package " + packageName + ";");
             pw.println("");
-            pw.println("import io.mateu.ui.core.app.AsyncCallback;");
+            pw.println("import io.mateu.ui.core.shared.AsyncCallback;");
             pw.println("");
             pw.println("/**");
             pw.println(" * Generated class creating an async interface for the");

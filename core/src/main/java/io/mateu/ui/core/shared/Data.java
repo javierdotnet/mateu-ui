@@ -1,7 +1,6 @@
 package io.mateu.ui.core.shared;
 
-import io.mateu.ui.core.data.ChangeListener;
-import io.mateu.ui.core.data.DataContainer;
+import io.mateu.ui.core.client.data.DataContainer;
 
 import java.io.Serializable;
 import java.util.*;
@@ -32,6 +31,12 @@ public class Data implements Serializable, DataContainer {
 
     public Data(Map<String, Object> properties) {
         data = properties;
+    }
+
+    public List<Data> getSelection(String property) {
+        List<Data> s = new ArrayList<>();
+        for (Data x : getList(property)) if (x.getBoolean("_selected")) s.add(x);
+        return s;
     }
 
     @Override

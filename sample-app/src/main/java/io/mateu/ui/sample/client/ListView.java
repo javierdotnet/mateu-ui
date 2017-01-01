@@ -1,16 +1,14 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.app.AbstractExecutable;
-import io.mateu.ui.core.app.AsyncCallback;
-import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.components.fields.TextField;
-import io.mateu.ui.core.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.components.fields.grids.TextColumn;
+import io.mateu.ui.core.shared.AsyncCallback;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.components.fields.TextField;
+import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.TextColumn;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.views.AbstractForm;
-import io.mateu.ui.core.views.AbstractListView;
-import io.mateu.ui.core.views.AbstractView;
-import io.mateu.ui.core.views.ViewForm;
+import io.mateu.ui.core.client.views.AbstractForm;
+import io.mateu.ui.core.client.views.AbstractListView;
+import io.mateu.ui.core.client.views.ViewForm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,16 +40,17 @@ public class ListView extends AbstractListView {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        MateuUI.run(new AbstractExecutable() {
-            @Override
-            public void run() {
 
                 Data d = new Data("q", "AAAAAAAA");
                 d.getList("_data").add(new Data("col1", "XXXX", "col2", "YYYYY"));
                 d.set("_data_currentpageindex", getForm().getData().getInt("_data_currentpageindex"));
                 d.set("_data_pagecount", 3);
-                callback.onSuccess(d);
-            }
-        });
+
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(d);
+                    }
+                });
     }
 }

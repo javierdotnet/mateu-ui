@@ -1,15 +1,15 @@
 package io.mateu.ui.javafx.views.components;
 
-import io.mateu.ui.core.Mateu;
-import io.mateu.ui.core.app.AbstractAction;
-import io.mateu.ui.core.app.ActionOnRow;
-import io.mateu.ui.core.app.MateuUI;
-import io.mateu.ui.core.components.fields.GridField;
-import io.mateu.ui.core.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.components.fields.grids.LinkColumn;
+import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.ActionOnRow;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.components.fields.GridField;
+import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.LinkColumn;
+import io.mateu.ui.core.client.components.fields.grids.TextColumn;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.views.AbstractListView;
-import io.mateu.ui.core.views.ListViewListener;
+import io.mateu.ui.core.client.views.AbstractListView;
+import io.mateu.ui.core.client.views.ListViewListener;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
 import io.mateu.ui.javafx.views.components.table.MateuCheckBoxTableCell;
@@ -24,12 +24,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import io.mateu.ui.javafx.views.components.table.MateuTextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 
 import java.util.ArrayList;
@@ -73,27 +73,48 @@ public class GridNode extends VBox {
                 ((AbstractListView)viewNode.getView()).addListViewListener(new ListViewListener() {
                     @Override
                     public void onReset() {
-                        System.out.println("paginación = 0");
-                        pagination.setCurrentPageIndex(0);
-                        System.out.println("paginación == 0");
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("paginación = 0");
+                                pagination.setDisable(true);
+                                pagination.setCurrentPageIndex(0);
+                                System.out.println("paginación == 0 ok");
+                            }
+                        });
                     }
 
                     @Override
                     public void onSearch() {
-                        pagination.setDisable(true);
-                        System.out.println("paginación deshabilitada");
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pagination.setDisable(true);
+                                System.out.println("paginación deshabilitada");
+                            }
+                        });
                     }
 
                     @Override
                     public void onSuccess() {
-                        pagination.setDisable(false);
-                        System.out.println("paginación habilitada");
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pagination.setDisable(false);
+                                System.out.println("paginación habilitada");
+                            }
+                        });
                     }
 
                     @Override
                     public void onFailure(Throwable caught) {
-                        pagination.setDisable(false);
-                        System.out.println("paginación habilitada");
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pagination.setDisable(false);
+                                System.out.println("paginación habilitada");
+                            }
+                        });
                     }
                 });
 
@@ -103,7 +124,12 @@ public class GridNode extends VBox {
                     public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
                         if (!pagination.isDisabled() && !oldValue.equals(newValue)) {
                             System.out.println("LANZAMOS BÚSQUEDA POR CAMBIO DE PÁGINA");
-                            ((AbstractListView)viewNode.getView()).search();
+                            MateuUI.run(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((AbstractListView) viewNode.getView()).search();
+                                }
+                            });
                         }
                     }
                 });
@@ -193,7 +219,7 @@ public class GridNode extends VBox {
         {
             TableColumn<DataStore, Boolean> c1;
             l.add(c1 = new TableColumn<DataStore, Boolean>("Sel."));
-            c1.setCellValueFactory(new PropertyValueFactory<Boolean>("selected"));
+            c1.setCellValueFactory(new PropertyValueFactory<Boolean>("_selected"));
             c1.setCellFactory(MateuCheckBoxTableCell.forTableColumn(c1));
             c1.setEditable(true);
             c1.setPrefWidth(30);
@@ -201,20 +227,43 @@ public class GridNode extends VBox {
 
         for (AbstractColumn c : g.getColumns()) {
 
-            TableColumn<DataStore, String> c1;
-            l.add(c1 = new TableColumn<DataStore, String>(c.getLabel()));
-
-            c1.setPrefWidth(c.getWidth());
+            TableColumn c1;
+            l.add(c1 = new TableColumn(c.getLabel()));
 
             if (c instanceof LinkColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<String>(c.getId()));
-                c1.setCellFactory(MateuLinkTableCell.<DataStore, String>forTableColumn(new DefaultStringConverter(), (ActionOnRow) c));
-            } else {
+                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                c1.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                    @Override
+                    public String toString(Object object) {
+                        return (object == null)?null:"" + object;
+                    }
+
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                }, (ActionOnRow) c));
+            } else if (c instanceof TextColumn) {
                 c1.setCellValueFactory(new PropertyValueFactory<String>(c.getId()));
                 c1.setCellFactory(MateuTextFieldTableCell.<DataStore, String>forTableColumn(new DefaultStringConverter()));
                 c1.setEditable(true);
+            } else {
+                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                    @Override
+                    public String toString(Object object) {
+                        return (object == null)?null:"" + object;
+                    }
+
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                }));
+                c1.setEditable(true);
             }
 
+            c1.setPrefWidth(c.getWidth());
         }
 
         return l;

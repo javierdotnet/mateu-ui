@@ -8,6 +8,17 @@ import io.mateu.ui.core.communication.Service;
 @Service()
 public interface BaseService {
 
-    public String[][] sql(String sql);
+    public Object[][] select(String sql) throws Exception;
+
+    public Object selectSingleValue(String sql) throws Exception;
+
+    public void execute(String sql) throws Exception;
+
+    public Data selectPaginated(Data parameters) throws Exception;
+
+
+    public Data set(String serverSideControllerKey, Data data) throws Exception;
+
+    public Data get(String serverSideControllerKey, Object id) throws IllegalAccessException, InstantiationException, Exception;
 
 }

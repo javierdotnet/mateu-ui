@@ -1,6 +1,7 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.app.*;
+import io.mateu.ui.core.client.app.*;
+import io.mateu.ui.core.client.app.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -77,6 +78,16 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         MateuUI.openView(new ListView());
+                    }
+                }, (MenuEntry) new AbstractAction() {
+                    @Override
+                    public String getName() {
+                        return "AbstractCRUDView";
+                    }
+
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new CRUDView());
                     }
                 }, (MenuEntry) new AbstractAction() {
                     @Override

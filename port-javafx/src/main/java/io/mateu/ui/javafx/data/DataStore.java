@@ -1,10 +1,8 @@
 package io.mateu.ui.javafx.data;
 
 import com.sun.javafx.collections.ObservableMapWrapper;
-import io.mateu.ui.core.Mateu;
-import io.mateu.ui.core.data.ChangeListener;
+import io.mateu.ui.core.client.Mateu;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.javafx.views.ViewNode;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -44,6 +42,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
     public DataStore(Data data) {
         super(new HashMap<String, Object>());
+        set("_selected", false);
         setData(data);
     }
 

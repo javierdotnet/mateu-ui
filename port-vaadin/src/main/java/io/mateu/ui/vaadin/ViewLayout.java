@@ -1,24 +1,36 @@
 package io.mateu.ui.vaadin;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.validator.DoubleValidator;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.*;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.TextField;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractExecutable;
 import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
-import io.mateu.ui.core.client.components.fields.GridField;
+import io.mateu.ui.core.client.components.fields.IntegerField;
+import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
+import io.mateu.ui.core.server.ServerSideHelper;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.vaadin.data.DataStore;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.vaadin.ui.NumberField;
+import org.vaadin.viritin.fields.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +52,10 @@ public class ViewLayout extends VerticalLayout {
                 dataStore.setData(newData);
             }
         });
+
+//        setContent(new MVerticalLayout(new MHorizontalLayout(c, d).withFullWidth())
+//                .expand(new MHorizontalLayout(menu).expand(mainContent)));
+
 
         buildToolBar();
         if (view instanceof AbstractListView) {
@@ -206,15 +222,20 @@ public class ViewLayout extends VerticalLayout {
     private Component getVaadinComponent(AbstractField field) {
         Component c = null;
 
+        Data data = view.getForm().getData();
+
+        Object v = data.get(field.getId());
+
+
         if (field instanceof GridField) {
 
             GridField g = (GridField) field;
 
-            Table table = new Table((g.getLabel() != null)?g.getLabel().getText():null);
+            Table table = new Table((g.getLabel() != null) ? g.getLabel().getText() : null);
 
 // Define two columns for the built-in container
             {
-                table.addContainerProperty("_selected", CheckBox.class,  null, "Sel.", null, Table.Align.CENTER);
+                table.addContainerProperty("_selected", CheckBox.class, null, "Sel.", null, Table.Align.CENTER);
             }
             for (AbstractColumn col : g.getColumns()) {
                 if (col instanceof LinkColumn) {
@@ -224,8 +245,6 @@ public class ViewLayout extends VerticalLayout {
                 }
                 table.setColumnWidth(col.getId(), col.getWidth());
             }
-
-            Data data = view.getForm().getData();
 
             Property<ObservableList<DataStore>> p = dataStore.getObservableListProperty(field.getId());
             Component finalC = c;
@@ -239,7 +258,7 @@ public class ViewLayout extends VerticalLayout {
                     List ll = new ArrayList();
                     for (Object o : l) {
                         if (o instanceof DataStore) {
-                            ll.add(((DataStore)o).getData());
+                            ll.add(((DataStore) o).getData());
                         } else ll.add(o);
                     }
 
@@ -268,7 +287,7 @@ public class ViewLayout extends VerticalLayout {
                                 b.addClickListener(new Button.ClickListener() {
                                     public void buttonClick(Button.ClickEvent event) {
                                         System.out.println(x.getData().toString());
-                                        ((LinkColumn)col).run(x.getData());
+                                        ((LinkColumn) col).run(x.getData());
                                     }
                                 });
                                 cells.add(b);
@@ -284,12 +303,374 @@ public class ViewLayout extends VerticalLayout {
             table.setPageLength(10);
 
             c = table;
+        } else if (field instanceof AutocompleteField) {
+
+            AutocompleteField rf = (AutocompleteField) field;
+
+            ComboBox og;
+            c = og = new ComboBox();
+
+            for (Pair p : rf.getValues()) {
+                og.addItem(p);
+            }
+
+            if (v != null) {
+                //og.select(v);
+
+                for (Object o : og.getItemIds()) {
+                    //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                    if (o.equals(v)) og.select(o);
+                }
+
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    //og.select(newValue);
+
+                    for (Object o : og.getItemIds()) {
+                        if (o.equals(newValue)) og.select(o);
+                    }
+
+                }
+            });
+            og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+
+
+        } else if (field instanceof CalendarField || field instanceof io.mateu.ui.core.client.components.fields.DateField) {
+
+            DateField cb;
+            c = cb = new DateField();
+
+            if (v != null) cb.setValue((Date) v);
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    cb.setValue((Date) newValue);
+                }
+            });
+            cb.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof CheckBoxField) {
+
+            CheckBox cb;
+            c = cb = new CheckBox(((CheckBoxField) field).getText(), (v != null && v instanceof Boolean && ((Boolean) v)) ? true : false);
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    cb.setValue((newValue != null && newValue instanceof Boolean && ((Boolean) newValue)) ? true : false);
+                }
+            });
+            cb.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof CheckBoxListField) {
+
+            CheckBoxListField rf = (CheckBoxListField) field;
+
+            OptionGroup og;
+            c = og = new OptionGroup();
+
+            og.setMultiSelect(true);
+
+            for (Pair p : rf.getValues()) {
+                og.addItem(p);
+            }
+
+            if (v != null) {
+                //og.select(v);
+
+                for (Object o : og.getItemIds()) {
+                    //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                    if (o.equals(v)) og.select(o);
+                }
+
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    //og.select(newValue);
+
+                    for (Object o : og.getItemIds()) {
+                        if (o.equals(newValue)) og.select(o);
+                    }
+
+                }
+            });
+            og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof ComboBoxField) {
+
+            ComboBoxField rf = (ComboBoxField) field;
+
+            ComboBox og;
+            c = og = new ComboBox();
+
+            for (Pair p : rf.getValues()) {
+                og.addItem(p);
+            }
+
+            if (v != null) {
+                //og.select(v);
+
+                for (Object o : og.getItemIds()) {
+                    //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                    if (o.equals(v)) og.select(o);
+                }
+
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    //og.select(newValue);
+
+                    for (Object o : og.getItemIds()) {
+                        if (o.equals(newValue)) og.select(o);
+                    }
+
+                }
+            });
+            og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+
+        } else if (field instanceof DoubleField) {
+            NumberField intf;
+            c = intf = new NumberField();
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    System.out.println((newValue != null)?newValue.getClass().getName():"null");
+                    intf.setValue((newValue != null)?Double.parseDouble("" + newValue):null);
+                }
+            });
+            intf.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    System.out.println((valueChangeEvent.getProperty().getValue() != null)?valueChangeEvent.getProperty().getValue().getClass().getName():"null");
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof IntegerField) {
+
+            org.vaadin.viritin.fields.IntegerField intf;
+            c = intf = new org.vaadin.viritin.fields.IntegerField();
+
+            if (v != null) intf.setValue((Integer) v);
+
+
+            Property p = dataStore.getProperty(field.getId());
+            Component finalC = c;
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    intf.setValue((newValue != null)?(Integer) newValue:null);
+                }
+            });
+            intf.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    System.out.println((valueChangeEvent.getProperty().getValue() != null)?valueChangeEvent.getProperty().getValue().getClass().getName():"null");
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+
+        } else if (field instanceof LinkField) {
+
+            LinkField lf = (LinkField) field;
+
+            Button cb;
+            c = cb = new Button((lf.getText() != null)?lf.getText():(String) v);
+
+            cb.setStyleName("link");
+
+            cb.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    lf.run();
+                }
+            });
+
+
+        } else if (field instanceof RadioButtonField) {
+
+            RadioButtonField rf = (RadioButtonField) field;
+
+            OptionGroup og;
+            c = og = new OptionGroup();
+
+            for (Pair p : rf.getValues()) {
+                og.addItem(p);
+            }
+
+            if (v != null) {
+                //og.select(v);
+
+                for (Object o : og.getItemIds()) {
+                    //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                    if (o.equals(v)) og.select(o);
+                }
+
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    //og.select(newValue);
+
+                    for (Object o : og.getItemIds()) {
+                        if (o.equals(newValue)) og.select(o);
+                    }
+
+                }
+            });
+            og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof TextAreaField)  {
+            c = new TextArea();
+
+            if (v != null) ((TextArea) c).setValue("" + v);
+
+            Property p = dataStore.getProperty(field.getId());
+            Component finalC = c;
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    ((TextArea) finalC).setValue((newValue != null)?"" + newValue:null);
+                }
+            });
+            ((TextArea)c).addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof ShowTextField) {
+            c = new Label();
+
+            if (v != null) ((Label) c).setValue("" + v);
+
+            Property p = dataStore.getProperty(field.getId());
+            Component finalC = c;
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    ((Label) finalC).setValue((newValue != null)?"" + newValue:null);
+                }
+            });
+        } else if (field instanceof SqlComboBoxField) {
+
+            SqlComboBoxField rf = (SqlComboBoxField) field;
+
+            ComboBox og;
+            c = og = new ComboBox();
+
+            try {
+                for (Object[] l : ServerSideHelper.getServerSideApp().select(rf.getSql())) {
+
+                    og.addItem(new Pair(l[0], "" + l[1]));
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (v != null) {
+                //og.select(v);
+
+                for (Object o : og.getItemIds()) {
+                    //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                    if (o.equals(v)) og.select(o);
+                }
+
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    //og.select(newValue);
+
+                    for (Object o : og.getItemIds()) {
+                        if (o.equals(newValue)) og.select(o);
+                    }
+
+                }
+            });
+            og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof io.mateu.ui.core.client.components.fields.TextField) {
+            c = new TextField();
+
+            if (v != null) ((TextField) c).setValue("" + v);
+
+            Property p = dataStore.getProperty(field.getId());
+            Component finalC = c;
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    ((TextField) finalC).setValue((newValue != null)?"" + newValue:null);
+                }
+            });
+            ((TextField)c).addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
         } else {
             c = new TextField();
 
-            Data data = view.getForm().getData();
-
-            Object v = data.get(field.getId());
             if (v != null) ((TextField) c).setValue("" + v);
 
             Property p = dataStore.getProperty(field.getId());

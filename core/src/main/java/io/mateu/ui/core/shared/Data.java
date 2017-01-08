@@ -144,9 +144,11 @@ public class Data implements Serializable, DataContainer {
         data.remove(property);
     }
 
-    public boolean equals(Data data) {
-        return getProperties().equals(data.getProperties());
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && obj instanceof Data && getProperties().equals(((Data)obj).getProperties());
     }
+
 
     @Override
     public boolean isEmpty(String property) {

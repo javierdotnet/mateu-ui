@@ -9,6 +9,8 @@ import io.mateu.ui.core.client.views.ViewForm;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 
+import java.util.Date;
+
 /**
  * Created by miguel on 3/1/17.
  */
@@ -18,7 +20,7 @@ public class AllFieldsFiew extends AbstractView {
     public Data initializeData() {
         return new Data("f9", "link", "f5", new Pair("2", "V2"), "f10", new Pair("2", "V2")
                 , "f21", "Hello!", "f23", "http://www.google.es"
-        , "f24", "<b>This is html!</b>");
+        , "f24", "<b>This is html!</b>", "f2", new Date());
     }
 
     @Override
@@ -56,9 +58,9 @@ public class AllFieldsFiew extends AbstractView {
         f.add(new SqlRadioButtonField("f15", "SqlRadioButtonField"));
         f.add(new SqlSearchField("f16", "SqlSearchField"));
         f.add(new TextAreaField("f22", "TextArea"));
-        f.add(new TextField<Double>("f17", "TextField<Double>"));
-        f.add(new TextField<Integer>("f18", "TextField<Integer>"));
-        f.add(new TextField<String>("f19", "TextField<String>"));
+        f.add(new DoubleField("f17", "DoubleField"));
+        f.add(new IntegerField("f18", "IntegerField"));
+        f.add(new TextField("f19", "TextField"));
         f.add(new WebField("f23", "Web"));
 
         return f;

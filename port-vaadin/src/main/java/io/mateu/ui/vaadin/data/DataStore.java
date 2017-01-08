@@ -11,10 +11,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -121,16 +117,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
 
     public <X> X set(String name, X value) {
-        if (value instanceof Date) {
-            Property p = props.get(name);
-            if (p != null && p instanceof StringProperty) {
-                getProperty(name).setValue((value != null)? "" + value:null);
-            } else {
-                Instant instant = Instant.ofEpochMilli(((Date)value).getTime());
-                LocalDate res = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
-                ((Property)getLocalDateTimeProperty(name)).setValue(res);
-            }
-        } else if (value instanceof List<?>) {
+        if (value instanceof List<?>) {
             Property<ObservableList<DataStore>> p = getObservableListProperty(name);
             p.getValue().clear();
             for (Data x : (List<Data>) value) p.getValue().add(new DataStore(x));
@@ -151,10 +138,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
     public <X> X get(String property) {
         X value = (X) ((Property)getProperty(property)).getValue();
-        if (value != null && value instanceof LocalDate) {
-            Instant instant = Instant.from(((LocalDate)value).atStartOfDay(ZoneId.systemDefault()));
-            value = (X) Date.from(instant);
-        }
         return value;
     }
 
@@ -210,23 +193,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         return p;
     }
 
-    public Property<LocalDate> getLocalDateProperty(String id) {
-        Property p = props.get(id);
-        if (p == null) {
-            props.put(id, p = new SimpleObjectProperty<LocalDate>());
-            p.addListener(listenerx);
-        }
-        return p;
-    }
-
-    public Property<LocalDateTime> getLocalDateTimeProperty(String id) {
-        Property p = props.get(id);
-        if (p == null) {
-            props.put(id, p = new SimpleObjectProperty<LocalDateTime>());
-            p.addListener(listenerx);
-        }
-        return p;
-    }
 
 
     public Property<Double> getDoubleProperty(String id) {
@@ -283,15 +249,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             p.addListener(listenerx);
         }
         if (p.getValue() == null) p.setValue(FXCollections.observableArrayList());
-        return p;
-    }
-
-    public Property<LocalDateTime> getDateProperty(String id) {
-        Property p = props.get(id);
-        if (p == null) {
-            props.put(id, p = new SimpleObjectProperty<LocalDateTime>());
-            p.addListener(listenerx);
-        }
         return p;
     }
 

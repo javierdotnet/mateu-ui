@@ -551,6 +551,50 @@ public class ViewNode extends StackPane {
 
                 n = cmb;
 
+            } else if (c instanceof DoubleField) {
+                javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
+
+                    DecimalFormat format = new DecimalFormat( "#.0" );
+                    tf.setTextFormatter( new TextFormatter<>(converter ->
+                    {
+                        if ( converter.getControlNewText().isEmpty() )
+                        {
+                            return converter;
+                        }
+
+                        ParsePosition parsePosition = new ParsePosition( 0 );
+                        Object object = format.parse( converter.getControlNewText(), parsePosition );
+
+                        if ( object == null || parsePosition.getIndex() < converter.getControlNewText().length() )
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return converter;
+                        }
+                    }));
+                    tf.textProperty().bindBidirectional(dataStore.getDoubleProperty(((DoubleField) c).getId()), new StringConverter<Double>() {
+                        @Override
+                        public String toString(Double object) {
+                            if (object == null) return null;
+                            else return "" + object;
+                        }
+
+                        @Override
+                        public Double fromString(String string) {
+                            Double d = null;
+                            try {
+                                d = new Double(string);
+                            } catch (Exception e) {
+
+                            }
+                            return d;
+                        }
+                    });
+
+                n = tf;
+
             } else if (c instanceof FileField) {
                 javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
@@ -629,6 +673,48 @@ public class ViewNode extends StackPane {
                 StackPane sp = new StackPane();
                 n = sp;
                 sp.getChildren().add(tf);
+            } else if (c instanceof IntegerField) {
+                javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
+                    DecimalFormat format = new DecimalFormat( "#" );
+                    tf.setTextFormatter( new TextFormatter<>(converter ->
+                    {
+                        if ( converter.getControlNewText().isEmpty() )
+                        {
+                            return converter;
+                        }
+
+                        ParsePosition parsePosition = new ParsePosition( 0 );
+                        Object object = format.parse( converter.getControlNewText(), parsePosition );
+
+                        if ( object == null || parsePosition.getIndex() < converter.getControlNewText().length() )
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return converter;
+                        }
+                    }));
+                    tf.textProperty().bindBidirectional(dataStore.getIntegerProperty(((IntegerField) c).getId()), new StringConverter<Integer>() {
+                        @Override
+                        public String toString(Integer object) {
+                            if (object == null) return null;
+                            else return "" + object;
+                        }
+
+                        @Override
+                        public Integer fromString(String string) {
+                            Integer d = null;
+                            try {
+                                d = new Integer(string);
+                            } catch (Exception e) {
+
+                            }
+                            return d;
+                        }
+                    });
+                 n = tf;
+
             } else if (c instanceof LinkField) {
                 Hyperlink tf;
                 n = tf = new Hyperlink();

@@ -15,9 +15,13 @@ import java.util.Map;
  */
 public abstract class AbstractForm extends FieldContainer {
 
+    private String columnWidths = "200,200";
+
     private Data data;
 
     private List<DataSetterListener> dataSetterListeners = new ArrayList<>();
+
+
 
     public void addDataSetterListener(DataSetterListener listener) {
         dataSetterListeners.add(listener);
@@ -65,9 +69,22 @@ public abstract class AbstractForm extends FieldContainer {
         return data;
     }
 
+    public void setData(Data data, boolean only_) {
+        Data aux = this.data;
+        if (aux == null) aux = new Data();
+        if (only_) {
+            for (String n : data.getPropertyNames()) if (n.startsWith("_")) {
+                aux.set(n, data.get(n));
+            }
+        } else {
+            aux.copy(data);
+        }
+        this.data = aux;
+        for (DataSetterListener l : dataSetterListeners) l.setted(aux);
+    }
+
     public void setData(Data data) {
-        this.data = data;
-        for (DataSetterListener l : dataSetterListeners) l.setted(data);
+        setData(data, false);
     }
 
 
@@ -99,4 +116,12 @@ public abstract class AbstractForm extends FieldContainer {
         return errors;
     }
 
+    public String getColumnWidths() {
+        return columnWidths;
+    }
+
+    public AbstractForm setColumnWidths(String columnWidths) {
+        this.columnWidths = columnWidths;
+        return this;
+    }
 }

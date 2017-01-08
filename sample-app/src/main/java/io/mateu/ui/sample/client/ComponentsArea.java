@@ -10,8 +10,9 @@ import java.util.List;
  * Created by miguel on 9/8/16.
  */
 public class ComponentsArea extends AbstractArea {
-    public String getName() {
-        return "Components";
+
+    public ComponentsArea() {
+        super("Components");
     }
 
     public List<AbstractModule> getModules() {

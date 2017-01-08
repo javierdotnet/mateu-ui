@@ -1,7 +1,7 @@
 package io.mateu.ui.core.client.views;
 
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 

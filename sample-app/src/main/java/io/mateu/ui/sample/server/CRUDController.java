@@ -10,17 +10,17 @@ import io.mateu.ui.core.shared.Data;
 public class CRUDController extends ServerSideEditorViewController {
     @Override
     public Data get(Object id) throws Exception {
-        return ServerSideHelper.getFromSql("select * from customer where id = " + id);
+        return ServerSideHelper.getServerSideApp().getFromSql("select * from customer where id = " + id);
     }
 
     @Override
     public Object set(Data data) throws Exception {
-        ServerSideHelper.setToSql(data, "customer");
+        ServerSideHelper.getServerSideApp().setToSql(data, "customer");
 
         Object id = data.get("_id");
 
         if (id == null) {
-            id = ServerSideHelper.selectSingleValue("select max(id) from customer");
+            id = ServerSideHelper.getServerSideApp().selectSingleValue("select max(id) from customer");
         }
 
         return id;

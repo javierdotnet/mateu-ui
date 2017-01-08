@@ -16,42 +16,29 @@ import java.util.List;
 public class CommunicationModule extends AbstractModule {
     @Override
     public List<MenuEntry> getMenu() {
-        return Arrays.asList((MenuEntry) new AbstractAction() {
-            @Override
-            public String getName() {
-                return "echo";
-            }
-
+        return Arrays.asList((MenuEntry) new AbstractAction("echo") {
             @Override
             public void run() {
                 TestServiceAsync s = MateuUI.create(TestService.class);
                 s.echo("Hola!!", new AsyncCallback<String>() {
                     @Override
                     public void onFailure(Throwable caught) {
+
                         MateuUI.alert("error!");
                     }
 
                     @Override
                     public void onSuccess(String result) {
+
                         MateuUI.alert("resultado: " + result);
                     }
                 });
             }
-        }, (MenuEntry) new AbstractAction() {
-            @Override
-            public String getName() {
-                return "sql";
-            }
-
+        }, (MenuEntry) new AbstractAction("sql") {
             @Override
             public void run() {
                 BaseServiceAsync s = MateuUI.create(BaseService.class);
-                s.select("Hola!!", new AsyncCallback<Object[][]>() {
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        MateuUI.alert("error!");
-                    }
-
+                s.select("select * from customer", new Callback<Object[][]>() {
                     @Override
                     public void onSuccess(Object[][] result) {
                         MateuUI.alert("resultado: " + result);

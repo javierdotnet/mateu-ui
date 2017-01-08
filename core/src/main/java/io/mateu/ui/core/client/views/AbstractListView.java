@@ -4,7 +4,7 @@ import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.shared.Data;
 
 import java.util.ArrayList;
@@ -38,11 +38,7 @@ public abstract class AbstractListView extends AbstractView {
     @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> as = super.createActions();
-        as.add(new AbstractAction() {
-            @Override
-            public String getName() {
-                return "Search";
-            }
+        as.add(new AbstractAction("Search") {
 
             @Override
             public void run() {
@@ -86,7 +82,7 @@ public abstract class AbstractListView extends AbstractView {
                     @Override
                     public void onSuccess(Data result) {
                                 for (ListViewListener l : listViewListeners) l.onSuccess();
-                                getForm().setData(result);
+                                getForm().setData(result, true);
 
                      }
                 });

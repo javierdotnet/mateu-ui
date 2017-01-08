@@ -10,11 +10,13 @@
         <module name="port-android" />
         <module name="port-openui" />
         <module name="port-vaadin" />
+        <module name="port-vaadin-dummy" />
         <module name="sample-app" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="code-generation" target="1.8" />
+      <module name="codegeneration-vaadin" target="1.8" />
       <module name="core" target="1.8" />
       <module name="mateu-ui" target="1.5" />
       <module name="parent" target="1.8" />
@@ -22,6 +24,7 @@
       <module name="port-javafx" target="1.8" />
       <module name="port-openui" target="1.5" />
       <module name="port-vaadin" target="1.8" />
+      <module name="port-vaadin-dummy" target="1.5" />
       <module name="sample-app" target="1.8" />
       <module name="sample-runner-javafx" target="1.5" />
     </bytecodeTargetLevel>

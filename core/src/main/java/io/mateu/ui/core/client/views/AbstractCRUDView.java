@@ -3,8 +3,8 @@ package io.mateu.ui.core.client.views;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.client.components.fields.grids.LinkColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 
@@ -21,23 +21,13 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
     @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> as = super.createActions();
-        as.add(new AbstractAction() {
-            @Override
-            public String getName() {
-                return "New";
-            }
-
+        as.add(new AbstractAction("New") {
             @Override
             public void run() {
                MateuUI.openView(getNewEditorView());
             }
         });
-        as.add(new AbstractAction() {
-            @Override
-            public String getName() {
-                return "Delete";
-            }
-
+        as.add(new AbstractAction("Delete") {
             @Override
             public void run() {
                 if (getSelection().size() == 0) MateuUI.alert("No rows selected");

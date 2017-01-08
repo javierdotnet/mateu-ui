@@ -11,150 +11,77 @@ import java.util.List;
  */
 public class ComponentsModule extends AbstractModule {
     public List<MenuEntry> getMenu() {
-        return Arrays.asList((MenuEntry) new AbstractMenu() {
-            @Override
-            public String getName() {
-                return "App";
-            }
-
+        return Arrays.asList((MenuEntry) new AbstractMenu("App") {
             @Override
             public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractApplication";
-                    }
-
+                return Arrays.asList((MenuEntry) new AbstractAction("AbstractApplication") {
                     @Override
                     public void run() {
 
                     }
-                }, (MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractArea";
-                    }
-
+                }, (MenuEntry) new AbstractAction("AbstractArea") {
                     @Override
                     public void run() {
 
                     }
-                }, (MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractModule";
-                    }
-
+                }, (MenuEntry) new AbstractAction("AbstractModule") {
                     @Override
                     public void run() {
 
                     }
                 });
             }
-        }, (MenuEntry) new AbstractMenu() {
-            @Override
-            public String getName() {
-                return "Views";
-            }
+        }, (MenuEntry) new AbstractMenu("Views") {
 
             @Override
             public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractView";
-                    }
-
-                    @Override
+                return Arrays.asList((MenuEntry) new AbstractAction("AbstractView") {
+                     @Override
                     public void run() {
 
                     }
-                }, (MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractListView";
-                    }
-
+                }, (MenuEntry) new AbstractAction("AbstractListView") {
                     @Override
                     public void run() {
                         MateuUI.openView(new ListView());
                     }
-                }, (MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractCRUDView";
-                    }
-
+                }, (MenuEntry) new AbstractAction("AbstractCRUDView") {
                     @Override
                     public void run() {
                         MateuUI.openView(new CRUDView());
                     }
-                }, (MenuEntry) new AbstractAction() {
+                }, (MenuEntry) new AbstractAction("AbstractCRUDView 2") {
                     @Override
-                    public String getName() {
-                        return "AbstractForm";
+                    public void run() {
+                        MateuUI.openView(new CRUDView2());
                     }
-
+                }, (MenuEntry) new AbstractAction("AbstractForm") {
                     @Override
                     public void run() {
 
                     }
                 });
             }
-        }, (MenuEntry) new AbstractMenu() {
-            @Override
-            public String getName() {
-                return "Components";
-            }
+        }, (MenuEntry) new AbstractMenu("Components") {
 
             @Override
             public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "AbstractField";
-                    }
-
+                return Arrays.asList((MenuEntry) new AbstractAction("All fields") {
                     @Override
                     public void run() {
-
+                        MateuUI.openView(new AllFieldsFiew());
                     }
-                }, (MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "Label";
-                    }
-
-                    @Override
-                    public void run() {
-
-                    }
-                }, (MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "TextField";
-                    }
-
-                    @Override
+                }, (MenuEntry) new AbstractAction("TextField") {
+                     @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new TextFieldView());
                     }
                 });
             }
-        }, (MenuEntry) new AbstractMenu() {
-            @Override
-            public String getName() {
-                return "Components";
-            }
-
+        }, (MenuEntry) new AbstractMenu("More components") {
             @Override
             public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction() {
-                    @Override
-                    public String getName() {
-                        return "Complex form";
-                    }
-
+                return Arrays.asList((MenuEntry) new AbstractAction("Complex form") {
                     @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new ComplexFormView());

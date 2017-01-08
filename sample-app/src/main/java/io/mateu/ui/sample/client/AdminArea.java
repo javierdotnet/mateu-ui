@@ -10,10 +10,10 @@ import java.util.List;
  * Created by miguel on 9/8/16.
  */
 public class AdminArea extends AbstractArea {
-    public String getName() {
-        return "Admin";
-    }
 
+    public AdminArea() {
+        super("Admin");
+    }
     public List<AbstractModule> getModules() {
         return Arrays.asList((AbstractModule) new AdminModule());
     }

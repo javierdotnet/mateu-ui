@@ -12,7 +12,7 @@ public class AppNode extends BorderPane {
 
     private final TopNode topNode;
     private final ViewsNode viewsNode;
-    private final MenuNode menuNode;
+    //private final MenuNode menuNode;
 
     public static AppNode get() {
         return me;
@@ -21,7 +21,7 @@ public class AppNode extends BorderPane {
     public AppNode() {
         me = this;
         setTop(topNode = new TopNode());
-        setLeft(menuNode = new MenuNode());
+        //setLeft(menuNode = new MenuNode());
         setCenter(viewsNode = new ViewsNode());
         setStyle("-fx-background-color: #FFeaea;");
 
@@ -37,9 +37,11 @@ public class AppNode extends BorderPane {
         return viewsNode;
     }
 
+    /*
     public MenuNode getMenuNode() {
         return menuNode;
     }
+    */
 
 
 }

@@ -15,12 +15,14 @@ import javafx.stage.Stage;
 import io.mateu.ui.core.client.app.ClientSideHelper;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.views.AbstractView;
+import javafx.stage.Window;
 
 /**
  * Created by miguel on 9/8/16.
  */
 public class JavafxPort extends Application {
     private static AbstractApplication app;
+    public static Stage mainStage;
 
     public JavafxPort(AbstractApplication app) {
         this.app = app;
@@ -33,6 +35,8 @@ public class JavafxPort extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         System.out.println("JavafxPort.start()");
+
+        mainStage = primaryStage;
 
         try {
             System.out.println("Loading font " + JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm());

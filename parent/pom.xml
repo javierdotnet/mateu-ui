@@ -118,13 +118,16 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
             <configuration>
-
+                <failOnMissingWebXml>false</failOnMissingWebXml>
 
               <overlays>
+                <overlay></overlay>
                 <overlay>
                   <groupId>io.mateu.ui</groupId>
                   <artifactId>port-vaadin</artifactId>
+                  <!--
                   <classifier>war</classifier>
+                  -->
                   <!--
                   <excludes>
                       <exclude>WEB-INF/classes/images/sampleimage-dependency.jpg</exclude>
@@ -134,6 +137,15 @@
               </overlays>
             </configuration>
           </plugin>
+
+            <plugin>
+              <groupId>org.eclipse.jetty</groupId>
+              <artifactId>jetty-maven-plugin</artifactId>
+              <!--
+              <version>9.4.1-SNAPSHOT</version>
+              -->
+            </plugin>
+
         </plugins>
       </build>
       <dependencies>
@@ -147,9 +159,17 @@
 
         <dependency>
           <groupId>io.mateu.ui</groupId>
-          <artifactId>port-vaadin</artifactId>
+          <artifactId>codegeneration-vaadin</artifactId>
           <version>1.0-SNAPSHOT</version>
           <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>io.mateu.ui</groupId>
+          <artifactId>port-vaadin</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <type>war</type>
+          <scope>runtime</scope>
         </dependency>
 
       </dependencies>
@@ -166,4 +186,21 @@
     </dependency>
 
   </dependencies>
+
+
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>mateu-central</id>
+      <url>http://mateu.io:8081/repository/mateu-central/</url>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>mateu-central</id>
+      <url>http://mateu.io:8081/repository/mateu-central/</url>
+      <layout>legacy</layout>
+    </snapshotRepository>
+  </distributionManagement>
+
 </project>

@@ -164,4 +164,26 @@ public class Data implements Serializable, DataContainer {
         return new Data(data);
     }
 
+    @Override
+    public String toString() {
+        String s = "";
+        //s = super.toString();
+        for (String k : data.keySet()) {
+            if (data.get(k) instanceof Data) {
+                s += "" + k + ":[\n" + ((Data) data.get(k)).toString() + "]";
+            } else if (data.get(k) instanceof Data) {
+                Data d = (Data) data.get(k);
+                s += "" + k + ":(";
+                String ss = "";
+                for (String n : d.getPropertyNames()) {
+                    if (!"".equals(ss)) ss += ",";
+                    ss += "" + n + ":" + d.get(n);
+                }
+                s += ss + ")";
+            } else s += "" + k + ":" + data.get(k);
+            s += "\n";
+        }
+        return s;
+
+    }
 }

@@ -66,7 +66,6 @@ public class AppProcessor extends AbstractProcessor {
                     "import io.mateu.ui.javafx.JavafxPort;\n" +
                     "import javafx.application.Application;\n" +
                     "import javafx.stage.Stage;\n" +
-                    "import io.mateu.ui.sample.client.SampleApp;\n" +
                     "\n" +
                     "/**\n" +
                     " * Created by miguel on 9/8/16.\n" +

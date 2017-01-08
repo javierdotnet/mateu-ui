@@ -2,7 +2,7 @@ package io.mateu.ui.core.client.components.fields;
 
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractExecutable;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.GriRowFormatter;
 import io.mateu.ui.core.client.components.fields.grids.GridFieldHelper;
 import io.mateu.ui.core.shared.Data;

@@ -1,21 +1,19 @@
 package io.mateu.ui.sample.server;
 
-import io.mateu.ui.core.server.EditorViewControllerRegistry;
-import io.mateu.ui.core.server.ServerSideApp;
-import io.mateu.ui.core.server.ServerSideHelper;
+import io.mateu.ui.core.server.*;
 import org.hsqldb.jdbc.JDBCDataSource;
 
+import javax.sql.DataSource;
 import java.util.Date;
 
 /**
  * Created by miguel on 1/1/17.
  */
-public class SampleApp implements ServerSideApp {
+public class SampleApp extends BaseServerSideApp implements ServerSideApp {
     private static JDBCDataSource jdbcDataSource;
     private static boolean populated;
 
-    @Override
-    public JDBCDataSource getJdbcDataSource() throws Exception {
+    public DataSource getJdbcDataSource() throws Exception {
         if (jdbcDataSource == null) {
             System.out.println("Creating datasource");
             jdbcDataSource = new JDBCDataSource();
@@ -35,9 +33,10 @@ public class SampleApp implements ServerSideApp {
         return jdbcDataSource;
     }
 
-    private static void populate(JDBCDataSource jdbcDataSource) throws Exception {
 
-        ServerSideHelper.runSqlBatch(ServerSideHelper.read(SampleApp.class.getResourceAsStream("data.sql")));
+    private void populate(JDBCDataSource jdbcDataSource) throws Exception {
+
+        runSqlBatch(Utils.read(SampleApp.class.getResourceAsStream("data.sql")));
 
     }
 }

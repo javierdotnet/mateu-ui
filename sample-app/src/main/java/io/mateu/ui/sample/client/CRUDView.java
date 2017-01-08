@@ -1,11 +1,9 @@
 package io.mateu.ui.sample.client;
 
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.components.fields.GridField;
 import io.mateu.ui.core.client.components.fields.TextField;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.client.components.fields.grids.LinkColumn;
-import io.mateu.ui.core.client.components.fields.grids.TextColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.*;

@@ -3,6 +3,9 @@ package io.mateu.ui.javafx.data;
 import com.sun.javafx.collections.ObservableMapWrapper;
 import io.mateu.ui.core.client.Mateu;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.FileLocator;
+import io.mateu.ui.core.shared.Pair;
+import io.mateu.ui.core.shared.PairList;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -58,7 +61,9 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             Collections.reverse(ns);
             for (String n : ns)
             {
-                if (data.get(n) instanceof Data)
+                if (data.get(n) instanceof Pair) {
+                    set(n, data.get(n));
+                } else if (data.get(n) instanceof Data)
                 {
                     DataStore x = new DataStore(data.get(n));
                     set(n, x);
@@ -70,7 +75,9 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
                     l.clear();
                     for (Object y : (List) data.get(n))
                     {
-                        if (y instanceof Data) {
+                        if (y instanceof Pair) {
+                            set(n, y);
+                        } else if (y instanceof Data) {
                             DataStore x = new DataStore((Data) y);
                             l.add(x);
                         } else {
@@ -151,7 +158,16 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         //s = super.toString();
         for (String k : props.keySet()) {
             if (props.get(k).getValue() instanceof DataStore) {
-                s += "" + k + ":[\n" + ((DataStore)props.get(k).getValue()).toString() + "]";
+                s += "" + k + ":[\n" + ((DataStore) props.get(k).getValue()).toString() + "]";
+            } else if (props.get(k).getValue() instanceof Data) {
+                Data d = (Data) props.get(k).getValue();
+                s += "" + k + ":(";
+                String ss = "";
+                for (String n : d.getPropertyNames()) {
+                    if (!"".equals(ss)) ss += ",";
+                    ss += "" + n + ":" + d.get(n);
+                }
+                s += ss + ")";
             } else s += "" + k + ":" + props.get(k).getValue();
             s += "\n";
         }
@@ -269,7 +285,30 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     }
 
 
+    public Property<Pair> getPairProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<Pair>());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
 
+    public Property<PairList> getPairListProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<PairList>(new PairList()));
+            p.addListener(listenerx);
+        }
+        return p;
+    }
 
-
+    public Property<FileLocator>  getFileLocatorProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<FileLocator>());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
 }

@@ -10,10 +10,12 @@
     -fx-border-style: none;
 }
 
+/*
 .label {
     -fx-min-width: 200px;
     -fx-alignment: baseline-right;
 }
+*/
 
 /*
 * {

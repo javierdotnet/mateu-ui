@@ -4,6 +4,7 @@ import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.shared.BaseService;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.FileLocator;
 import javafx.application.Platform;
 
 /**
@@ -233,6 +234,46 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                         public void run() {
 
                             callback.onSuccess(r);
+
+                        }
+                    });
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+    }
+
+    @Override
+    public void upload(byte[] bytes, AsyncCallback<FileLocator> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    FileLocator result = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).upload(bytes);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(result);
 
                         }
                     });

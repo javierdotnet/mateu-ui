@@ -14,11 +14,7 @@ import java.util.List;
 public class AboutModule extends AbstractModule {
     public List<MenuEntry> getMenu() {
         List<MenuEntry> l = new ArrayList<>();
-        l.add(new AbstractAction() {
-            @Override
-            public String getName() {
-                return "About us";
-            }
+        l.add(new AbstractAction("About us") {
 
             @Override
             public void run() {

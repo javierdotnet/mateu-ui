@@ -21,4 +21,7 @@ public interface BaseService {
 
     public Data get(String serverSideControllerKey, Object id) throws IllegalAccessException, InstantiationException, Exception;
 
+
+    public FileLocator upload(byte[] bytes) throws Exception;
+
 }

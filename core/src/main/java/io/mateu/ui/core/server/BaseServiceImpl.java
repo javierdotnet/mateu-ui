@@ -3,6 +3,7 @@ package io.mateu.ui.core.server;
 import io.mateu.ui.core.shared.BaseService;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.server.ServerSideHelper;
+import io.mateu.ui.core.shared.FileLocator;
 
 /**
  * Created by miguel on 27/12/16.
@@ -10,17 +11,17 @@ import io.mateu.ui.core.server.ServerSideHelper;
 public class BaseServiceImpl implements BaseService {
     @Override
     public Object[][] select(String sql) throws Exception {
-        return ServerSideHelper.select(sql);
+        return ServerSideHelper.getServerSideApp().select(sql);
     }
 
     @Override
     public Object selectSingleValue(String sql) throws Exception {
-        return ServerSideHelper.selectSingleValue(sql);
+        return ServerSideHelper.getServerSideApp().selectSingleValue(sql);
     }
 
     @Override
     public void execute(String sql) throws Exception {
-        ServerSideHelper.execute(sql);
+        ServerSideHelper.getServerSideApp().execute(sql);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class BaseServiceImpl implements BaseService {
         int fromRow = rowsPerPage * parameters.getInt("_currentpageindex");
         String sql = parameters.getString("_sql");
 
-        for (Object[] l : ServerSideHelper.selectPage(sql, fromRow, rowsPerPage)) {
+        for (Object[] l : ServerSideHelper.getServerSideApp().selectPage(sql, fromRow, rowsPerPage)) {
             Data r;
             d.getList("_data").add(r = new Data());
             if (l != null) for (int i = 0; i < l.length; i++) {
@@ -42,7 +43,7 @@ public class BaseServiceImpl implements BaseService {
             }
         }
 
-        int numRows = ServerSideHelper.getNumberOfRows(sql);
+        int numRows = ServerSideHelper.getServerSideApp().getNumberOfRows(sql);
         //d.set("_data_currentpageindex", from);
         d.set("_data_pagecount", numRows / rowsPerPage + ((numRows % rowsPerPage == 0)?0:1));
 
@@ -58,5 +59,10 @@ public class BaseServiceImpl implements BaseService {
     @Override
     public Data get(String serverSideControllerKey, Object id) throws Exception {
         return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
+    }
+
+    @Override
+    public FileLocator upload(byte[] bytes) throws Exception {
+        return ServerSideHelper.getServerSideApp().upload(bytes);
     }
 }

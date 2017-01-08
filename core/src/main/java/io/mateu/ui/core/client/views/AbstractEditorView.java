@@ -20,12 +20,7 @@ public abstract class AbstractEditorView extends AbstractView {
     @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> actions = new ArrayList<>();
-        actions.add(new AbstractAction() {
-            @Override
-            public String getName() {
-                return "Save";
-            }
-
+        actions.add(new AbstractAction("Save") {
             @Override
             public void run() {
                 save();

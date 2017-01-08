@@ -4,9 +4,9 @@ import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
 import io.mateu.ui.core.client.components.fields.TextField;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.client.components.fields.grids.LinkColumn;
-import io.mateu.ui.core.client.components.fields.grids.TextColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractView;
@@ -27,12 +27,7 @@ public class ComplexFormView extends AbstractView {
     public List<AbstractAction> createActions() {
         List<AbstractAction> as = super.createActions();
 
-        as.add(new AbstractAction() {
-            @Override
-            public String getName() {
-                return "Test action";
-            }
-
+        as.add(new AbstractAction("Test action") {
             @Override
             public void run() {
                 System.out.println(getForm().getData());

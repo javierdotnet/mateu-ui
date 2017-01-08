@@ -5,6 +5,14 @@ package io.mateu.ui.core.client.app;
  */
 public abstract class AbstractAction extends AbstractExecutable implements MenuEntry {
 
-    public abstract String getName();
+    private String name;
+
+    public AbstractAction(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    };
 
 }

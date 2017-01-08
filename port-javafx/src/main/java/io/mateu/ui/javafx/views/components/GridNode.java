@@ -4,9 +4,9 @@ import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.ActionOnRow;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
-import io.mateu.ui.core.client.components.fields.grids.AbstractColumn;
-import io.mateu.ui.core.client.components.fields.grids.LinkColumn;
-import io.mateu.ui.core.client.components.fields.grids.TextColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractListView;
 import io.mateu.ui.core.client.views.ListViewListener;
@@ -28,6 +28,7 @@ import io.mateu.ui.javafx.views.components.table.MateuTextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
@@ -42,6 +43,7 @@ public class GridNode extends VBox {
 
     private final GridField field;
     private final ViewNode viewNode;
+    private TableView<DataStore> tableView;
     FlowPane paginationContainer;
     private Pagination pagination;
 
@@ -49,7 +51,7 @@ public class GridNode extends VBox {
         this.viewNode = viewNode;
         this.field = field;
 
-        getChildren().add(buildTable(field));
+        getChildren().add(tableView = buildTable(field));
 
         createToolBar(field.getActions());
 
@@ -171,7 +173,7 @@ public class GridNode extends VBox {
     }
 
 
-    private Node buildTable(GridField c) {
+    private TableView<DataStore> buildTable(GridField c) {
         TableView<DataStore> t = new TableView<>();
 
         t.getColumns().addAll(buildColumns(c));
@@ -207,8 +209,7 @@ public class GridNode extends VBox {
         });
 
 
-        t.setPrefWidth(5000);
-        t.setPrefHeight(5000);
+        t.setPrefHeight(150);
 
         return t;
     }
@@ -267,5 +268,9 @@ public class GridNode extends VBox {
         }
 
         return l;
+    }
+
+    public TableView<DataStore> getTableView() {
+        return tableView;
     }
 }

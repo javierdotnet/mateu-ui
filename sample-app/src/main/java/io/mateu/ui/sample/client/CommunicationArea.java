@@ -10,9 +10,9 @@ import java.util.List;
  * Created by miguel on 27/12/16.
  */
 public class CommunicationArea extends AbstractArea {
-    @Override
-    public String getName() {
-        return "Comunicación";
+
+    public CommunicationArea() {
+        super("Communication");
     }
 
     @Override

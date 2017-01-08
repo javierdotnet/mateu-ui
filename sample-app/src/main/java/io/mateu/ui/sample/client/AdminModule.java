@@ -13,32 +13,17 @@ import java.util.List;
 public class AdminModule extends AbstractModule {
     @Override
     public List<MenuEntry> getMenu() {
-        return Arrays.asList((MenuEntry) new AbstractAction() {
-            @Override
-            public String getName() {
-                return "My profile";
-            }
-
+        return Arrays.asList((MenuEntry) new AbstractAction("My profile") {
             @Override
             public void run() {
 
             }
-        }, (MenuEntry) new AbstractAction() {
-            @Override
-            public String getName() {
-                return "Change password";
-            }
-
+        }, (MenuEntry) new AbstractAction("Change password") {
             @Override
             public void run() {
 
             }
-        }, (MenuEntry) new AbstractAction() {
-            @Override
-            public String getName() {
-                return "Template";
-            }
-
+        }, (MenuEntry) new AbstractAction("Template") {
             @Override
             public void run() {
 

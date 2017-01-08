@@ -7,11 +7,16 @@ import io.mateu.ui.core.shared.Data;
  */
 public class Pair extends Data {
 
-    public String getValue() {
-        return getString("value");
+    public Pair(Object value, String text) {
+        setValue(value);
+        setText(text);
     }
 
-    public void setValue(String value) {
+    public Object getValue() {
+        return get("value");
+    }
+
+    public void setValue(Object value) {
         set("value", value);
     }
 
@@ -23,4 +28,13 @@ public class Pair extends Data {
         set("text", text);
     }
 
+    @Override
+    public String toString() {
+        return getText();
+    }
+
+    @Override
+    public boolean equals(Data data) {
+        return get("value").equals(data.get("value"));
+    }
 }

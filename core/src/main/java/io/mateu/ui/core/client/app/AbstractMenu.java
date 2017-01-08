@@ -7,7 +7,15 @@ import java.util.List;
  */
 public abstract class AbstractMenu implements MenuEntry {
 
-    public abstract String getName();
+    private String name;
+
+    public AbstractMenu(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public abstract List<MenuEntry> getEntries();
 

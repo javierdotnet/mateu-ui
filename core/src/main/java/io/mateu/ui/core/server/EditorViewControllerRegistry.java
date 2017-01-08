@@ -17,14 +17,19 @@ public class EditorViewControllerRegistry {
 
 
     public static void build() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Reflections reflections = new Reflections(Class.forName(ServerSideHelper.read(EditorViewControllerRegistry.class.getResourceAsStream("/META-INF/services/io.mateu.ui.serversideapp"))).getPackage().getName());
+        Reflections reflections = new Reflections(Class.forName(Utils.read(EditorViewControllerRegistry.class.getResourceAsStream("/META-INF/services/io.mateu.ui.serversideapp"))).getPackage().getName());
 
         Set<Class<? extends ServerSideEditorViewController>> controllers =
                 reflections.getSubTypesOf(ServerSideEditorViewController.class);
 
         for (Class c : controllers) {
-            ServerSideEditorViewController i = (ServerSideEditorViewController) c.newInstance();
-            controllersMap.put(i.getKey(), i);
+            try {
+                System.out.println("mapping controller " + c.getCanonicalName());
+                ServerSideEditorViewController i = (ServerSideEditorViewController) c.newInstance();
+                controllersMap.put(i.getKey(), i);
+            } catch (Exception e) {
+
+            }
         }
 
     }

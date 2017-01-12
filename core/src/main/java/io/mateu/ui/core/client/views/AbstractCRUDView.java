@@ -47,7 +47,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
     @Override
     public List<AbstractColumn> createColumns() {
         List<AbstractColumn> cols = new ArrayList<>();
-        cols.add(new LinkColumn("id", "Id", 100) {
+        cols.add(new LinkColumn("_id", "Id", 100) {
             @Override
             public void run(Data data) {
                 MateuUI.openView(getNewEditorView().setInitialId(data.get(getId())));

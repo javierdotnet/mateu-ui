@@ -803,26 +803,23 @@ public class ViewNode extends StackPane {
 
                 n = cmb;
 
-                String sql = ((SqlComboBoxField)c).getSql();
-                if (sql != null && !"".equals(sql.trim())) {
 
-                    ((SqlComboBoxField)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
-                        @Override
-                        public void onSuccess(Object[][] result) {
-                            MateuUI.runInUIThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    List<Pair> l = new ArrayList<>();
-                                    for (Object[] r : result) {
-                                        l.add(new Pair(r[0], (r[1] == null)?null:"" + r[1]));
-                                    }
-                                    cmb.getItems().addAll(l);
+
+                ((SqlComboBoxField)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
+                    @Override
+                    public void onSuccess(Object[][] result) {
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                List<Pair> l = new ArrayList<>();
+                                for (Object[] r : result) {
+                                    l.add(new Pair(r[0], (r[1] == null)?null:"" + r[1]));
                                 }
-                            });
-                        }
-                    });
-
-                }
+                                cmb.getItems().addAll(l);
+                            }
+                        });
+                    }
+                });
 
 
             } else if (c instanceof TextAreaField) {

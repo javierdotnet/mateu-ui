@@ -19,7 +19,7 @@ import io.mateu.ui.vaadin.AppProvider;
  * The UI is initialized using {@link #init(VaadinRequest)}. This method is intended to be
  * overridden to add component to the user interface and initialize non-component functionality.
  */
-@Theme("mytheme")
+@Theme("valo")
 @Push
 @Widgetset("io.mateu.ui.MyAppWidgetset")
 public class MyUI extends UI {

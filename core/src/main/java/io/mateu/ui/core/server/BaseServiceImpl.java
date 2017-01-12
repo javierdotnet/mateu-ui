@@ -39,7 +39,7 @@ public class BaseServiceImpl implements BaseService {
             Data r;
             d.getList("_data").add(r = new Data());
             if (l != null) for (int i = 0; i < l.length; i++) {
-                r.set((i == 0)?"id":"col" + i, l[i]);
+                r.set((i == 0)?"_id":"col" + i, l[i]);
             }
         }
 

@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Created by miguel on 4/1/17.
  */
-public class ViewLayout extends VerticalLayout {
+public class ViewLayout extends FormLayout {
 
     private DataStore dataStore;
 
@@ -207,17 +207,7 @@ public class ViewLayout extends VerticalLayout {
         add(where, c, paintLabel, false);
     }
     private void add(Layout where, AbstractField c, boolean paintLabel, boolean inToolbar) {
-        HorizontalLayout h = new HorizontalLayout();
-        if (paintLabel && c.getLabel() != null) {
-            Label l;
-            h.addComponent(l = new Label((c.getLabel().getText() != null)?c.getLabel().getText():""));
-            if (!inToolbar) {
-                l.setWidth("200px");
-                l.addStyleName("align-right");
-            }
-        }
-        h.addComponent(getVaadinComponent(c));
-        where.addComponent(h);
+        where.addComponent(getVaadinComponent(c));
     }
 
     private Component getVaadinComponent(AbstractField field) {
@@ -309,7 +299,7 @@ public class ViewLayout extends VerticalLayout {
             AutocompleteField rf = (AutocompleteField) field;
 
             ComboBox og;
-            c = og = new ComboBox();
+            c = og = new ComboBox((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             for (Pair p : rf.getValues()) {
                 og.addItem(p);
@@ -349,7 +339,7 @@ public class ViewLayout extends VerticalLayout {
         } else if (field instanceof CalendarField || field instanceof io.mateu.ui.core.client.components.fields.DateField) {
 
             DateField cb;
-            c = cb = new DateField();
+            c = cb = new DateField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             if (v != null) cb.setValue((Date) v);
 
@@ -370,7 +360,7 @@ public class ViewLayout extends VerticalLayout {
         } else if (field instanceof CheckBoxField) {
 
             CheckBox cb;
-            c = cb = new CheckBox(((CheckBoxField) field).getText(), (v != null && v instanceof Boolean && ((Boolean) v)) ? true : false);
+            c = cb = new CheckBox((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null, (v != null && v instanceof Boolean && ((Boolean) v)) ? true : false);
 
             Property p = dataStore.getProperty(field.getId());
             p.addListener(new ChangeListener() {
@@ -391,7 +381,7 @@ public class ViewLayout extends VerticalLayout {
             CheckBoxListField rf = (CheckBoxListField) field;
 
             OptionGroup og;
-            c = og = new OptionGroup();
+            c = og = new OptionGroup((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             og.setMultiSelect(true);
 
@@ -433,7 +423,7 @@ public class ViewLayout extends VerticalLayout {
             ComboBoxField rf = (ComboBoxField) field;
 
             ComboBox og;
-            c = og = new ComboBox();
+            c = og = new ComboBox((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             for (Pair p : rf.getValues()) {
                 og.addItem(p);
@@ -471,7 +461,7 @@ public class ViewLayout extends VerticalLayout {
 
         } else if (field instanceof DoubleField) {
             NumberField intf;
-            c = intf = new NumberField();
+            c = intf = new NumberField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             Property p = dataStore.getProperty(field.getId());
             p.addListener(new ChangeListener() {
@@ -492,7 +482,7 @@ public class ViewLayout extends VerticalLayout {
         } else if (field instanceof IntegerField) {
 
             org.vaadin.viritin.fields.IntegerField intf;
-            c = intf = new org.vaadin.viritin.fields.IntegerField();
+            c = intf = new org.vaadin.viritin.fields.IntegerField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             if (v != null) intf.setValue((Integer) v);
 
@@ -536,7 +526,7 @@ public class ViewLayout extends VerticalLayout {
             RadioButtonField rf = (RadioButtonField) field;
 
             OptionGroup og;
-            c = og = new OptionGroup();
+            c = og = new OptionGroup((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             for (Pair p : rf.getValues()) {
                 og.addItem(p);
@@ -572,7 +562,7 @@ public class ViewLayout extends VerticalLayout {
             });
 
         } else if (field instanceof TextAreaField)  {
-            c = new TextArea();
+            c = new TextArea((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             if (v != null) ((TextArea) c).setValue("" + v);
 
@@ -592,7 +582,7 @@ public class ViewLayout extends VerticalLayout {
             });
 
         } else if (field instanceof ShowTextField) {
-            c = new Label();
+            c = new Label((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             if (v != null) ((Label) c).setValue("" + v);
 
@@ -609,7 +599,7 @@ public class ViewLayout extends VerticalLayout {
             SqlComboBoxField rf = (SqlComboBoxField) field;
 
             ComboBox og;
-            c = og = new ComboBox();
+            c = og = new ComboBox((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             try {
                 rf.call(new AsyncCallback<Object[][]>() {
@@ -662,7 +652,7 @@ public class ViewLayout extends VerticalLayout {
             });
 
         } else if (field instanceof io.mateu.ui.core.client.components.fields.TextField) {
-            c = new TextField();
+            c = new TextField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             if (v != null) ((TextField) c).setValue("" + v);
 
@@ -681,7 +671,7 @@ public class ViewLayout extends VerticalLayout {
                 }
             });
         } else {
-            c = new TextField();
+            c = new TextField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
             if (v != null) ((TextField) c).setValue("" + v);
 

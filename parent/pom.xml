@@ -20,7 +20,12 @@
     <profile>
       <id>javafx</id>
       <activation>
+        <!--
         <activeByDefault>true</activeByDefault>
+        -->
+        <property>
+          <name>javafx</name>
+        </property>
       </activation>
       <properties>
         <packaging.type>jar</packaging.type>
@@ -95,9 +100,12 @@
     <profile>
       <id>web</id>
       <activation>
+        <activeByDefault>true</activeByDefault>
+        <!--
         <property>
           <name>web</name>
         </property>
+        -->
       </activation>
       <properties>
         <packaging.type>war</packaging.type>

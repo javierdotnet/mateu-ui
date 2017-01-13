@@ -18,6 +18,7 @@ import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.server.ServerSideHelper;
+import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.vaadin.data.DataStore;
@@ -611,11 +612,22 @@ public class ViewLayout extends VerticalLayout {
             c = og = new ComboBox();
 
             try {
-                for (Object[] l : ServerSideHelper.getServerSideApp().select(rf.getSql())) {
+                rf.call(new AsyncCallback<Object[][]>() {
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                    }
 
-                    og.addItem(new Pair(l[0], "" + l[1]));
+                    @Override
+                    public void onSuccess(Object[][] result) {
+                        for (Object[] l : result) {
 
-                }
+                            og.addItem(new Pair(l[0], "" + l[1]));
+
+                        }
+                    }
+                });
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

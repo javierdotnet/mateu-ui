@@ -199,7 +199,7 @@
       <uniqueVersion>true</uniqueVersion>
       <id>mateu-central</id>
       <url>http://nexus.mateu.io/repository/mateu-central/</url>
-      <layout>legacy</layout>
+      <layout>default</layout>
     </snapshotRepository>
   </distributionManagement>
 

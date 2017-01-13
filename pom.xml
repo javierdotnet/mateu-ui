@@ -17,11 +17,10 @@
         <module>port-openui</module>
         <module>port-android</module>
         <module>port-javafx</module>
-        <module>sample-app</module>
-        <module>code-generation</module>
         <module>port-vaadin</module>
         <module>codegeneration-vaadin</module>
         <module>port-vaadin-dummy</module>
+        <module>sample-app</module>
     </modules>
 
 

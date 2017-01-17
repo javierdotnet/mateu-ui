@@ -20,56 +20,7 @@ public class AppComponent extends VerticalLayout {
 
         //setSizeFull();
 
-        MateuUI.setClientSideHelper(new ClientSideHelper() {
 
-            public BaseServiceAsync baseServiceImpl = new BaseServiceClientSideImpl();
-
-            @Override
-            public void openView(AbstractView view) {
-                views.addView(view);
-            }
-
-            @Override
-            public Data getNewDataContainer() {
-                return new Data();
-            }
-
-            @Override
-            public <T> T create(Class<?> serviceInterface) {
-                try {
-                    return (T) Class.forName(serviceInterface.getName().replaceAll("\\.shared\\.", ".client.") + "ClientSideImpl").newInstance();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            public void alert(String msg) {
-                Notification.show("Alert", msg, Notification.Type.WARNING_MESSAGE);
-            }
-
-            @Override
-            public void run(Runnable runnable) {
-                new Thread(runnable).start();
-            }
-
-            @Override
-            public void runInUIThread(Runnable runnable) {
-
-                getUI().access(runnable);
-
-            }
-
-            @Override
-            public BaseServiceAsync getBaseService() {
-                return baseServiceImpl;
-            }
-        });
 
 
         addComponent(buildMenu(app));

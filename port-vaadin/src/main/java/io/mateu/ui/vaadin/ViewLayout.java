@@ -4,9 +4,14 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.DoubleValidator;
 import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractExecutable;
 import io.mateu.ui.core.client.app.MateuUI;
@@ -37,7 +42,7 @@ import java.util.List;
 /**
  * Created by miguel on 4/1/17.
  */
-public class ViewLayout extends FormLayout {
+public class ViewLayout extends VerticalLayout implements View {
 
     private DataStore dataStore;
 
@@ -51,14 +56,37 @@ public class ViewLayout extends FormLayout {
             @Override
             public void setted(Data newData) {
                 dataStore.setData(newData);
+                dataStore.set("_title", view.getTitle());
             }
         });
+        dataStore.set("_title", view.getTitle());
+
+        setMargin(true);
+        addStyleName("content-common");
+
+        Property p = dataStore.getProperty("_title");
+        Label h1 = new Label((String) p.getValue());
+        h1.addStyleName(ValoTheme.LABEL_H1);
+        p.addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                h1.setValue((newValue != null)?"" + newValue:null);
+            }
+        });
+
+        addComponent(h1);
+
 
 //        setContent(new MVerticalLayout(new MHorizontalLayout(c, d).withFullWidth())
 //                .expand(new MHorizontalLayout(menu).expand(mainContent)));
 
 
+        //setMargin(false);
+        //setWidth("800px");
+        //addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
         buildToolBar();
+
         if (view instanceof AbstractListView) {
             add(this, new GridField("_data", ((AbstractListView) view).getColumns()), false);
         } else {
@@ -143,11 +171,16 @@ public class ViewLayout extends FormLayout {
     }
 
     private void buildBody() {
+        FormLayout row = new FormLayout();
+        row.setWidth("100%");
+        row.setSpacing(true);
+        addComponent(row);
+
         int posField = 0;
         for (io.mateu.ui.core.client.components.Component c : view.getForm().getComponentsSequence()) {
             if (c instanceof AbstractField) {
 
-                add(this, (AbstractField) c);
+                add(row, (AbstractField) c);
 
                 posField++;
             }
@@ -155,7 +188,16 @@ public class ViewLayout extends FormLayout {
     }
 
     private void buildToolBar() {
+
         HorizontalLayout h = new HorizontalLayout();
+
+        FormLayout f = new FormLayout();
+        //h.setSpacing(true);
+        //h.setMargin(true);
+        //h.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        f.setSpacing(true);
+
+        h.addComponent(f);
 
         if (view instanceof AbstractListView) {
 
@@ -163,10 +205,10 @@ public class ViewLayout extends FormLayout {
             for (io.mateu.ui.core.client.components.Component c : view.getForm().getComponentsSequence()) {
                 if (c instanceof AbstractField) {
 
-                    add(h, (AbstractField) c, true, true);
+                    add(f, (AbstractField) c, true, true);
 
                     posField++;
-                    if (posField > ((AbstractListView) view).getMaxFieldsInHeader()) break;
+                    if (posField >= ((AbstractListView) view).getMaxFieldsInHeader()) break;
                 }
             }
         }
@@ -207,7 +249,9 @@ public class ViewLayout extends FormLayout {
         add(where, c, paintLabel, false);
     }
     private void add(Layout where, AbstractField c, boolean paintLabel, boolean inToolbar) {
-        where.addComponent(getVaadinComponent(c));
+        Component x = getVaadinComponent(c);
+        where.addComponent(x);
+        if (inToolbar) x.addStyleName("inline");
     }
 
     private Component getVaadinComponent(AbstractField field) {
@@ -694,4 +738,8 @@ public class ViewLayout extends FormLayout {
         return c;
     }
 
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        System.out.println("entering view " + getClass().getName());
+    }
 }

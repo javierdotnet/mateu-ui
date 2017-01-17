@@ -30,7 +30,7 @@ public abstract class AbstractListView extends AbstractView {
     }
 
     public int getMaxFieldsInHeader() {
-        return 4;
+        return 1;
     }
 
     public abstract void rpc(Data parameters, AsyncCallback<Data> callback);

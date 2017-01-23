@@ -35,6 +35,8 @@ public class Pair extends Data {
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof Pair && get("value").equals(((Pair)obj).get("value"));
+        boolean ok = obj == null && get("value") == null;
+        ok |= obj != null && obj instanceof Pair && ((get("value") == null && ((Pair)obj).get("value") == null) || (get("value") != null && get("value").equals(((Pair)obj).get("value"))));
+        return ok;
     }
 }

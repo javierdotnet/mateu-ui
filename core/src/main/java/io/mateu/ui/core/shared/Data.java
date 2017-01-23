@@ -29,6 +29,10 @@ public class Data implements Serializable, DataContainer {
         }
     }
 
+    public boolean containsKey(Object k) {
+        return data.containsKey(k);
+    }
+
     public Data(Map<String, Object> properties) {
         data = properties;
     }

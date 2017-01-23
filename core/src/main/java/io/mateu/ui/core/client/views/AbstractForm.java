@@ -2,6 +2,7 @@ package io.mateu.ui.core.client.views;
 
 import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.components.fields.AbstractField;
+import io.mateu.ui.core.client.components.fields.PKField;
 import io.mateu.ui.core.client.data.ChangeListener;
 import io.mateu.ui.core.shared.Data;
 
@@ -37,9 +38,10 @@ public abstract class AbstractForm extends FieldContainer {
 
     private Map<String, List<ChangeListener>> propertyListeners = new HashMap<>();
 
-    public void addPropertyListener(String propertyName, ChangeListener listener) {
+    public AbstractForm addPropertyListener(String propertyName, ChangeListener listener) {
         if (!propertyListeners.containsKey(propertyName)) propertyListeners.put(propertyName, new ArrayList<>());
         propertyListeners.get(propertyName).add(listener);
+        return this;
     }
 
     public void removePropertyListener(ChangeListener listener) {
@@ -96,6 +98,19 @@ public abstract class AbstractForm extends FieldContainer {
 
     public AbstractForm add(Component component) {
         super.add(component);
+        if (component instanceof PKField) {
+            addPropertyListener("_id", new ChangeListener() {
+                @Override
+                public void changed(Object oldValue, Object newValue) {
+                    PKField f = (PKField) component;
+                    if (newValue == null) {
+                        f.setEnabled(true);
+                    } else {
+                        f.setEnabled(false);
+                    }
+                }
+            });
+        }
         return this;
     }
 

@@ -1,12 +1,11 @@
 package io.mateu.ui.javafx.app;
 
-import io.mateu.ui.core.client.views.AbstractEditorView;
-import io.mateu.ui.core.client.views.AbstractView;
-import io.mateu.ui.core.client.views.DataSetterListener;
-import io.mateu.ui.core.client.views.ViewListener;
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 
@@ -34,6 +33,7 @@ public class ViewsNode extends BorderPane {
 
         if (tabs.containsKey(view.getViewId())) {
             t = tabs.get(view.getViewId());
+            tabPane.getSelectionModel().select(t);
         } else {
             tabPane.getTabs().add(t = new ViewTab(view));
             view.addListener(new ViewListener() {
@@ -57,6 +57,8 @@ public class ViewsNode extends BorderPane {
                         }
                     }
                 });
+            } else if (view instanceof AbstractListView) {
+                ((AbstractListView)view).search();
             }
             t.setOnClosed(new EventHandler<Event>() {
                 @Override
@@ -65,8 +67,18 @@ public class ViewsNode extends BorderPane {
                 }
             });
             tabs.put(view.getViewId(), t);
+            tabPane.getSelectionModel().select(t);
+            if (t.getViewNode().getFirstField() != null) {
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("FOCUS REQUESTED!");
+                        t.getViewNode().getFirstField().requestFocus();
+                    }
+                });
+            }
         }
-        tabPane.getSelectionModel().select(t);
+
 
     }
 }

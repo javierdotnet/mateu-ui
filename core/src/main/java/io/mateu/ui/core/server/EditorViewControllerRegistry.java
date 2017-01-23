@@ -26,6 +26,7 @@ public class EditorViewControllerRegistry {
             try {
                 System.out.println("mapping controller " + c.getCanonicalName());
                 ServerSideEditorViewController i = (ServerSideEditorViewController) c.newInstance();
+                System.out.println("mapping controller with key " + i.getKey());
                 controllersMap.put(i.getKey(), i);
             } catch (Exception e) {
 

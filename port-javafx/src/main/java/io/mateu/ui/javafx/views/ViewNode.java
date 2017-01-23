@@ -1,5 +1,6 @@
 package io.mateu.ui.javafx.views;
 
+import com.sun.javafx.scene.web.skin.HTMLEditorSkin;
 import io.mateu.ui.core.client.Mateu;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.MateuUI;
@@ -25,19 +26,31 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
+import org.controlsfx.control.MaskerPane;
+import org.controlsfx.control.decoration.Decorator;
+import org.controlsfx.control.decoration.GraphicDecoration;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +64,10 @@ import java.util.*;
  */
 public class ViewNode extends StackPane {
 
+    private static final Image REQUIRED_IMAGE = new Image(GraphicValidationDecoration.class.getResource("/impl/org/controlsfx/control/validation/required-indicator.png").toExternalForm());
+    private MaskerPane maskerPane;
+
+
     private AbstractView view;
     private DataStore dataStore;
     private BorderPane bp;
@@ -58,6 +75,11 @@ public class ViewNode extends StackPane {
     private Pane componentsCotainer;
     private boolean minsFixed;
     private Stage moreFiltersDialog;
+    private Node firstField = null;
+
+    public Node getFirstField() {
+        return firstField;
+    }
 
     public ProgressIndicator getProgressIndicator() {
         return progressIndicator;
@@ -78,6 +100,8 @@ public class ViewNode extends StackPane {
                 getDataStore().setData(newData);
             }
         });
+        getChildren().add(maskerPane = new MaskerPane());
+        maskerPane.setVisible(false);
     }
 
     public DataStore getDataStore() {
@@ -92,7 +116,8 @@ public class ViewNode extends StackPane {
         MateuUI.runInUIThread(new Runnable() {
             @Override
             public void run() {
-                getChildren().add(progressIndicator = new ProgressIndicator());
+                maskerPane.setVisible(true);
+                //getChildren().add(progressIndicator = new ProgressIndicator());
             }
         });
     }
@@ -101,7 +126,8 @@ public class ViewNode extends StackPane {
         MateuUI.runInUIThread(new Runnable() {
             @Override
             public void run() {
-                getChildren().remove(progressIndicator);
+                maskerPane.setVisible(false);
+                //getChildren().remove(progressIndicator);
             }
         });
     }
@@ -189,13 +215,15 @@ public class ViewNode extends StackPane {
         if (view instanceof AbstractListView) {
             AbstractListView lv = (AbstractListView) view;
 
+            ValidationSupport validationSupport = new ValidationSupport();
+
             Pane contenedor = new HBox();
 
             int pos = 0;
             int posField = 0;
             List<Component> cs = lv.getForm().getComponentsSequence();
             for (Component c : cs) {
-                addComponent(null, null, contenedor, c, false, true);
+                addComponent(validationSupport,null, null, contenedor, c, false, true);
 
                 if (c instanceof AbstractField) posField++;
                 if (posField >= lv.getMaxFieldsInHeader()) break;
@@ -238,7 +266,7 @@ public class ViewNode extends StackPane {
 
 
 
-                    build(sp, moreFiltersComponentsCotainer, lv.getForm(), lv.getMaxFieldsInHeader(), true);
+                    build(validationSupport, sp, moreFiltersComponentsCotainer, lv.getForm(), lv.getMaxFieldsInHeader(), true);
                     Button bmf;
                     toolBar.getItems().add(bmf = new Button("More filters..."));
                     bmf.setOnAction(new EventHandler<ActionEvent>() {
@@ -288,10 +316,10 @@ public class ViewNode extends StackPane {
     }
 
     private void build(ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField) {
-        build(scrollPane, overallContainer, form, fromField, false);
+        build(new ValidationSupport(), scrollPane, overallContainer, form, fromField, false);
     }
 
-    private void build(ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField, boolean inToolBar) {
+    private void build(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField, boolean inToolBar) {
 
         List<Pane> panels = new ArrayList<>();
         panels.add(new VBox(2));
@@ -299,7 +327,7 @@ public class ViewNode extends StackPane {
         Node lastNode = null;
         if (view instanceof AbstractListView && !inToolBar) {
             AbstractListView lv = (AbstractListView) view;
-            lastNode = addComponent(scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true, false, false);
+            lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true, false, false);
         } else {
             int pos = 0;
             int posField = 0;
@@ -311,7 +339,7 @@ public class ViewNode extends StackPane {
                     else if (c instanceof RowStart) panels.add(new FlowPane(5, 2));
                     else if (c instanceof ColumnEnd) panels.remove(panels.size() - 1);
                     else if (c instanceof RowEnd) panels.remove(panels.size() - 1);
-                    else n = addComponent(scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
+                    else n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
                 }
                 if (n != null) lastNode = n;
                 if (c instanceof AbstractField) posField++;
@@ -350,17 +378,18 @@ public class ViewNode extends StackPane {
         minsFixed = true;
     }
 
-    private Node addComponent(ScrollPane scrollPane, Pane overallContainer, Pane container, Component c, boolean maximize, boolean inToolBar) {
-        return addComponent(scrollPane, overallContainer, container, c, maximize, inToolBar, true);
+    private Node addComponent(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, Pane container, Component c, boolean maximize, boolean inToolBar) {
+        return addComponent(validationSupport, scrollPane, overallContainer, container, c, maximize, inToolBar, true);
     }
 
-    private Node addComponent(ScrollPane scrollPane, Pane overallContainer, Pane container, Component c, boolean maximize, boolean inToolBar, boolean showLabels) {
+    private Node addComponent(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, Pane container, Component c, boolean maximize, boolean inToolBar, boolean showLabels) {
         //TODO: resolver con inyección de dependencias
 
         Node n = null;
 
         Pane donde = container;
         if (donde instanceof VBox) {
+            container = donde;
             ((VBox) donde).getChildren().add(donde = new FlowPane());
             donde.setPrefWidth(5000);
         }
@@ -369,10 +398,41 @@ public class ViewNode extends StackPane {
 
             if (showLabels) {
                 if (((AbstractField) c).getLabel() != null) {
+
+                    /*
+                    TextFlow flow = new TextFlow();
+
+                    Text text1=new Text(((AbstractField) c).getLabel().getText());
+                    text1.setStyle("-fx-font-weight: regular");
+
+                    flow.getChildren().add(text1);
+
+                    if (((AbstractField)c).isRequired()) {
+                        Text text2=new Text("(*)");
+                        text2.setStyle("-fx-font-weight: bold");
+
+                        flow.getChildren().add(text2);
+                    }
+
+                    donde.getChildren().add(flow);
+                    if (!inToolBar) flow.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-right;");
+                    else flow.setStyle("-fx-alignment: baseline-right;");
+                       */
+
+
                     Label l;
                     donde.getChildren().add(l = new Label(((AbstractField) c).getLabel().getText()));
                     if (!inToolBar) l.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-right;");
                     else l.setStyle("-fx-alignment: baseline-right;");
+
+                    /*
+                    if (((AbstractField)c).isRequired()) {
+                        //l.setText(l.getText() + " (*)");
+                        Node requiredDecoration = new ImageView( REQUIRED_IMAGE );
+                        Decorator.addDecoration( l, new GraphicDecoration( requiredDecoration, Pos.TOP_LEFT ));
+                    }
+                    */
+
                 }
             }
 
@@ -476,6 +536,10 @@ public class ViewNode extends StackPane {
                     }
                 });
 
+                if (firstField == null) {
+                    firstField = cmb.getEditor();
+                }
+
 
             } else if (c instanceof CalendarField || c instanceof DateField) {
                 DatePicker tf;
@@ -528,6 +592,7 @@ public class ViewNode extends StackPane {
             } else if (c instanceof ComboBoxField) {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
+                cmb.getItems().add(new Pair(null, null));
                 cmb.getItems().addAll(((ComboBoxField)c).getValues());
                 //cmb.getSelectionModel().selectFirst(); //select the first element
                 cmb.setCellFactory(new Callback<ListView<Pair>, ListCell<Pair>>() {
@@ -771,9 +836,37 @@ public class ViewNode extends StackPane {
 
 
             } else if (c instanceof RichTextField) {
-                javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
-                tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
+                HTMLEditor tf = new HTMLEditor();
+                dataStore.getStringProperty(((AbstractField) c).getId()).addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        if (tf.getUserData() == null) {
+                            tf.setHtmlText(newValue);
+                        } else {
+                            tf.setUserData(null);
+                        }
+                    }
+                });
+                tf.setOnKeyReleased(new EventHandler<KeyEvent>() {
+                    @Override
+                    public void handle(KeyEvent event) {
+                        tf.setUserData(true);
+                        dataStore.getStringProperty(((AbstractField) c).getId()).setValue(tf.getHtmlText());
+                    }
+                });
                 n = tf;
+            } else if (c instanceof SearchField) {
+                HBox h = new HBox();
+                javafx.scene.control.Label tf = new javafx.scene.control.Label();
+                dataStore.getPairProperty(((AbstractField) c).getId()).addListener(new ChangeListener<Pair>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Pair> observable, Pair oldValue, Pair newValue) {
+                        tf.setText((newValue != null)?newValue.getText():null);
+                    }
+                });
+                h.getChildren().add(tf);
+                h.getChildren().add(new Button("Search"));
+                n = h;
             } else if (c instanceof ShowTextField) {
                 javafx.scene.control.Label tf = new javafx.scene.control.Label();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
@@ -815,6 +908,7 @@ public class ViewNode extends StackPane {
                                 for (Object[] r : result) {
                                     l.add(new Pair(r[0], (r[1] == null)?null:"" + r[1]));
                                 }
+                                cmb.getItems().add(new Pair(null, null));
                                 cmb.getItems().addAll(l);
                             }
                         });
@@ -911,6 +1005,11 @@ public class ViewNode extends StackPane {
                 }
                 n = tf;
 
+                if (firstField == null) {
+                    firstField = tf;
+                }
+
+
             } else if (c instanceof WebField) {
                 WebView tf = new WebView();
                 dataStore.getStringProperty(((AbstractField) c).getId()).addListener(new ChangeListener<String>() {
@@ -932,7 +1031,42 @@ public class ViewNode extends StackPane {
                 n = sp;
                 sp.getChildren().add(tf);
             }
-            if (n != null) donde.getChildren().add(n);
+            if (n != null) {
+                donde.getChildren().add(n);
+
+                Node finalN1 = n;
+                Pane finalDonde = donde;
+                Pane finalContainer = container;
+                ((AbstractField)c).addListener(new FieldListener() {
+                    @Override
+                    public void visibilityChanged(boolean newValue) {
+                        if (newValue) {
+                            if (finalN1.getUserData() != null) {
+                                int i = (int) finalN1.getUserData();
+                                finalN1.setUserData(null);
+                                finalContainer.getChildren().add(i, finalDonde);
+                            }
+                        } else {
+                            if (finalN1.getUserData() == null) {
+                                int i = finalContainer.getChildren().indexOf(finalDonde);
+                                finalN1.setUserData(i);
+                                //finalDonde.setVisible(newValue);
+                                finalContainer.getChildren().remove(finalDonde);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void enablementChanged(boolean newValue) {
+                        if (finalN1 instanceof javafx.scene.control.TextField) ((javafx.scene.control.TextField)finalN1).setEditable(false);
+                    }
+                });
+
+            }
+
+            if (((AbstractField) c).isRequired()) {
+                validationSupport.registerValidator((Control) n, Validator.createEmptyValidator("Required field"));
+            }
 
         } else {
 

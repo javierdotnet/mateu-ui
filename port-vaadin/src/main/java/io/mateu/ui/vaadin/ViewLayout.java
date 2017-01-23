@@ -1,19 +1,14 @@
 package io.mateu.ui.vaadin;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.validator.DoubleValidator;
-import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.app.AbstractAction;
-import io.mateu.ui.core.client.app.AbstractExecutable;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
@@ -22,7 +17,6 @@ import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
-import io.mateu.ui.core.server.ServerSideHelper;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
@@ -33,7 +27,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.vaadin.ui.NumberField;
-import org.vaadin.viritin.fields.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +39,8 @@ public class ViewLayout extends VerticalLayout implements View {
 
     private DataStore dataStore;
 
+    Window win = new Window("Waiting...");
+
     private final AbstractView view;
 
     public ViewLayout(AbstractView view) {
@@ -56,7 +51,13 @@ public class ViewLayout extends VerticalLayout implements View {
             @Override
             public void setted(Data newData) {
                 dataStore.setData(newData);
-                dataStore.set("_title", view.getTitle());
+                String t = view.getTitle();
+                if (view instanceof AbstractEditorView) {
+                    Object id = dataStore.get("_id");
+                    if (id == null) t = "New " + t;
+                    else t += " " + id;
+                }
+                dataStore.set("_title", t);
             }
         });
         dataStore.set("_title", view.getTitle());
@@ -64,15 +65,24 @@ public class ViewLayout extends VerticalLayout implements View {
         setMargin(true);
         addStyleName("content-common");
 
-        Property p = dataStore.getProperty("_title");
-        Label h1 = new Label((String) p.getValue());
+        String t = view.getTitle();
+        if (view instanceof AbstractEditorView) {
+            Object id = dataStore.get("_id");
+            if (id == null) t = "New " + t;
+            else t += " " + id;
+        }
+
+        Label h1 = new Label(t);
         h1.addStyleName(ValoTheme.LABEL_H1);
+
+        Property p = dataStore.getProperty("_title");
         p.addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 h1.setValue((newValue != null)?"" + newValue:null);
             }
         });
+        p.setValue(t);
 
         addComponent(h1);
 
@@ -94,13 +104,35 @@ public class ViewLayout extends VerticalLayout implements View {
         }
 
         addListeners();
+
+
+        ProgressBar pb = new ProgressBar();
+        pb.setIndeterminate(true);
+        HorizontalLayout h = new HorizontalLayout();
+        h.addComponent(pb);
+        h.addComponent(new Label("Waiting..."));
+        h.setMargin(true);
+        h.setSpacing(true);
+        win.setContent(h);
+        win.setHeight("80px");
+        win.setWidth("200px");
+        win.setCaption(null);
+        win.setResizable(false);
+        win.setDraggable(false);
+        win.setClosable(false);
+        win.setModal(true);
+
     }
 
     public void startWaiting() {
         MateuUI.runInUIThread(new Runnable() {
             @Override
             public void run() {
-                Notification.show("waiting...");
+
+                getUI().addWindow(win);
+                win.center();
+                win.focus();
+
             }
         });
     }
@@ -109,7 +141,7 @@ public class ViewLayout extends VerticalLayout implements View {
         MateuUI.runInUIThread(new Runnable() {
             @Override
             public void run() {
-                Notification.show("...end.");
+                getUI().removeWindow(win);
             }
         });
     }
@@ -191,25 +223,35 @@ public class ViewLayout extends VerticalLayout implements View {
 
         HorizontalLayout h = new HorizontalLayout();
 
+        h.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+
         FormLayout f = new FormLayout();
         //h.setSpacing(true);
         //h.setMargin(true);
         //h.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-        f.setSpacing(true);
+        h.setMargin(new MarginInfo(false, false, true, false));
+        f.setMargin(false);
+        f.setSpacing(false);
+
+        h.setSpacing(true);
 
         h.addComponent(f);
 
         if (view instanceof AbstractListView) {
 
             int posField = 0;
+            Component last = null;
             for (io.mateu.ui.core.client.components.Component c : view.getForm().getComponentsSequence()) {
                 if (c instanceof AbstractField) {
 
-                    add(f, (AbstractField) c, true, true);
+                    last = add(f, (AbstractField) c, true, true);
 
                     posField++;
                     if (posField >= ((AbstractListView) view).getMaxFieldsInHeader()) break;
                 }
+            }
+            if (last != null) {
+//                f.setMargin(new MarginInfo(false, true, false, false));
             }
         }
 
@@ -245,13 +287,14 @@ public class ViewLayout extends VerticalLayout implements View {
         add(where, c, true);
     }
 
-    private void add(Layout where, AbstractField c, boolean paintLabel) {
-        add(where, c, paintLabel, false);
+    private Component add(Layout where, AbstractField c, boolean paintLabel) {
+        return add(where, c, paintLabel, false);
     }
-    private void add(Layout where, AbstractField c, boolean paintLabel, boolean inToolbar) {
+    private Component add(Layout where, AbstractField c, boolean paintLabel, boolean inToolbar) {
         Component x = getVaadinComponent(c);
         where.addComponent(x);
         if (inToolbar) x.addStyleName("inline");
+        return x;
     }
 
     private Component getVaadinComponent(AbstractField field) {
@@ -477,7 +520,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 //og.select(v);
 
                 for (Object o : og.getItemIds()) {
-                    //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                    System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
                     if (o.equals(v)) og.select(o);
                 }
 
@@ -605,20 +648,20 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
-        } else if (field instanceof TextAreaField)  {
-            c = new TextArea((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+        } else if (field instanceof RichTextField)  {
+            c = new RichTextArea((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
 
-            if (v != null) ((TextArea) c).setValue("" + v);
+            if (v != null) ((RichTextArea) c).setValue("" + v);
 
             Property p = dataStore.getProperty(field.getId());
             Component finalC = c;
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    ((TextArea) finalC).setValue((newValue != null)?"" + newValue:null);
+                    ((RichTextArea) finalC).setValue((newValue != null)?"" + newValue:null);
                 }
             });
-            ((TextArea)c).addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+            ((RichTextArea)c).addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
                 @Override
                 public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
                     p.setValue(valueChangeEvent.getProperty().getValue());
@@ -655,10 +698,16 @@ public class ViewLayout extends VerticalLayout implements View {
                     @Override
                     public void onSuccess(Object[][] result) {
                         for (Object[] l : result) {
-
                             og.addItem(new Pair(l[0], "" + l[1]));
-
                         }
+
+                        Property p = dataStore.getProperty(field.getId());
+                        Object v = p.getValue();
+                        for (Object o : og.getItemIds()) {
+                            //System.out.println("o=" + o.getClass().getName() + ":" + o + ", v=" + v.getClass().getName() + ":" + v + ", equals()=" + o.equals(v));
+                            if (o.equals(v)) og.select(o);
+                        }
+
                     }
                 });
 
@@ -689,6 +738,26 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
             og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+
+        } else if (field instanceof TextAreaField)  {
+            c = new TextArea((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+
+            if (v != null) ((TextArea) c).setValue("" + v);
+
+            Property p = dataStore.getProperty(field.getId());
+            Component finalC = c;
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    ((TextArea) finalC).setValue((newValue != null)?"" + newValue:null);
+                }
+            });
+            ((TextArea)c).addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
                 @Override
                 public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
                     p.setValue(valueChangeEvent.getProperty().getValue());
@@ -734,6 +803,21 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
         }
+
+        Component finalC1 = c;
+        field.addListener(new FieldListener() {
+            @Override
+            public void visibilityChanged(boolean newValue) {
+                finalC1.setVisible(newValue);
+            }
+
+            @Override
+            public void enablementChanged(boolean newValue) {
+                finalC1.setEnabled(newValue);
+            }
+        });
+
+        if (field.isRequired() && c instanceof com.vaadin.ui.AbstractField) ((com.vaadin.ui.AbstractField)c).setRequired(true);
 
         return c;
     }

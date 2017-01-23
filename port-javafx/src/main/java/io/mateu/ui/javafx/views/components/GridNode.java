@@ -245,8 +245,18 @@ public class GridNode extends VBox {
                     }
                 }, (ActionOnRow) c));
             } else if (c instanceof TextColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<String>(c.getId()));
-                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, String>forTableColumn(new DefaultStringConverter()));
+                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                    @Override
+                    public String toString(Object object) {
+                        return (object == null)?null:"" + object;
+                    }
+
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                }));
                 c1.setEditable(true);
             } else {
                 c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));

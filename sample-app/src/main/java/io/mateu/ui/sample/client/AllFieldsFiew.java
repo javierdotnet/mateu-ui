@@ -32,7 +32,7 @@ public class AllFieldsFiew extends AbstractView {
     public AbstractForm createForm() {
         AbstractForm f = new ViewForm(this);
 
-        f.add(new AutocompleteField("f1", "Autocomplete", "1", "aaaaaa", "2", "asxdd", "3", "bededeud", "4", "bbbb"));
+        f.add(new AutocompleteField("f1", "Autocomplete", "1", "aaaaaa", "2", "asxdd", "3", "bededeud", "4", "bbbb").setRequired(true));
         f.add(new CalendarField("f2", "Calendar"));
         f.add(new CheckBoxField("f3", "CheckBox"));
         f.add(new CheckBoxListField("f4", "CheckBoxList", "1", "V1", "2", "V2"));

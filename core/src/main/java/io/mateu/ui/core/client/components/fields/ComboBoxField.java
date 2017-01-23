@@ -31,6 +31,11 @@ public class ComboBoxField extends AbstractField<ComboBoxField> {
         }
     }
 
+    public ComboBoxField(String id, String label, List<Pair> values) {
+        super(id, label);
+        this.values.addAll(values);
+    }
+
     public List<Pair> getValues() {
         return values;
     }

@@ -35,6 +35,8 @@ public class BaseServiceImpl implements BaseService {
         int fromRow = rowsPerPage * parameters.getInt("_currentpageindex");
         String sql = parameters.getString("_sql");
 
+        d.getList("_data");
+
         for (Object[] l : ServerSideHelper.getServerSideApp().selectPage(sql, fromRow, rowsPerPage)) {
             Data r;
             d.getList("_data").add(r = new Data());
@@ -52,12 +54,14 @@ public class BaseServiceImpl implements BaseService {
 
     @Override
     public Data set(String serverSideControllerKey, Data data) throws Exception {
+        System.out.println("set(" + serverSideControllerKey + "," + data + ")");
         Object id = EditorViewControllerRegistry.getController(serverSideControllerKey).set(data);
         return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
     }
 
     @Override
     public Data get(String serverSideControllerKey, Object id) throws Exception {
+        System.out.println("get(" + serverSideControllerKey + "," + id + ")");
         return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
     }
 

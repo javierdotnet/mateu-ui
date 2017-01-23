@@ -9,16 +9,19 @@ import javafx.scene.control.Tab;
  */
 public class ViewTab extends Tab {
     private final AbstractView view;
+    private final ViewNode viewNode;
 
     public ViewTab(AbstractView view) {
         this.view = view;
 
         setText(view.getTitle());
-        setContent(new ViewNode(view));
+        setContent(viewNode = new ViewNode(view));
 
     }
 
     public String getKey() {
         return view.getViewId();
     }
+
+    public ViewNode getViewNode() { return viewNode; }
 }

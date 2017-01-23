@@ -10,6 +10,10 @@ import java.util.List;
  */
 public abstract class AbstractField<T extends AbstractField<T>> extends BaseComponent implements Component {
 
+    private boolean visible = true;
+
+    private boolean enabled = true;
+
     private String id;
 
     private Label label;
@@ -23,6 +27,8 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
     private boolean required;
 
     private List<FieldValidator> validators = new ArrayList<>();
+
+    private List<FieldListener> listeners = new ArrayList<>();
 
 
     public AbstractField(String id) {
@@ -41,7 +47,9 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
             if (error != null) errors.add(error);
         });
         return errors;
-    };
+    }
+
+    ;
 
     public Label getLabel() {
         return label;
@@ -99,6 +107,34 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
 
     public String getId() {
         return id;
+    }
+
+    public void setVisible(boolean visible) {
+        boolean changed = this.visible != visible;
+        this.visible = visible;
+        if (changed) for (FieldListener l : listeners) {
+            l.visibilityChanged(visible);
+        }
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        boolean changed = this.enabled != enabled;
+        this.enabled = enabled;
+        if (changed) for (FieldListener l : listeners) {
+            l.enablementChanged(enabled);
+        }
+    }
+
+    public void addListener(FieldListener l) {
+        listeners.add(l);
     }
 
 }

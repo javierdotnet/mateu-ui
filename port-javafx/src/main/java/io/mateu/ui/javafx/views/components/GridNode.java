@@ -2,29 +2,28 @@ package io.mateu.ui.javafx.views.components;
 
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.ActionOnRow;
+import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
-import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
-import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
-import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.*;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractListView;
 import io.mateu.ui.core.client.views.ListViewListener;
+import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
-import io.mateu.ui.javafx.views.components.table.MateuCheckBoxTableCell;
-import io.mateu.ui.javafx.views.components.table.MateuLinkTableCell;
-import io.mateu.ui.javafx.views.components.table.PropertyValueFactory;
+import io.mateu.ui.javafx.views.components.table.*;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import io.mateu.ui.javafx.views.components.table.MateuTextFieldTableCell;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
@@ -149,11 +148,21 @@ public class GridNode extends VBox {
                     Data d;
                     viewNode.getDataStore().getData().getList(field.getId()).add(d = new Data());
                     DataStore ds = new DataStore(d);
-                    ds.getBooleanProperty("selected");
+                    ds.getBooleanProperty("_selected");
                     for (AbstractColumn c : field.getColumns()) {
-                        ds.getStringProperty(c.getId());
+                        if (c instanceof CheckBoxColumn) ds.getBooleanProperty(c.getId());
+                        else ds.getProperty(c.getId());
                     }
                     viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().add(ds);
+                }
+            });
+            toolBar.getItems().add(b = new Button("Remove"));
+            b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    List<DataStore> borrar = new ArrayList<>();
+                    for (DataStore x : viewNode.getDataStore().getObservableListProperty(field.getId()).getValue()) if (x.getBooleanProperty("_selected").getValue()) borrar.add(x);
+                    for (DataStore x : borrar) viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().remove(x);
                 }
             });
         }
@@ -229,9 +238,58 @@ public class GridNode extends VBox {
         for (AbstractColumn c : g.getColumns()) {
 
             TableColumn c1;
-            l.add(c1 = new TableColumn(c.getLabel()));
 
-            if (c instanceof LinkColumn) {
+            if (c instanceof CheckBoxColumn) {
+                l.add(c1 = new TableColumn<DataStore, Boolean>(c.getLabel()));
+                c1.setCellValueFactory(new PropertyValueFactory<Boolean>(c.getId()));
+                c1.setCellFactory(MateuCheckBoxTableCell.forTableColumn(c1));
+                c1.setEditable(true);
+            } else if (c instanceof SqlComboBoxColumn) {
+                l.add(c1 = new TableColumn<DataStore, Pair>(c.getLabel()));
+                c1.setCellValueFactory(new PropertyValueFactory<Pair>(c.getId()));
+                ObservableList<Pair> vs = FXCollections.observableArrayList();
+                MateuUI.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((SqlComboBoxColumn) c).call(new Callback<Object[][]>() {
+                            @Override
+                            public void onSuccess(Object[][] result) {
+                                List<Pair> ps = new ArrayList<>();
+                                for (Object[] x : result) {
+                                    ps.add(new Pair(x[0], "" + x[1]));
+                                }
+                                vs.setAll(ps);
+                            }
+                        });
+                    }
+                });
+                c1.setCellFactory(ComboBoxTableCell.forTableColumn(vs));
+                c1.setEditable(true);
+            } else if (c instanceof ComboBoxColumn) {
+                l.add(c1 = new TableColumn<DataStore, Pair>(c.getLabel()));
+                c1.setCellValueFactory(new PropertyValueFactory<Pair>(c.getId()));
+                c1.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableList(((ComboBoxColumn)c).getValues())));
+                c1.setEditable(true);
+            } else {
+                l.add(c1 = new TableColumn(c.getLabel()));
+            }
+
+
+            if (c instanceof DoubleColumn) {
+            c1.setCellValueFactory(new PropertyValueFactory<Double>(c.getId()));
+            c1.setCellFactory(MateuDoubleFieldTableCell.<DataStore, Double>forTableColumn(new StringConverter<Double>() {
+                @Override
+                public String toString(Double object) {
+                    return (object == null) ? null : "" + object;
+                }
+
+                @Override
+                public Double fromString(String string) {
+                    return (string == null || "".equals(string.trim())) ? null : Double.parseDouble(string);
+                }
+            }));
+            c1.setEditable(true);
+        } else if (c instanceof LinkColumn) {
                 c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
                 c1.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override
@@ -244,21 +302,21 @@ public class GridNode extends VBox {
                         return string;
                     }
                 }, (ActionOnRow) c));
-            } else if (c instanceof TextColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+            } else if (c instanceof IntegerColumn) {
+                c1.setCellValueFactory(new PropertyValueFactory<Integer>(c.getId()));
+                c1.setCellFactory(MateuIntegerFieldTableCell.<DataStore, Integer>forTableColumn(new StringConverter<Integer>() {
                     @Override
-                    public String toString(Object object) {
+                    public String toString(Integer object) {
                         return (object == null)?null:"" + object;
                     }
 
                     @Override
-                    public Object fromString(String string) {
-                        return string;
+                    public Integer fromString(String string) {
+                        return (string == null || "".equals(string.trim()))?null:Integer.parseInt(string);
                     }
                 }));
                 c1.setEditable(true);
-            } else {
+            } else if (c instanceof TextColumn) {
                 c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
                 c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override

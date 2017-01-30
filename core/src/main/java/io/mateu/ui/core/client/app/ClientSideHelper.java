@@ -19,4 +19,8 @@ public interface ClientSideHelper {
     void runInUIThread(Runnable runnable);
 
     BaseServiceAsync getBaseService();
+
+    void run(Runnable runnable, Runnable onerror);
+
+    void openView(AbstractView parentView, AbstractView view);
 }

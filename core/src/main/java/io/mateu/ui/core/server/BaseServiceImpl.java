@@ -2,8 +2,8 @@ package io.mateu.ui.core.server;
 
 import io.mateu.ui.core.shared.BaseService;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.server.ServerSideHelper;
 import io.mateu.ui.core.shared.FileLocator;
+import io.mateu.ui.core.shared.UserData;
 
 /**
  * Created by miguel on 27/12/16.
@@ -66,7 +66,23 @@ public class BaseServiceImpl implements BaseService {
     }
 
     @Override
-    public FileLocator upload(byte[] bytes) throws Exception {
-        return ServerSideHelper.getServerSideApp().upload(bytes);
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Exception {
+        return ServerSideHelper.getServerSideApp().upload(fileName, bytes, temporary);
     }
+
+    @Override
+    public UserData authenticate(String login, String password) throws Exception {
+        return ServerSideHelper.getServerSideApp().authenticate(login, password);
+    }
+
+    @Override
+    public void changePassword(String login, String oldPassword, String newPassword) throws Exception {
+        ServerSideHelper.getServerSideApp().changePassword(login, oldPassword, newPassword);
+    }
+
+    @Override
+    public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception {
+        ServerSideHelper.getServerSideApp().updateProfile(login, name, email, foto);
+    }
+
 }

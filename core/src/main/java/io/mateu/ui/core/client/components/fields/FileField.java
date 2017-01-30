@@ -5,6 +5,8 @@ package io.mateu.ui.core.client.components.fields;
  */
 public class FileField extends AbstractField<FileField> {
 
+    private boolean temporary;
+
     public FileField(String id) {
         super(id);
     }
@@ -13,4 +15,12 @@ public class FileField extends AbstractField<FileField> {
         super(id, label);
     }
 
+    public boolean isTemporary() {
+        return temporary;
+    }
+
+    public FileField setTemporary(boolean temporary) {
+        this.temporary = temporary;
+        return this;
+    }
 }

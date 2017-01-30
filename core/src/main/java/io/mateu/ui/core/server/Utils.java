@@ -145,4 +145,23 @@ public class Utils {
         }
 
     }
+
+    public static void write(String fn, byte[] bytes) {
+        File f = new File(fn);
+        write(f, bytes);
+    }
+
+    public static void write(File f, byte[] bytes) {
+        System.out.println("writing " + f.getAbsolutePath());
+        FileOutputStream w;
+        try {
+            if (!f.getParentFile().exists()) f.getParentFile().mkdirs();
+            w = new FileOutputStream(f);
+            w.write(bytes);
+            w.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -1,5 +1,8 @@
 package io.mateu.ui.javafx.app;
 
+import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.views.AbstractView;
+import io.mateu.ui.javafx.JavafxPort;
 import javafx.scene.layout.BorderPane;
 import io.mateu.ui.javafx.views.ViewNode;
 
@@ -25,8 +28,10 @@ public class AppNode extends BorderPane {
         setCenter(viewsNode = new ViewsNode());
         setStyle("-fx-background-color: #FFeaea;");
 
-        
+    }
 
+    public void clearTabs() {
+        if (viewsNode != null) viewsNode.clearTabs();
     }
 
     public TopNode getTopNode() {

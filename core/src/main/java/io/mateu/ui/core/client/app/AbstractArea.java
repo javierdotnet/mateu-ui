@@ -8,10 +8,15 @@ import java.util.List;
  */
 public abstract class AbstractArea {
 
+    private boolean publicAccess = false;
     private String name;
 
     public AbstractArea(String name) {
         this.name = name;
+    }
+
+    public AbstractArea(String name, boolean publicAccess) {
+        this.name = name; this.publicAccess = publicAccess;
     }
 
     public String getName() {
@@ -19,4 +24,12 @@ public abstract class AbstractArea {
     }
 
     public abstract List<AbstractModule> getModules();
+
+    public boolean isPublicAccess() {
+        return publicAccess;
+    }
+
+    public void setPublicAccess(boolean publicAccess) {
+        this.publicAccess = publicAccess;
+    }
 }

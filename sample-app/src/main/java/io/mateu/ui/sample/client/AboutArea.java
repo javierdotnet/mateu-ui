@@ -12,7 +12,7 @@ import java.util.List;
 public class AboutArea extends AbstractArea {
 
     public AboutArea() {
-        super("About");
+        super("About", true);
     }
 
     public List<AbstractModule> getModules() {

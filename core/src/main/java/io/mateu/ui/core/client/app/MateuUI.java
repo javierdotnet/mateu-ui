@@ -47,6 +47,10 @@ public class MateuUI {
         getClientSideHelper().openView(view);
     }
 
+    public static void openView(AbstractView parentView, AbstractView view) {
+        getClientSideHelper().openView(parentView, view);
+    }
+
     public static void runInUIThread(Runnable runnable) {
         getClientSideHelper().runInUIThread(runnable);
     }
@@ -68,5 +72,9 @@ public class MateuUI {
             }
         }
         return ids;
+    }
+
+    public static void run(Runnable runnable, Runnable onerror) {
+        getClientSideHelper().run(runnable, onerror);
     }
 }

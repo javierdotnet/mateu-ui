@@ -48,6 +48,11 @@ public abstract class AbstractListView extends AbstractView {
                         reset();
                         search();
                     }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        for (ListViewListener l : listViewListeners) l.onSuccess();
+                    }
                 });
             }
         });
@@ -67,15 +72,11 @@ public abstract class AbstractListView extends AbstractView {
 
                 rpc(getForm().getData(), new Callback<Data>() {
 
-                    public void superOnFailure(Throwable caught) {
-                        super.onFailure(caught);
-                    }
-
                     @Override
                     public void onFailure(Throwable caught) {
 
                                 for (ListViewListener l : listViewListeners) l.onFailure(caught);
-                                superOnFailure(caught);
+                                super.onFailure(caught);
 
                     }
 

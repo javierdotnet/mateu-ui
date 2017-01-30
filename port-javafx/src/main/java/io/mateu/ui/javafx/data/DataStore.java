@@ -45,8 +45,9 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
     public DataStore(Data data) {
         super(new HashMap<String, Object>());
-        set("_selected", false);
         setData(data);
+        set("_selected", false);
+        set("__id", UUID.randomUUID());
     }
 
 
@@ -310,5 +311,14 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             p.addListener(listenerx);
         }
         return p;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean eq = false;
+        Object k = get("__id");
+        if (k != null) eq = obj instanceof DataStore && k.equals(((DataStore)obj).get("__id"));
+        else eq = super.equals(obj);
+        return eq;
     }
 }

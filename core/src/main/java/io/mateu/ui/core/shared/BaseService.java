@@ -22,6 +22,13 @@ public interface BaseService {
     public Data get(String serverSideControllerKey, Object id) throws IllegalAccessException, InstantiationException, Exception;
 
 
-    public FileLocator upload(byte[] bytes) throws Exception;
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Exception;
+
+    public UserData authenticate(String login, String password) throws Exception;
+
+    public void changePassword(String login, String oldPassword, String newPassword) throws Exception;
+
+    public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception;
+
 
 }

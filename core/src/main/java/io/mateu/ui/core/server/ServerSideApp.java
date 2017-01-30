@@ -3,9 +3,9 @@ package io.mateu.ui.core.server;
 import io.mateu.ui.core.shared.BaseService;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
+import io.mateu.ui.core.shared.UserData;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
+import java.io.IOException;
 
 /**
  * Created by miguel on 1/1/17.
@@ -30,13 +30,19 @@ public interface ServerSideApp {
 
     public void transact(SQLTransaction t) throws Exception;
 
-    public FileLocator upload(byte[] bytes);
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws IOException, Exception;
 
     public void notransact(SQLTransaction t) throws Exception;
 
     public Data getFromSql(String sql) throws Exception;
 
     public void setToSql(Data data, String tableName) throws Exception;
+
+    UserData authenticate(String login, String password) throws Exception;
+
+    void changePassword(String login, String oldPassword, String newPassword) throws Exception;
+
+    void updateProfile(String login, String name, String email, FileLocator foto) throws Exception;
 }
 
 

@@ -12,6 +12,14 @@ public class Pair extends Data {
         setText(text);
     }
 
+    public Pair(Pair value) {
+        clear();
+        if (value != null) {
+            setValue(value.getValue());
+            setText(value.getText());
+        }
+    }
+
     public Object getValue() {
         return get("value");
     }

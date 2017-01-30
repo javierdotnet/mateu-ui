@@ -1,10 +1,7 @@
 package io.mateu.ui.core.client;
 
-import io.mateu.ui.core.shared.AsyncCallback;
+import io.mateu.ui.core.shared.*;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.shared.BaseService;
-import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.shared.FileLocator;
 import javafx.application.Platform;
 
 /**
@@ -260,14 +257,14 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
     }
 
     @Override
-    public void upload(byte[] bytes, AsyncCallback<FileLocator> callback) {
+    public void upload(String fileName, byte[] bytes, boolean temporary, AsyncCallback<FileLocator> callback) {
         MateuUI.run(new Runnable() {
             @Override
             public void run() {
 
                 try {
 
-                    FileLocator result = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).upload(bytes);
+                    FileLocator result = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).upload(fileName, bytes, temporary);
 
                     Platform.runLater(new Runnable() {
                         @Override
@@ -297,5 +294,123 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
             }
         });
 
+    }
+
+    @Override
+    public void authenticate(String login, String password, AsyncCallback<UserData> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    UserData result = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).authenticate(login, password);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(result);
+
+                        }
+                    });
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+    }
+
+    @Override
+    public void changePassword(String login, String oldPassword, String newPassword, AsyncCallback<Void> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).changePassword(login, oldPassword, newPassword);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(null);
+
+                        }
+                    });
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void updateProfile(String login, String name, String email, FileLocator foto, AsyncCallback<Void> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).updateProfile(login, name, email, null);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(null);
+
+                        }
+                    });
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
     }
 }

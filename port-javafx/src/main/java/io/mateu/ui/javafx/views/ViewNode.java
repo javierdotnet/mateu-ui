@@ -2,14 +2,14 @@ package io.mateu.ui.javafx.views;
 
 import com.sun.javafx.scene.web.skin.HTMLEditorSkin;
 import io.mateu.ui.core.client.Mateu;
-import io.mateu.ui.core.client.app.AbstractAction;
-import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.*;
+import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.components.fields.*;
-import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.core.client.views.*;
+import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.javafx.JFXHelper;
 import io.mateu.ui.javafx.JavafxPort;
 import io.mateu.ui.javafx.app.AppNode;
@@ -18,6 +18,8 @@ import io.mateu.ui.javafx.data.ViewNodeDataStore;
 import io.mateu.ui.javafx.views.components.GridNode;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,11 +28,17 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -42,8 +50,8 @@ import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.*;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.decoration.Decorator;
@@ -52,12 +60,16 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
 import java.util.*;
+import java.util.List;
+
 
 /**
  * Created by miguel on 9/8/16.
@@ -76,6 +88,8 @@ public class ViewNode extends StackPane {
     private boolean minsFixed;
     private Stage moreFiltersDialog;
     private Node firstField = null;
+    private Dialog dmf;
+    private ValidationSupport validationSupport;
 
     public Node getFirstField() {
         return firstField;
@@ -215,7 +229,7 @@ public class ViewNode extends StackPane {
         if (view instanceof AbstractListView) {
             AbstractListView lv = (AbstractListView) view;
 
-            ValidationSupport validationSupport = new ValidationSupport();
+            validationSupport = new ValidationSupport();
 
             Pane contenedor = new HBox();
 
@@ -238,6 +252,19 @@ public class ViewNode extends StackPane {
                 }
 
                 if (numFields > lv.getMaxFieldsInHeader()) {
+                    Button bmf;
+                    toolBar.getItems().add(bmf = new Button("+"));
+                    bmf.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            dmf.showAndWait();
+                        }
+                    });
+
+                    addMoreFiltersDialog();
+                }
+
+                if (false && numFields > lv.getMaxFieldsInHeader()) {
 
                     moreFiltersDialog = new Stage();
                     moreFiltersDialog.setWidth(600);
@@ -308,11 +335,88 @@ public class ViewNode extends StackPane {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    System.out.println(getDataStore().toString());
+                    //System.out.println(getDataStore().toString());
+                    MateuUI.openView(new AbstractDialog() {
+                        @Override
+                        public void onOk(Data data) {
+
+                        }
+
+                        @Override
+                        public String getTitle() {
+                            return "Data";
+                        }
+
+                        @Override
+                        public Data initializeData() {
+                            Data d = super.initializeData();
+                            d.set("data", view.getForm().getData());
+                            return d;
+                        }
+
+                        @Override
+                        public AbstractForm createForm() {
+                            return new ViewForm(this).setLastFieldMaximized(true).add(new DataViewerField("data"));
+                        }
+                    });
                 }
             });
         }
         return toolBar;
+    }
+
+    private void addMoreFiltersDialog() {
+        // Create the custom dialog.
+        Dialog<javafx.util.Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("More filters");
+
+// Set the icon (must be included in the project).
+        //dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
+
+// Set the button types.
+        ButtonType loginButtonType = new ButtonType("Search", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+// Create the username and password labels and fields.
+
+
+// Enable/Disable login button depending on whether a username was entered.
+        Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+        //loginButton.setDisable(true);
+
+// Do some validation (using the Java 8 lambda syntax).
+
+        Pane pane;
+        ScrollPane sp = new ScrollPane(pane = new Pane());
+        sp.getStyleClass().add("mateu-view-scroll");
+        pane.getStyleClass().add("mateu-view");
+        if (false) addEventHandler(Event.ANY, e -> {
+            System.out.println("caught " + e.getEventType().getName());
+        });
+
+        //build(sp, pane, view.getForm(), ((AbstractListView) view).getMaxFieldsInHeader());
+        AbstractListView lv = (AbstractListView) view;
+        build(validationSupport, sp, pane, lv.getForm(), lv.getMaxFieldsInHeader(), true);
+
+        dialog.getDialogPane().setContent(sp);
+        dialog.getDialogPane().setMaxWidth(600);
+        dialog.getDialogPane().setMinHeight(200);
+        dialog.setResizable(true);
+
+// Request focus on the username field by default.
+        //Platform.runLater(() -> name.requestFocus());
+
+// Convert the result to a username-password-pair when the login button is clicked.
+
+
+        loginButton.addEventFilter(ActionEvent.ACTION, ae -> {
+            dialog.close();
+            ((AbstractListView) view).search();
+        });
+
+        //Optional<javafx.util.Pair<String, String>> result = dialog.showAndWait();
+
+        dmf = dialog;
     }
 
     private void build(ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField) {
@@ -420,8 +524,8 @@ public class ViewNode extends StackPane {
                        */
 
 
-                    Label l;
-                    donde.getChildren().add(l = new Label(((AbstractField) c).getLabel().getText()));
+                    javafx.scene.control.Label l;
+                    donde.getChildren().add(l = new javafx.scene.control.Label(((AbstractField) c).getLabel().getText()));
                     if (!inToolBar) l.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-right;");
                     else l.setStyle("-fx-alignment: baseline-right;");
 
@@ -616,6 +720,64 @@ public class ViewNode extends StackPane {
 
                 n = cmb;
 
+            } else if (c instanceof DataViewerField) {
+
+                TreeTableView<Pair> t = new TreeTableView<>();
+                t.setShowRoot(true);
+
+//                row.getStyleClass().add("highlightedRow");
+//                  row.getStyleClass().removeAll(Collections.singleton("highlightedRow"));
+
+                t.setRowFactory(new Callback<TreeTableView<Pair>, TreeTableRow<Pair>>() {
+                    @Override
+                    public TreeTableRow<Pair> call(TreeTableView<Pair> param) {
+                        return new TreeTableRow<Pair>() {
+                            @Override
+                            protected void updateItem(Pair item, boolean empty) {
+                                super.updateItem(item, empty);
+                                boolean leaf = !empty;
+                                leaf = leaf && item != null && item.get("_leaf") != null;
+                                if (!this.getStyleClass().contains("dataviewer")) this.getStyleClass().add("dataviewer");
+                                if (leaf) {
+                                    this.getStyleClass().add("leaf");
+                                } else {
+                                    this.getStyleClass().remove("leaf");
+                                }
+                            }
+                        };
+                    }
+                });
+
+
+                ObservableList<Pair> m = FXCollections.observableArrayList();
+
+                TreeItem<Pair> root = buildTree(((AbstractField)c).getId(), dataStore.get(((AbstractField)c).getId()));
+                t.setRoot(root);
+
+                TreeTableColumn<Pair,String> nameCol = new TreeTableColumn<>("Name");
+                nameCol.setPrefWidth(250);
+                nameCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<Pair, String> p) ->
+                        new ReadOnlyStringWrapper("" + p.getValue().getValue().getText()));
+                TreeTableColumn<Pair,String> valueCol = new TreeTableColumn<>("Value");
+                valueCol.setPrefWidth(250);
+                valueCol.setCellValueFactory((TreeTableColumn.CellDataFeatures<Pair, String> p) ->
+                        new ReadOnlyStringWrapper("" + p.getValue().getValue().getValue()));
+
+
+                t.getColumns().setAll(nameCol, valueCol);
+
+                dataStore.getProperty(((AbstractField)c).getId()).addListener(new ChangeListener<Object>() {
+                    @Override
+                    public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+                        TreeItem<Pair> root = buildTree(((AbstractField)c).getId(), newValue);
+                        t.setRoot(root);
+                    }
+                });
+
+                //cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
+
+                n = t;
+
             } else if (c instanceof DoubleField) {
                 javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
 
@@ -661,14 +823,10 @@ public class ViewNode extends StackPane {
                 n = tf;
 
             } else if (c instanceof FileField) {
-                javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
-                tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
-                n = tf;
-
                 //////////////////////
 
-                VBox v;
-                n = v = new VBox();
+                HBox v;
+                n = v = new HBox();
 
                 final HBox h0;
                 v.getChildren().add(h0 = new HBox());
@@ -682,7 +840,32 @@ public class ViewNode extends StackPane {
                     public void changed(ObservableValue<? extends FileLocator> arg0, FileLocator oldValue, FileLocator newValue) {
                         h0.getChildren().clear();
                         if (newValue != null && newValue.getUrl() != null) {
-                            h0.getChildren().add(new Label(newValue.getUrl()));
+                            Hyperlink l = new Hyperlink(newValue.getFileName());
+                            l.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent event) {
+                                    try {
+                                        Desktop.getDesktop().open(new File(newValue.getUrl()));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        MateuUI.alert("" + e.getClass().getName() + ":" + e.getMessage());
+                                    }
+                                }
+                            });
+                            h0.getChildren().add(l);
+                            Button b;
+                            h0.getChildren().add(b = new Button("X"));
+                            b.setOnAction(new EventHandler<ActionEvent>() {
+
+                                @Override
+                                public void handle(ActionEvent paramT) {
+                                    dataStore.getFileLocatorProperty(((AbstractField)c).getId()).setValue(null);
+                                }
+                            });
+
+                            v.setSpacing(5);
+                        } else {
+                            v.setSpacing(0);
                         }
                     }
                 });;
@@ -701,7 +884,7 @@ public class ViewNode extends StackPane {
                         FileChooser fc = new FileChooser();
                         File f = fc.showOpenDialog(s);
                         if (f != null) try {
-                            MateuUI.getBaseService().upload(JFXHelper.read(new FileInputStream(f)), new io.mateu.ui.core.client.app.Callback<FileLocator>() {
+                            MateuUI.getBaseService().upload(f.getName(), JFXHelper.read(new FileInputStream(f)), ((FileField)c).isTemporary(), new io.mateu.ui.core.client.app.Callback<FileLocator>() {
                                 @Override
                                 public void onSuccess(FileLocator result) {
                                     dataStore.getFileLocatorProperty(((AbstractField)c).getId()).setValue(result);
@@ -713,7 +896,6 @@ public class ViewNode extends StackPane {
                         }
                     }
                 });
-
 
 
             } else if (c instanceof GridField) {
@@ -893,10 +1075,7 @@ public class ViewNode extends StackPane {
                 });
 
                 cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
-
                 n = cmb;
-
-
 
                 ((SqlComboBoxField)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
                     @Override
@@ -920,89 +1099,9 @@ public class ViewNode extends StackPane {
                 javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 n = tf;
-            } else if (c instanceof TextField) {
+            } else if (c instanceof io.mateu.ui.core.client.components.fields.TextField) {
                 javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
-                if (c.getClass().isAssignableFrom(Double.class)) {
-                    DecimalFormat format = new DecimalFormat( "#.0" );
-                    tf.setTextFormatter( new TextFormatter<>(converter ->
-                    {
-                        if ( converter.getControlNewText().isEmpty() )
-                        {
-                            return converter;
-                        }
-
-                        ParsePosition parsePosition = new ParsePosition( 0 );
-                        Object object = format.parse( converter.getControlNewText(), parsePosition );
-
-                        if ( object == null || parsePosition.getIndex() < converter.getControlNewText().length() )
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            return converter;
-                        }
-                    }));
-                    tf.textProperty().bindBidirectional(dataStore.getDoubleProperty(((TextField) c).getId()), new StringConverter<Double>() {
-                        @Override
-                        public String toString(Double object) {
-                            if (object == null) return null;
-                            else return "" + object;
-                        }
-
-                        @Override
-                        public Double fromString(String string) {
-                            Double d = null;
-                            try {
-                                d = new Double(string);
-                            } catch (Exception e) {
-
-                            }
-                            return d;
-                        }
-                    });
-                } else if (c.getClass().isAssignableFrom(Integer.class)) {
-                    DecimalFormat format = new DecimalFormat( "#" );
-                    tf.setTextFormatter( new TextFormatter<>(converter ->
-                    {
-                        if ( converter.getControlNewText().isEmpty() )
-                        {
-                            return converter;
-                        }
-
-                        ParsePosition parsePosition = new ParsePosition( 0 );
-                        Object object = format.parse( converter.getControlNewText(), parsePosition );
-
-                        if ( object == null || parsePosition.getIndex() < converter.getControlNewText().length() )
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            return converter;
-                        }
-                    }));
-                    tf.textProperty().bindBidirectional(dataStore.getIntegerProperty(((TextField) c).getId()), new StringConverter<Integer>() {
-                        @Override
-                        public String toString(Integer object) {
-                            if (object == null) return null;
-                            else return "" + object;
-                        }
-
-                        @Override
-                        public Integer fromString(String string) {
-                            Integer d = null;
-                            try {
-                                d = new Integer(string);
-                            } catch (Exception e) {
-
-                            }
-                            return d;
-                        }
-                    });
-                } else {
-                    tf.textProperty().bindBidirectional(dataStore.getStringProperty(((TextField) c).getId()));
-                }
+                tf.textProperty().bindBidirectional(dataStore.getStringProperty(((io.mateu.ui.core.client.components.fields.TextField) c).getId()));
                 n = tf;
 
                 if (firstField == null) {
@@ -1071,8 +1170,8 @@ public class ViewNode extends StackPane {
         } else {
 
             if (c instanceof io.mateu.ui.core.client.components.Label) {
-                Label l;
-                donde.getChildren().add(n = l = new Label(((io.mateu.ui.core.client.components.Label) c).getText()));
+                javafx.scene.control.Label l;
+                donde.getChildren().add(n = l = new javafx.scene.control.Label(((io.mateu.ui.core.client.components.Label) c).getText()));
                 l.setStyle("-fx-alignment: baseline-" + getAlignmentString(((io.mateu.ui.core.client.components.Label) c).getAlignment()) + ";");
             }
         }
@@ -1098,6 +1197,36 @@ public class ViewNode extends StackPane {
         }
 
         return n;
+    }
+
+    private TreeItem<Pair> buildTree(String n, Object v) {
+        TreeItem<Pair> i = new TreeItem<>();
+        if (v instanceof DataStore) {
+            i.setValue(new Pair("", n));
+            DataStore d = (DataStore) v;
+            for (String p : d.keySet()) {
+                i.getChildren().add(buildTree(p, d.get(p)));
+            }
+        } else if (v instanceof Data) {
+            i.setValue(new Pair("", n));
+            Data d = (Data) v;
+            for (String p : d.getPropertyNames()) {
+                i.getChildren().add(buildTree(p, d.get(p)));
+            }
+        } else if (v instanceof List) {
+            List l = (List) v;
+            i.setValue(new Pair("", n + "[] (" + l.size() + ")"));
+            int pos = 0;
+            for (Object o : l) {
+                i.getChildren().add(buildTree(n + "[" + pos++ + "]", o));
+            }
+        } else {
+            Pair p;
+            i.setValue(p = new Pair(v, n));
+            p.set("_leaf", true);
+        }
+        i.setExpanded(true);
+        return i;
     }
 
     private String getAlignmentString(Alignment alignment) {

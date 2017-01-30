@@ -6,6 +6,7 @@ import io.mateu.ui.core.shared.Data;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 
@@ -80,5 +81,11 @@ public class ViewsNode extends BorderPane {
         }
 
 
+    }
+
+    public void clearTabs() {
+        tabs.clear();
+        tabPane.getTabs().clear();
+        //for (Tab t : tabPane.getTabs()) tabPane.getTabs().remove(t);
     }
 }

@@ -1,5 +1,8 @@
 package io.mateu.ui.core.client.app;
 
+import io.mateu.ui.core.client.views.AbstractView;
+import io.mateu.ui.core.shared.UserData;
+
 import java.util.List;
 
 /**
@@ -7,7 +10,26 @@ import java.util.List;
  */
 public abstract class AbstractApplication {
 
+    private UserData userData;
+
     public abstract String getName();
 
+    public boolean isAuthenticationNeeded() {
+        return true;
+    }
+
     public abstract List<AbstractArea> getAreas();
+
+    public void setUserData(UserData userData) {
+        this.userData = userData;
+    }
+
+    public UserData getUserData() {
+        return userData;
+    }
+
+    public AbstractView getPublicHome() { return null; };
+
+    public AbstractView getPrivateHome() { return null; };
+
 }

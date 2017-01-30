@@ -5,14 +5,13 @@ import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by miguel on 7/1/17.
@@ -20,6 +19,7 @@ import java.util.List;
 public abstract class BaseServerSideApp implements ServerSideApp {
 
     private static DataSource jdbcDataSource;
+    private static long fileId;
 
 
     @Override
@@ -169,8 +169,17 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public FileLocator upload(byte[] bytes) {
-        return null;
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Exception {
+        long id = fileId++;
+        String extension = ".tmp";
+        if (fileName == null || "".equals(fileName.trim())) fileName = "" + id;
+        if (fileName.lastIndexOf(".") < fileName.length() - 1) {
+            extension = fileName.substring(fileName.lastIndexOf("."));
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        File temp = File.createTempFile(fileName, extension);
+        Utils.write(temp, bytes);
+        return new FileLocator(id, temp.getName(), temp.getAbsolutePath());
     }
 
     @Override

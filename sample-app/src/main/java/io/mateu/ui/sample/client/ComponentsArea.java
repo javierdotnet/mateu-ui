@@ -18,4 +18,9 @@ public class ComponentsArea extends AbstractArea {
     public List<AbstractModule> getModules() {
         return Arrays.asList((AbstractModule) new ComponentsModule());
     }
+
+    @Override
+    public boolean isPublicAccess() {
+        return true;
+    }
 }

@@ -15,6 +15,10 @@ public class Data implements Serializable, DataContainer {
     public Data() {
     }
 
+    public Data(Data other) {
+        copy(other);
+    }
+
     public Data(Object... args) {
         super();
         int pos = 0;
@@ -103,7 +107,31 @@ public class Data implements Serializable, DataContainer {
 
     public void copy(Data original) {
         clear();
-        putAll(original.getProperties());
+        if (original != null) for (Map.Entry<String, Object> e : original.getProperties().entrySet()) {
+            if (e.getValue() instanceof List) {
+                List l = getList(e.getKey());
+                l.clear();
+                for (Object o : ((List) e.getValue())) {
+                    l.add(auxCopy(o));
+                }
+            } else {
+                set(e.getKey(), auxCopy(e.getValue()));
+            }
+        }
+    }
+
+    public Object auxCopy(Object o) {
+        Object c = null;
+        if (o instanceof FileLocator) {
+            c = new FileLocator((FileLocator) o);
+        } else if (o instanceof Pair) {
+            c = new Pair((Pair) o);
+        } else if (o instanceof Data) {
+            c = new Data((Data)o);
+        } else {
+            c = o;
+        }
+        return c;
     }
 
     @Override

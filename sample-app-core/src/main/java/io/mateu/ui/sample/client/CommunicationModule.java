@@ -1,11 +1,11 @@
 package io.mateu.ui.sample.client;
 
+import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.BaseService;
-import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.sample.shared.TestService;
-import io.mateu.ui.sample.shared.TestServiceAsync;
+import io.mateu.ui.sample.client.TestServiceAsync;
 
 import java.util.Arrays;
 import java.util.List;

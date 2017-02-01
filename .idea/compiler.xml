@@ -12,6 +12,7 @@
         <module name="port-vaadin" />
         <module name="port-vaadin-dummy" />
         <module name="sample-app" />
+        <module name="sample-app-core" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -26,6 +27,7 @@
       <module name="port-vaadin" target="1.8" />
       <module name="port-vaadin-dummy" target="1.8" />
       <module name="sample-app" target="1.8" />
+      <module name="sample-app-core" target="1.8" />
       <module name="sample-runner-javafx" target="1.5" />
     </bytecodeTargetLevel>
   </component>

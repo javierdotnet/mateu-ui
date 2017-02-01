@@ -4,7 +4,6 @@ import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.DataViewerField;
 import io.mateu.ui.core.client.components.fields.TextField;
-import io.mateu.ui.core.client.components.fields.TreeTableGridField;
 import io.mateu.ui.core.client.views.AbstractDialog;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractView;

@@ -10,5 +10,6 @@
     <file url="file://$PROJECT_DIR$/port-vaadin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/port-vaadin-dummy" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sample-app" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sample-app-core" charset="UTF-8" />
   </component>
 </project>

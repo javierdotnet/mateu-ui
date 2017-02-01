@@ -1,6 +1,8 @@
 package io.mateu.ui.sample.server;
 
-import io.mateu.ui.core.server.*;
+import io.mateu.ui.core.server.BaseServerSideApp;
+import io.mateu.ui.core.server.ServerSideApp;
+import io.mateu.ui.core.server.Utils;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
 import io.mateu.ui.core.shared.UserData;

@@ -8,6 +8,15 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: org.hsqldb:hsqldb:2.3.4" />
+          <element id="archive" name="sample-app-core-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="sample-app-core" />
+          </element>
+          <element id="archive" name="code-generation-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="code-generation" />
+          </element>
+          <element id="archive" name="codegeneration-vaadin-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="codegeneration-vaadin" />
+          </element>
           <element id="archive" name="core-1.0-SNAPSHOT.jar">
             <element id="module-output" name="core" />
           </element>
@@ -15,12 +24,6 @@
           <element id="library" level="project" name="Maven: com.google.guava:guava:15.0" />
           <element id="library" level="project" name="Maven: org.javassist:javassist:3.19.0-GA" />
           <element id="library" level="project" name="Maven: com.google.code.findbugs:annotations:2.0.1" />
-          <element id="archive" name="port-javafx-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="port-javafx" />
-          </element>
-          <element id="archive" name="codegeneration-vaadin-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="codegeneration-vaadin" />
-          </element>
         </element>
       </element>
       <element id="directory" name="META-INF">

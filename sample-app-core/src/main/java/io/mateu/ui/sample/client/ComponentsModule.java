@@ -49,6 +49,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.openView(new CRUDView());
                     }
+                }, (MenuEntry) new AbstractAction("Currencies CRUD view") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new CRUDViewForCurrencies());
+                    }
                 }, (MenuEntry) new AbstractAction("AbstractCRUDView 2") {
                     @Override
                     public void run() {
@@ -74,6 +79,21 @@ public class ComponentsModule extends AbstractModule {
                      @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new TextFieldView());
+                    }
+                }, (MenuEntry) new AbstractAction("Property listener") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new PropertyListenerView());
+                    }
+                }, (MenuEntry) new AbstractAction("Data viewer") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new DataViewerView());
+                    }
+                }, (MenuEntry) new AbstractAction("Grid") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new GridView());
                     }
                 });
             }

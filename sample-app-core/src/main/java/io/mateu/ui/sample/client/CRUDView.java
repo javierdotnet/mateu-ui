@@ -17,7 +17,18 @@ import java.util.List;
 public class CRUDView extends AbstractCRUDView {
     @Override
     public String getSql() {
-        return "select id, firstname, lastname, street from customer order by id";
+        String sql = "select id, firstname, lastname, street from customer where id = id ";
+        if (!getForm().getData().isEmpty("fn")) {
+            sql += " and lower(firstname) like '%" + getForm().getData().getString("fn").toLowerCase().replaceAll("'", "''") + "%'";
+        }
+        if (!getForm().getData().isEmpty("ln")) {
+            sql += " and lower(lastname) like '%" + getForm().getData().getString("ln").toLowerCase().replaceAll("'", "''") + "%'";
+        }
+        if (!getForm().getData().isEmpty("s")) {
+            sql += " and lower(street) like '%" + getForm().getData().getString("s").toLowerCase().replaceAll("'", "''") + "%'";
+        }
+        sql += " order by id";
+        return sql;
     }
 
     @Override
@@ -27,7 +38,10 @@ public class CRUDView extends AbstractCRUDView {
 
     @Override
     public AbstractForm createForm() {
-        return new ViewForm(this).add(new TextField("f", "Filter"));
+        return new ViewForm(this)
+                .add(new TextField("fn", "First name").setRequired(true))
+                .add(new TextField("ln", "Last name"))
+                .add(new TextField("s", "Street"));
     }
 
     @Override

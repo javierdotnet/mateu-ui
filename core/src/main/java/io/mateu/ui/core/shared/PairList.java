@@ -10,6 +10,14 @@ public class PairList {
 
     private List<Pair> values = new ArrayList<>();
 
+    public PairList(PairList l) {
+        values.addAll(l.getValues());
+    }
+
+    public PairList() {
+
+    }
+
 
     public List<Pair> getValues() {
         return values;

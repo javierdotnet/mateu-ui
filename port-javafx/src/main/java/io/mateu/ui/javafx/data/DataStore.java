@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * Created by miguel on 29/12/16.
  */
-public class DataStore extends ObservableMapWrapper<String, Object> {
+public class DataStore {
 
     private Data data;
     Map<String, Property> props = new LinkedHashMap<String, Property>();
@@ -44,7 +44,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
 
     public DataStore(Data data) {
-        super(new HashMap<String, Object>());
         setData(data);
         set("_selected", false);
         set("__id", UUID.randomUUID());
@@ -101,8 +100,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
                 }
             }
         }
-
-        if (data != null) putAll(data.getProperties());
     }
 
     public Data getData() {
@@ -320,5 +317,22 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         if (k != null) eq = obj instanceof DataStore && k.equals(((DataStore)obj).get("__id"));
         else eq = super.equals(obj);
         return eq;
+    }
+
+    public Set<String> keySet() {
+        return props.keySet();
+    }
+
+    public int size() {
+        return props.size();
+    }
+
+    public boolean isEmpty() {
+        return props.isEmpty();
+    }
+
+
+    public void clear() {
+        props.clear();
     }
 }

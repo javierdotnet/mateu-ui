@@ -1,7 +1,5 @@
 package io.mateu.ui.javafx.views;
 
-import com.sun.javafx.scene.web.skin.HTMLEditorSkin;
-import io.mateu.ui.core.client.Mateu;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.Component;
@@ -12,12 +10,10 @@ import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.javafx.JFXHelper;
 import io.mateu.ui.javafx.JavafxPort;
-import io.mateu.ui.javafx.app.AppNode;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.data.ViewNodeDataStore;
 import io.mateu.ui.javafx.views.components.GridNode;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
@@ -28,34 +24,24 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.*;
 import javafx.util.Callback;
-import javafx.util.converter.DefaultStringConverter;
 import org.controlsfx.control.MaskerPane;
-import org.controlsfx.control.decoration.Decorator;
-import org.controlsfx.control.decoration.GraphicDecoration;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
@@ -662,12 +648,13 @@ public class ViewNode extends StackPane {
                 if (text != null) tf.setText(text);
                 tf.selectedProperty().bindBidirectional(dataStore.getBooleanProperty(((AbstractField) c).getId()));
             } else if (c instanceof CheckBoxListField) {
-                n = new CheckBox();
 
                 Pane h;
                 n = h = new HBox(6);
 
                 final Map<Pair, CheckBox> tfs = new HashMap<>();
+
+                Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
 
                 for (final Pair p : ((CheckBoxListField)c).getValues()) {
                     CheckBox tf;
@@ -675,12 +662,16 @@ public class ViewNode extends StackPane {
                     tf.setText(p.getText());
                     tfs.put(p, tf);
 
-                    tf.setSelected(dataStore.getPairListProperty(((AbstractField)c).getId()).getValue().getValues().contains(p));
+                    tf.setSelected(prop.getValue() != null && prop.getValue().getValues().contains(p));
 
                     tf.selectedProperty().addListener(new ChangeListener<Boolean>() {
                         @Override
                         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                            if (newValue) dataStore.getPairListProperty(((AbstractField)c).getId()).getValue().getValues().add(p);
+                            PairList l = prop.getValue();
+                            if (l == null) l = new PairList();
+                            if (newValue) l.getValues().add(p);
+                            else l.getValues().remove(p);
+                            prop.setValue((l.getValues().size() > 0)?new PairList(l):null);
                         }
                     });
 
@@ -689,7 +680,7 @@ public class ViewNode extends StackPane {
                 dataStore.getPairListProperty(((AbstractField)c).getId()).addListener(new ChangeListener<PairList>() {
                     @Override
                     public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
-                        if (newValue != null)  for (Pair p : newValue.getValues()) if (tfs.containsKey(p)) tfs.get(p).setSelected(true);
+                        for (Pair p : tfs.keySet()) tfs.get(p).setSelected(newValue != null && newValue.getValues().contains(p));
                     }
                 });
 
@@ -1038,22 +1029,73 @@ public class ViewNode extends StackPane {
                 });
                 n = tf;
             } else if (c instanceof SearchField) {
+                SearchField sf = (SearchField) c;
                 HBox h = new HBox();
-                javafx.scene.control.Label tf = new javafx.scene.control.Label();
-                dataStore.getPairProperty(((AbstractField) c).getId()).addListener(new ChangeListener<Pair>() {
+                Hyperlink tf = new Hyperlink();
+                Button bdel = new Button("X");
+                Property<Pair> prop = dataStore.getPairProperty(((AbstractField) c).getId());
+                prop.addListener(new ChangeListener<Pair>() {
                     @Override
                     public void changed(ObservableValue<? extends Pair> observable, Pair oldValue, Pair newValue) {
                         tf.setText((newValue != null)?newValue.getText():null);
+                        bdel.setVisible(newValue != null);
+                    }
+                });
+                tf.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        MateuUI.openView(new EditorDialog(sf.getCrud().getNewEditorView().setInitialId(prop.getValue().getValue())));
                     }
                 });
                 h.getChildren().add(tf);
-                h.getChildren().add(new Button("Search"));
+                h.getChildren().add(bdel);
+                bdel.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        tf.setVisible(false);
+                        prop.setValue(null);
+                    }
+                });
+                Button bsearch;
+                h.getChildren().add(bsearch = new Button("Search"));
+                bsearch.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        MateuUI.openView(new CRUDDialog(sf.getCrud()));
+                    }
+                });
+
+                tf.setText((prop.getValue() != null)?prop.getValue().getText():null);
+                bdel.setVisible(prop.getValue() != null);
+
                 n = h;
+            } else if (c instanceof ShowImageField) {
+
+                // simple displays ImageView the image as is
+                ImageView iv = new ImageView();
+                Property<String> p = dataStore.getStringProperty(((AbstractField) c).getId());
+                p.addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        // load the image
+                        if (newValue == null) iv.setImage(null);
+                        else {
+                            Image image = new Image(newValue, true);
+                            iv.setImage(image);
+                        }
+                    }
+                });
+                String v = p.getValue();
+                if (v != null) {
+                    Image image = new Image(v, true);
+                    iv.setImage(image);
+                }
+                n = iv;
             } else if (c instanceof ShowTextField) {
                 javafx.scene.control.Label tf = new javafx.scene.control.Label();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 n = tf;
-            } else if (c instanceof SqlComboBoxField) {
+            } else if (c instanceof SqlAutocompleteField) {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
                 //cmb.getSelectionModel().selectFirst(); //select the first element
@@ -1077,7 +1119,7 @@ public class ViewNode extends StackPane {
                 cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
                 n = cmb;
 
-                ((SqlComboBoxField)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
+                ((SqlAutocompleteField)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
                     @Override
                     public void onSuccess(Object[][] result) {
                         MateuUI.runInUIThread(new Runnable() {
@@ -1091,6 +1133,226 @@ public class ViewNode extends StackPane {
                                 cmb.getItems().addAll(l);
                             }
                         });
+                    }
+                });
+
+                ObservableList<Pair> data = cmb.getItems();
+
+                cmb.setEditable(true);
+                cmb.getEditor().focusedProperty().addListener(observable -> {
+                    if (cmb.getSelectionModel().getSelectedIndex() < 0) {
+                        cmb.getEditor().setText(null);
+                    }
+                });
+                cmb.addEventHandler(KeyEvent.KEY_PRESSED, t -> cmb.hide());
+                cmb.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+
+                    private boolean moveCaretToPos = false;
+                    private int caretPos;
+
+                    @Override
+                    public void handle(KeyEvent event) {
+                        if (event.getCode() == KeyCode.UP) {
+                            caretPos = -1;
+                            moveCaret((cmb.getEditor().getText() != null)?cmb.getEditor().getText().length():0);
+                            return;
+                        } else if (event.getCode() == KeyCode.DOWN) {
+                            if (!cmb.isShowing()) {
+                                cmb.show();
+                            }
+                            caretPos = -1;
+                            moveCaret((cmb.getEditor().getText() != null)?cmb.getEditor().getText().length():0);
+                            return;
+                        } else if (event.getCode() == KeyCode.BACK_SPACE) {
+                            moveCaretToPos = true;
+                            caretPos = cmb.getEditor().getCaretPosition();
+                        } else if (event.getCode() == KeyCode.DELETE) {
+                            moveCaretToPos = true;
+                            caretPos = cmb.getEditor().getCaretPosition();
+                        } else if (event.getCode() == KeyCode.ENTER) {
+                            return;
+                        }
+
+                        if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT || event.getCode().equals(KeyCode.SHIFT) || event.getCode().equals(KeyCode.CONTROL)
+                                || event.isControlDown() || event.getCode() == KeyCode.HOME
+                                || event.getCode() == KeyCode.END || event.getCode() == KeyCode.TAB) {
+                            return;
+                        }
+
+                        ObservableList<Pair> list = FXCollections.observableArrayList();
+                        for (Pair aData : data) {
+                            if (aData != null && (cmb.getEditor().getText() == null  || (aData.getText() != null
+                                    && aData.getText().toLowerCase().contains(cmb.getEditor().getText().toLowerCase())))) {
+                                list.add(aData);
+                            }
+                        }
+                        String t = cmb.getEditor().getText();
+
+                        cmb.setItems(list);
+                        cmb.getEditor().setText(t);
+                        if (!moveCaretToPos) {
+                            caretPos = -1;
+                        }
+                        moveCaret((t != null)?t.length():0);
+                        if (!list.isEmpty()) {
+                            cmb.show();
+                        }
+                    }
+
+                    private void moveCaret(int textLength) {
+                        if (caretPos == -1) {
+                            cmb.getEditor().positionCaret(textLength);
+                        } else {
+                            cmb.getEditor().positionCaret(caretPos);
+                        }
+                        moveCaretToPos = false;
+                    }
+                });
+
+            } else if (c instanceof SqlCheckBoxList) {
+
+
+                Pane h;
+                n = h = new VBox(6);
+
+                Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
+
+                final Map<Pair, CheckBox> tfs = new HashMap<>();
+
+                ((SqlCheckBoxList)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
+                    @Override
+                    public void onSuccess(Object[][] result) {
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                List<Pair> l = new ArrayList<>();
+                                for (Object[] r : result) {
+                                    l.add(new Pair(r[0], (r[1] == null)?null:"" + r[1]));
+                                }
+
+                                for (Pair p : l) {
+                                    CheckBox tf;
+                                    h.getChildren().add(tf = new CheckBox());
+                                    tf.setText(p.getText());
+                                    tfs.put(p, tf);
+
+                                    tf.setSelected(prop.getValue() != null && prop.getValue().getValues().contains(p));
+
+                                    tf.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                                        @Override
+                                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                                            PairList l = prop.getValue();
+                                            if (l == null) l = new PairList();
+                                            if (newValue) l.getValues().add(p);
+                                            else l.getValues().remove(p);
+                                            prop.setValue((l.getValues().size() > 0)?new PairList(l):null);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+
+                prop.addListener(new ChangeListener<PairList>() {
+                    @Override
+                    public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
+                        for (Pair p : tfs.keySet()) tfs.get(p).setSelected(newValue != null && newValue.getValues().contains(p));
+                    }
+                });
+
+
+            } else if (c instanceof SqlComboBoxField) {
+
+                ComboBox<Pair> cmb = new ComboBox<Pair>();
+                //cmb.getSelectionModel().selectFirst(); //select the first element
+                cmb.setCellFactory(new Callback<ListView<Pair>, ListCell<Pair>>() {
+                    @Override
+                    public ListCell<Pair> call(ListView<Pair> p) {
+                        return new ListCell<Pair>() {
+
+                            @Override
+                            protected void updateItem(Pair item, boolean empty) {
+                                super.updateItem(item, empty);
+
+                                if (item == null || empty) {
+                                    setText(null);
+                                } else {
+                                    setText(item.getText());
+                                }
+                            }
+                        };
+                    }
+                });
+
+                cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField) c).getId()));
+                n = cmb;
+
+                ((SqlComboBoxField) c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
+                    @Override
+                    public void onSuccess(Object[][] result) {
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                List<Pair> l = new ArrayList<>();
+                                for (Object[] r : result) {
+                                    l.add(new Pair(r[0], (r[1] == null) ? null : "" + r[1]));
+                                }
+                                cmb.getItems().add(new Pair(null, null));
+                                cmb.getItems().addAll(l);
+                            }
+                        });
+                    }
+                });
+
+            } else if (c instanceof SqlRadioButtonField) {
+
+                ToggleGroup g = new ToggleGroup();
+
+                Pane h;
+                n = h = new VBox(6);
+
+                final Map<Pair, RadioButton> tfs = new HashMap<>();
+
+                ((SqlRadioButtonField) c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
+                    @Override
+                    public void onSuccess(Object[][] result) {
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                List<Pair> l = new ArrayList<>();
+                                for (Object[] r : result) {
+                                    l.add(new Pair(r[0], (r[1] == null) ? null : "" + r[1]));
+                                }
+                                for (Pair p : l) {
+                                    RadioButton tf;
+                                    h.getChildren().add(tf = new RadioButton());
+                                    tf.setText(p.getText());
+                                    tfs.put(p, tf);
+
+                                    tf.setToggleGroup(g);
+                                    //tf.selectedProperty().bindBidirectional(x.getStringProperty(c.getId()));
+
+                                    Pair v = dataStore.getPairProperty(((AbstractField)c).getId()).getValue();
+                                    tf.setSelected(v != null && v.equals(p));
+
+                                    tf.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                                        @Override
+                                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                                            if (newValue) dataStore.getPairProperty(((AbstractField)c).getId()).setValue(p);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+
+
+                dataStore.getPairProperty(((AbstractField)c).getId()).addListener(new ChangeListener<Pair>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Pair> observable, Pair oldValue, Pair newValue) {
+                        if (newValue != null)  if (tfs.containsKey(newValue)) tfs.get(newValue).setSelected(true);
                     }
                 });
 
@@ -1218,6 +1480,13 @@ public class ViewNode extends StackPane {
             i.setValue(new Pair("", n + "[] (" + l.size() + ")"));
             int pos = 0;
             for (Object o : l) {
+                i.getChildren().add(buildTree(n + "[" + pos++ + "]", o));
+            }
+        } else if (v instanceof PairList) {
+            PairList l = (PairList) v;
+            i.setValue(new Pair("", n + "[] (" + l.getValues().size() + ")"));
+            int pos = 0;
+            for (Object o : l.getValues()) {
                 i.getChildren().add(buildTree(n + "[" + pos++ + "]", o));
             }
         } else {

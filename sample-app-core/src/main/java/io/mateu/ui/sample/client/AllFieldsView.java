@@ -14,13 +14,13 @@ import java.util.Date;
 /**
  * Created by miguel on 3/1/17.
  */
-public class AllFieldsFiew extends AbstractView {
+public class AllFieldsView extends AbstractView {
 
     @Override
     public Data initializeData() {
         return new Data("f9", "link", "f5", new Pair("2", "V2"), "f10", new Pair("2", "V2")
-                , "f21", "Hello!", "f23", "http://www.google.es"
-        , "f24", "<b>This is html!</b>", "f2", new Date());
+                , "f21", "Hello!", "f23", "http://www.elpais.es"
+        , "f24", "<b>This is html!</b>", "f2", new Date(), "f20", "https://blogamericanuestra.files.wordpress.com/2016/04/che-guevara.jpg");
     }
 
     @Override
@@ -48,15 +48,14 @@ public class AllFieldsFiew extends AbstractView {
             }
         });
         f.add(new RadioButtonField("f10", "RadioButton", "1", "V1", "2", "V2"));
-        f.add(new SearchField("f11", "Search"));
+        f.add(new RichTextField("f25", "RichText"));
+        f.add(new SearchField("f25", "Search", new CRUDView()));
         f.add(new ShowImageField("f20", "ShowImage"));
         f.add(new ShowTextField("f21", "ShowText"));
-        f.add(new RichTextField("f25", "RichText"));
-        f.add(new SqlAutocompleteField("f12", "SqlAutocomplete"));
-        f.add(new SqlCheckBoxList("f13", "SqlCheckBoxList"));
+        f.add(new SqlAutocompleteField("f12", "SqlAutocomplete", "select id, lastname || ', ' || firstname from customer order by firstname"));
+        f.add(new SqlCheckBoxList("f13", "SqlCheckBoxList", "select id, name from currency order by name"));
         f.add(new SqlComboBoxField("f14", "SqlComboBoxField", "select id, lastname || ', ' || firstname from customer order by firstname"));
-        f.add(new SqlRadioButtonField("f15", "SqlRadioButtonField"));
-        f.add(new SqlSearchField("f16", "SqlSearchField"));
+        f.add(new SqlRadioButtonField("f15", "SqlRadioButtonField", "select id, name from currency order by name"));
         f.add(new TextAreaField("f22", "TextArea"));
         f.add(new DoubleField("f17", "DoubleField"));
         f.add(new IntegerField("f18", "IntegerField"));

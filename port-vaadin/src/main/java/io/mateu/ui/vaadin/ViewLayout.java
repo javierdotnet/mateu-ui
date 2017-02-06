@@ -2,6 +2,7 @@ package io.mateu.ui.vaadin;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -264,7 +265,7 @@ public class ViewLayout extends VerticalLayout implements View {
             }));
         }
 
-        {
+        if (false) {
             h.addComponent(new Button("DataStore", new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent clickEvent) {
@@ -781,6 +782,26 @@ public class ViewLayout extends VerticalLayout implements View {
                 @Override
                 public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
                     p.setValue(valueChangeEvent.getProperty().getValue());
+                }
+            });
+        } else if (field instanceof WebField) {
+            BrowserFrame b;
+            c = b = new BrowserFrame((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            b.setWidth("600px");
+            b.setHeight("400px");
+
+            if (v != null) {
+                System.out.println("setting iframe url to " + v);
+                b.setSource(new ExternalResource("" + v));
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            Component finalC = c;
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    System.out.println("setting iframe url to " +  newValue);
+                    ((BrowserFrame) finalC).setSource((newValue != null)?new ExternalResource("" + newValue):null);
                 }
             });
         } else {

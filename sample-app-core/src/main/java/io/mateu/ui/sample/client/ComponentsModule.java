@@ -73,7 +73,7 @@ public class ComponentsModule extends AbstractModule {
                 return Arrays.asList((MenuEntry) new AbstractAction("All fields") {
                     @Override
                     public void run() {
-                        MateuUI.openView(new AllFieldsFiew());
+                        MateuUI.openView(new AllFieldsView());
                     }
                 }, (MenuEntry) new AbstractAction("TextField") {
                      @Override

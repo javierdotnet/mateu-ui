@@ -7,6 +7,7 @@ public abstract class AbstractAction extends AbstractExecutable implements MenuE
 
     private String name;
 
+
     public AbstractAction(String name) {
         this.name = name;
     }

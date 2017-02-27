@@ -22,7 +22,11 @@ public abstract class AbstractForm extends FieldContainer {
 
     private List<DataSetterListener> dataSetterListeners = new ArrayList<>();
 
-
+    public void set(String k, Object v) {
+        for (DataSetterListener l : dataSetterListeners) {
+            l.setted(k, v);
+        }
+    }
 
     public void addDataSetterListener(DataSetterListener listener) {
         dataSetterListeners.add(listener);
@@ -39,6 +43,7 @@ public abstract class AbstractForm extends FieldContainer {
     private Map<String, List<ChangeListener>> propertyListeners = new HashMap<>();
 
     public AbstractForm addPropertyListener(String propertyName, ChangeListener listener) {
+        System.out.println("adding listener to property " + propertyName);
         if (!propertyListeners.containsKey(propertyName)) propertyListeners.put(propertyName, new ArrayList<>());
         propertyListeners.get(propertyName).add(listener);
         return this;
@@ -98,11 +103,12 @@ public abstract class AbstractForm extends FieldContainer {
 
     public AbstractForm add(Component component) {
         super.add(component);
-        if (component instanceof PKField) {
+        if (component instanceof PKField || (component instanceof AbstractField && ((AbstractField)component).isUnmodifiable())) {
             addPropertyListener("_id", new ChangeListener() {
                 @Override
                 public void changed(Object oldValue, Object newValue) {
-                    PKField f = (PKField) component;
+                    System.out.println("_id has changed!");
+                    AbstractField f = (AbstractField) component;
                     if (newValue == null) {
                         f.setEnabled(true);
                     } else {
@@ -124,7 +130,7 @@ public abstract class AbstractForm extends FieldContainer {
         getComponentsSequence().forEach((c) -> {
             if (c instanceof AbstractField) {
                 AbstractField f = (AbstractField) c;
-                if (f.isRequired() && getData().isEmpty(f.getId())) errors.add("Field " + f.getLabel() + " is required.");
+                if (f.isRequired() && getData().isEmpty(f.getId())) errors.add("Field " + f.getLabel().getText() + " is required.");
             }
         });
 

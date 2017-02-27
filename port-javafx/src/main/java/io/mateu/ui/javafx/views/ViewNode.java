@@ -5,6 +5,7 @@ import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
+import io.mateu.ui.core.client.views.ListView;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Pair;
@@ -24,12 +25,15 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -98,6 +102,11 @@ public class ViewNode extends StackPane {
             @Override
             public void setted(Data newData) {
                 getDataStore().setData(newData);
+            }
+
+            @Override
+            public void setted(String k, Object v) {
+                getDataStore().set(k, v);
             }
         });
         getChildren().add(maskerPane = new MaskerPane());
@@ -182,8 +191,8 @@ public class ViewNode extends StackPane {
             if (ev.getInitialId() != null) ev.load();
         }
 
-        if (view instanceof AbstractListView) {
-            AbstractListView lv = (AbstractListView) view;
+        if (view instanceof ListView) {
+            ListView lv = (ListView) view;
             lv.addListViewListener(new ListViewListener() {
                 @Override
                 public void onReset() {
@@ -212,8 +221,8 @@ public class ViewNode extends StackPane {
     private Node createToolBar(List<AbstractAction> actions) {
         ToolBar toolBar = new ToolBar();
 
-        if (view instanceof AbstractListView) {
-            AbstractListView lv = (AbstractListView) view;
+        if (view instanceof ListView) {
+            ListView lv = (ListView) view;
 
             validationSupport = new ValidationSupport();
 
@@ -381,7 +390,7 @@ public class ViewNode extends StackPane {
         });
 
         //build(sp, pane, view.getForm(), ((AbstractListView) view).getMaxFieldsInHeader());
-        AbstractListView lv = (AbstractListView) view;
+        ListView lv = (ListView) view;
         build(validationSupport, sp, pane, lv.getForm(), lv.getMaxFieldsInHeader(), true);
 
         dialog.getDialogPane().setContent(sp);
@@ -397,7 +406,7 @@ public class ViewNode extends StackPane {
 
         loginButton.addEventFilter(ActionEvent.ACTION, ae -> {
             dialog.close();
-            ((AbstractListView) view).search();
+            ((ListView) view).search();
         });
 
         //Optional<javafx.util.Pair<String, String>> result = dialog.showAndWait();
@@ -415,8 +424,8 @@ public class ViewNode extends StackPane {
         panels.add(new VBox(2));
 
         Node lastNode = null;
-        if (view instanceof AbstractListView && !inToolBar) {
-            AbstractListView lv = (AbstractListView) view;
+        if (view instanceof ListView && !inToolBar) {
+            ListView lv = (ListView) view;
             lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true, false, false);
         } else {
             int pos = 0;
@@ -531,8 +540,8 @@ public class ViewNode extends StackPane {
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
                 cmb.getItems().addAll(((AutocompleteField)c).getValues());
                 //cmb.getSelectionModel().selectFirst(); //select the first element
-                cmb.setCellFactory(new Callback<ListView<Pair>, ListCell<Pair>>() {
-                    @Override public ListCell<Pair> call(ListView<Pair> p) {
+                cmb.setCellFactory(new Callback<javafx.scene.control.ListView<Pair>, ListCell<Pair>>() {
+                    @Override public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
                         return new ListCell<Pair>() {
 
                             @Override protected void updateItem(Pair item, boolean empty) {
@@ -690,8 +699,8 @@ public class ViewNode extends StackPane {
                 cmb.getItems().add(new Pair(null, null));
                 cmb.getItems().addAll(((ComboBoxField)c).getValues());
                 //cmb.getSelectionModel().selectFirst(); //select the first element
-                cmb.setCellFactory(new Callback<ListView<Pair>, ListCell<Pair>>() {
-                    @Override public ListCell<Pair> call(ListView<Pair> p) {
+                cmb.setCellFactory(new Callback<javafx.scene.control.ListView<Pair>, ListCell<Pair>>() {
+                    @Override public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
                         return new ListCell<Pair>() {
 
                             @Override protected void updateItem(Pair item, boolean empty) {
@@ -770,8 +779,23 @@ public class ViewNode extends StackPane {
                 n = t;
 
             } else if (c instanceof DoubleField) {
-                javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
+                TextField tf;
+                n = tf = new TextField() {
+                    public void replaceText(int start, int end, String text) {
+                        //System.out.println("replaceText(" + start + "," + end + "," + text + ")");
+                        String s = getText();
+                        if (s == null) s = "";
+                        s = s.substring(0, start) + text + s.substring(end);
+                        if (s.matches("[0-9]*\\.*[0-9]*")) {
+                            super.replaceText(start, end, text);
+                        } else {
+                            //Aga2.getHelper().display("Campo numérico. Solo acepta valores numéricos. Acepta decimales");
+                        }
+                    };
+                };
+                tf.setAlignment(Pos.BASELINE_RIGHT);
 
+                /*
                     DecimalFormat format = new DecimalFormat( "#.0" );
                     tf.setTextFormatter( new TextFormatter<>(converter ->
                     {
@@ -792,6 +816,7 @@ public class ViewNode extends StackPane {
                             return converter;
                         }
                     }));
+                    */
                     tf.textProperty().bindBidirectional(dataStore.getDoubleProperty(((DoubleField) c).getId()), new StringConverter<Double>() {
                         @Override
                         public String toString(Double object) {
@@ -912,27 +937,22 @@ public class ViewNode extends StackPane {
                 n = sp;
                 sp.getChildren().add(tf);
             } else if (c instanceof IntegerField) {
-                javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
-                    DecimalFormat format = new DecimalFormat( "#" );
-                    tf.setTextFormatter( new TextFormatter<>(converter ->
-                    {
-                        if ( converter.getControlNewText().isEmpty() )
-                        {
-                            return converter;
+                TextField tf;
+                n = tf = new TextField() {
+                    public void replaceText(int start, int end, String text) {
+                        //System.out.println("replaceText(" + start + "," + end + "," + text + ")");
+                        String s = getText();
+                        if (s == null) s = "";
+                        s = s.substring(0, start) + text + s.substring(end);
+                        if (s.matches("[0-9]*")) {
+                            super.replaceText(start, end, text);
+                        } else {
+                            //Aga2.getHelper().display("Campo numérico entero. Solo acepta valores enteros, sin decimales");
                         }
+                    };
+                };
+                tf.setAlignment(Pos.BASELINE_RIGHT);
 
-                        ParsePosition parsePosition = new ParsePosition( 0 );
-                        Object object = format.parse( converter.getControlNewText(), parsePosition );
-
-                        if ( object == null || parsePosition.getIndex() < converter.getControlNewText().length() )
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            return converter;
-                        }
-                    }));
                     tf.textProperty().bindBidirectional(dataStore.getIntegerProperty(((IntegerField) c).getId()), new StringConverter<Integer>() {
                         @Override
                         public String toString(Integer object) {
@@ -1052,7 +1072,7 @@ public class ViewNode extends StackPane {
                 bdel.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        tf.setVisible(false);
+                        tf.setText(null);
                         prop.setValue(null);
                     }
                 });
@@ -1061,12 +1081,69 @@ public class ViewNode extends StackPane {
                 bsearch.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        MateuUI.openView(new CRUDDialog(sf.getCrud()));
+                        MateuUI.openView(new CRUDDialog(sf.getCrud()) {
+                            @Override
+                            public void onOk(Data data) {
+                                if (getSelection().size() == 0) {
+                                    MateuUI.alert("You must select one element");
+                                } else {
+                                    Data d = getSelection().get(0);
+                                    prop.setValue(new Pair(d.get("_id"), d.getString("col1")));
+                                }
+                            }
+                        });
                     }
                 });
 
                 tf.setText((prop.getValue() != null)?prop.getValue().getText():null);
                 bdel.setVisible(prop.getValue() != null);
+
+                n = h;
+            } else if (c instanceof SelectByIdField) {
+                HBox h = new HBox();
+                TextField tf;
+                h.getChildren().add(tf = new TextField());
+                Label l;
+                h.getChildren().add(l = new Label());
+
+                String id = ((AbstractField) c).getId();
+                Property<Pair> p = dataStore.getPairProperty(((AbstractField) c).getId());
+                tf.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        if (newValue != null && !"".equals(newValue.trim())) {
+                            ((SelectByIdField)c).call(((SelectByIdField)c).getQl().replaceAll("xxxx", newValue), new AsyncCallback<Object[][]>() {
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    p.setValue(null);
+                                    l.setText("" + caught.getClass().getName() + ": " + caught.getMessage());
+                                }
+
+                                @Override
+                                public void onSuccess(Object[][] result) {
+                                    Pair v = null;
+                                    if (result != null && result.length > 0) {
+                                        v = new Pair(result[0][0], "" + result[0][1]);
+                                    }
+                                    p.setValue(v);
+                                }
+                            });
+                        } else p.setValue(null);
+                    }
+                });
+                p.addListener(new ChangeListener<Pair>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Pair> observable, Pair oldValue, Pair newValue) {
+                        if (newValue != null) {
+                            if (!tf.isFocused()) tf.setText("" + newValue.getValue());
+                            l.setText("" + newValue.getText());
+                        } else {
+                            if (!tf.isFocused()) tf.setText(null);
+                            l.setText("---");
+                        }
+                    }
+                });
+
 
                 n = h;
             } else if (c instanceof ShowImageField) {
@@ -1099,8 +1176,8 @@ public class ViewNode extends StackPane {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
                 //cmb.getSelectionModel().selectFirst(); //select the first element
-                cmb.setCellFactory(new Callback<ListView<Pair>, ListCell<Pair>>() {
-                    @Override public ListCell<Pair> call(ListView<Pair> p) {
+                cmb.setCellFactory(new Callback<javafx.scene.control.ListView<Pair>, ListCell<Pair>>() {
+                    @Override public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
                         return new ListCell<Pair>() {
 
                             @Override protected void updateItem(Pair item, boolean empty) {
@@ -1266,9 +1343,9 @@ public class ViewNode extends StackPane {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
                 //cmb.getSelectionModel().selectFirst(); //select the first element
-                cmb.setCellFactory(new Callback<ListView<Pair>, ListCell<Pair>>() {
+                cmb.setCellFactory(new Callback<javafx.scene.control.ListView<Pair>, ListCell<Pair>>() {
                     @Override
-                    public ListCell<Pair> call(ListView<Pair> p) {
+                    public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
                         return new ListCell<Pair>() {
 
                             @Override
@@ -1419,7 +1496,9 @@ public class ViewNode extends StackPane {
 
                     @Override
                     public void enablementChanged(boolean newValue) {
-                        if (finalN1 instanceof javafx.scene.control.TextField) ((javafx.scene.control.TextField)finalN1).setEditable(false);
+                        System.out.println("enablementChanged(" + newValue + ")");
+                        setDisable(finalN1, !newValue);
+                        //if (finalN1 instanceof javafx.scene.control.TextField) ((javafx.scene.control.TextField)finalN1).setEditable(false);
                     }
                 });
 
@@ -1459,6 +1538,16 @@ public class ViewNode extends StackPane {
         }
 
         return n;
+    }
+
+    private void setDisable(Node n, boolean disabled) {
+        if (n instanceof Control) {
+            ((Control)n).setDisable(disabled);
+        } else if (n instanceof Pane) {
+            for (Node m : ((Pane)n).getChildren()) {
+                setDisable(m, disabled);
+            }
+        }
     }
 
     private TreeItem<Pair> buildTree(String n, Object v) {

@@ -60,6 +60,11 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
                 dataStore.set("_title", t);
             }
+
+            @Override
+            public void setted(String k, Object v) {
+
+            }
         });
         dataStore.set("_title", view.getTitle());
 

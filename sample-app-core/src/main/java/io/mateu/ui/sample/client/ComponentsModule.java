@@ -85,6 +85,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new PropertyListenerView());
                     }
+                }, (MenuEntry) new AbstractAction("Search field") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new SearchFieldView());
+                    }
                 }, (MenuEntry) new AbstractAction("Data viewer") {
                     @Override
                     public void run() {

@@ -20,7 +20,4 @@ public abstract class AbstractSqlListView extends AbstractListView {
         MateuUI.getBaseService().selectPaginated(parameters, callback);
     }
 
-    public List<Data> getSelection() {
-        return getForm().getData().getSelection("_data");
-    }
 }

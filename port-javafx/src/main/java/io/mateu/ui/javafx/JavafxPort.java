@@ -3,26 +3,33 @@ package io.mateu.ui.javafx;
 import io.mateu.ui.core.client.app.AbstractApplication;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.BaseServiceAsync;
-import io.mateu.ui.core.client.views.AbstractDialog;
+import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.app.AppNode;
+import io.mateu.ui.javafx.app.ViewTab;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import io.mateu.ui.core.client.app.ClientSideHelper;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.views.AbstractView;
 import javafx.stage.Window;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by miguel on 9/8/16.
@@ -93,17 +100,101 @@ public class JavafxPort extends Application {
                             d.setTitle(view.getTitle());
                             d.setResizable(true);
                             //alert.setHeaderText("Look, an Error Dialog");
-                            StackPane p;
-                            d.getDialogPane().setContent(p = new StackPane(new ViewNode(view)));
-                            p.setPrefWidth(600);
-                            p.setPrefHeight(400);
+
+                            if (view instanceof CRUDDialog) {
+                                Map<String, ViewTab> tabs = new HashMap<>();
+                                TabPane tabPane;
+                                ViewTab tcrud;
+                                d.getDialogPane().setContent(tabPane = new TabPane(tcrud = new ViewTab(view)));
+                                tcrud.setClosable(false);
+                                tabPane.setPrefWidth(600);
+                                tabPane.setPrefHeight(400);
+                                ((CRUDDialog)view).getCrud().addListener(new CRUDListener() {
+                                    @Override
+                                    public void openEditor(AbstractEditorView view) {
+
+                                        ViewTab t;
+
+                                        if (tabs.containsKey(view.getViewId())) {
+                                            t = tabs.get(view.getViewId());
+                                            tabPane.getSelectionModel().select(t);
+                                        } else {
+                                            tabPane.getTabs().add(t = new ViewTab(view));
+                                            view.addListener(new ViewListener() {
+                                                @Override
+                                                public void onClose() {
+                                                    tabPane.getTabs().remove(t);
+                                                    tabs.remove(view.getViewId());
+                                                }
+                                            });
+                                            if (view instanceof AbstractEditorView) {
+                                                view.getForm().addDataSetterListener(new DataSetterListener() {
+                                                    @Override
+                                                    public void setted(Data newData) {
+                                                        if (newData.get("_id") != null) {
+                                                            if (!newData.get("_id").equals(((AbstractEditorView) view).getInitialId())) {
+                                                                String oldK = view.getViewId();
+                                                                tabs.remove(oldK);
+                                                                ((AbstractEditorView) view).setInitialId(newData.get("_id"));
+                                                                tabs.put(view.getViewId(), t);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void setted(String k, Object v) {
+                                                        // do nothing
+                                                    }
+                                                });
+                                            }
+                                            t.setOnClosed(new EventHandler<Event>() {
+                                                @Override
+                                                public void handle(Event event) {
+                                                    tabs.remove(view.getViewId());
+                                                }
+                                            });
+                                            tabs.put(view.getViewId(), t);
+                                            tabPane.getSelectionModel().select(t);
+                                            if (t.getViewNode().getFirstField() != null) {
+                                                MateuUI.runInUIThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        System.out.println("FOCUS REQUESTED!");
+                                                        t.getViewNode().getFirstField().requestFocus();
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                    }
+                                });
+                            } else {
+                                StackPane p;
+                                d.getDialogPane().setContent(p = new StackPane(new ViewNode(view)));
+                                p.setPrefWidth(600);
+                                p.setPrefHeight(400);
+                            }
 
 
                             ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
                             d.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
 
-                            d.showAndWait();
+                            Optional<ButtonType> result = d.showAndWait();
+                            if (result.get() == loginButtonType) { //ButtonType.OK){
+                                // ... user chose OK
+                                ((AbstractDialog)view).onOk(view.getForm().getData());
+                            } else {
+                                // ... user chose CANCEL or closed the dialog
+                            }
                         } else {
+                            if (view instanceof AbstractCRUDView) {
+                                ((AbstractCRUDView)view).addListener(new CRUDListener() {
+                                    @Override
+                                    public void openEditor(AbstractEditorView e) {
+                                        MateuUI.openView(e);
+                                    }
+                                });
+                            }
                             AppNode.get().getViewsNode().addView(view);
                         }
 
@@ -199,6 +290,19 @@ public class JavafxPort extends Application {
             @Override
             public void openView(AbstractView parentView, AbstractView view) {
                 openView(view);
+            }
+
+            @Override
+            public void notifyErrors(List<String> msgs) {
+
+                StringBuffer sb = new StringBuffer();
+                boolean primero = true;
+                for (String m : msgs) {
+                    if (primero) primero = false; else sb.append("\n");
+                    sb.append(m);
+                }
+
+                Notifications.create().title("Errors").text(sb.toString()).position(Pos.BOTTOM_RIGHT).hideAfter(Duration.seconds(5)).darkStyle().showError();
             }
         });
 

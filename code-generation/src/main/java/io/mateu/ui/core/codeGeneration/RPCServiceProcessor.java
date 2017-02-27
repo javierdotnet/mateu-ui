@@ -52,7 +52,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
             annotatedElements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("io.mateu.ui.core.communication.Service"));
             for (TypeElement element : ElementFilter.typesIn(annotatedElements)) {
                 messager.printMessage(Kind.WARNING, "Generando fuentes para " + element.getQualifiedName());
-                generateInterfazAsincrona(element);
+                generateInterfazAsincrona(messager, elementsUtils, typeUtils, filer, element);
                 //generateHessian(element);
                 //generateClientSideImpl(element);
             }
@@ -246,26 +246,25 @@ public class RPCServiceProcessor extends AbstractProcessor {
         }
     }
 
-    private void generateInterfazAsincrona(TypeElement clase) {
+    public static void generateInterfazAsincrona(Messager messager, Elements elementsUtils, Types typeUtils, Filer filer, TypeElement clase) {
         messager.printMessage(Kind.NOTE, "generando interfaz asíncrona...");
         try {
             String simpleName = clase.getSimpleName().toString();
             String packageName = elementsUtils.getPackageOf(clase).getQualifiedName().toString();
             String typeName = clase.getSimpleName().toString() + "Async";
 
-            String pnc = packageName.replaceAll("\\.shared\\.", ".client.");
-            if (pnc.endsWith(".shared")) pnc = pnc.substring(0, pnc.lastIndexOf(".") + 1) + "client";
+            packageName = packageName.replaceAll("\\.shared\\.", ".client.");
+            if (packageName.endsWith(".shared")) packageName = packageName.substring(0, packageName.lastIndexOf(".") + 1) + "client";
 
 
-            JavaFileObject javaFile = filer.createSourceFile(pnc + "." + typeName, clase);
+            JavaFileObject javaFile = filer.createSourceFile(packageName + "." + typeName, clase);
             messager.printMessage(Kind.NOTE, "generando " + javaFile.toUri() + "...");
             Writer writer = javaFile.openWriter();
             PrintWriter pw = new PrintWriter(writer);
 
-            pw.println("package " + pnc + ";");
+            pw.println("package " + packageName + ";");
             pw.println("");
             pw.println("import io.mateu.ui.core.shared.AsyncCallback;");
-            pw.println("import io.mateu.ui.core.shared.Data;");
             pw.println("");
             pw.println("/**");
             pw.println(" * Generated class creating an async interface for the");
@@ -307,7 +306,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
         }
     }
 
-    private String getTipoCallback(TypeMirror typeMirror) {
+    private static String getTipoCallback(TypeMirror typeMirror) {
         TypeKind k = typeMirror.getKind();
         if (TypeKind.VOID.equals(k)) return "Void";
         else if (k.isPrimitive()) {

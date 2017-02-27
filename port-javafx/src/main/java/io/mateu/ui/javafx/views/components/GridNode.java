@@ -6,9 +6,9 @@ import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
 import io.mateu.ui.core.client.components.fields.grids.columns.*;
+import io.mateu.ui.core.client.views.*;
+import io.mateu.ui.core.client.views.ListView;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.client.views.AbstractListView;
-import io.mateu.ui.core.client.views.ListViewListener;
 import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
@@ -71,7 +71,7 @@ public class GridNode extends VBox {
 
                 //todo: añadir nº de registros por página!!!
 
-                ((AbstractListView)viewNode.getView()).addListViewListener(new ListViewListener() {
+                ((ListView)viewNode.getView()).addListViewListener(new ListViewListener() {
                     @Override
                     public void onReset() {
                         MateuUI.runInUIThread(new Runnable() {
@@ -128,7 +128,7 @@ public class GridNode extends VBox {
                             MateuUI.run(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((AbstractListView) viewNode.getView()).search();
+                                    ((ListView) viewNode.getView()).search();
                                 }
                             });
                         }

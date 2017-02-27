@@ -16,6 +16,6 @@ public class TextFieldView extends AbstractView {
 
     @Override
     public AbstractForm createForm() {
-        return new ViewForm(this).add(new TextField("field1", "Label for textfield"));
+        return new ViewForm(this).add(new TextField("_id", "_id")).add(new TextField("field1", "Label for textfield")).add(new TextField("field2", "Label for textfield").setUnmodifiable(true));
     }
 }

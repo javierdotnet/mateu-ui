@@ -20,7 +20,6 @@
         <module>port-vaadin</module>
         <module>codegeneration-vaadin</module>
         <module>port-vaadin-dummy</module>
-        <module>sample-app-core</module>
         <module>sample-app</module>
         <module>sample-app-core</module>
     </modules>

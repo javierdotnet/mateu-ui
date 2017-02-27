@@ -57,6 +57,11 @@ public class ViewsNode extends BorderPane {
                             }
                         }
                     }
+
+                    @Override
+                    public void setted(String k, Object v) {
+                        //do nothing
+                    }
                 });
             } else if (view instanceof AbstractListView) {
                 ((AbstractListView)view).search();
@@ -79,7 +84,6 @@ public class ViewsNode extends BorderPane {
                 });
             }
         }
-
 
     }
 

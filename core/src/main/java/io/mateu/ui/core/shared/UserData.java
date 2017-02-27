@@ -1,5 +1,6 @@
 package io.mateu.ui.core.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,6 +8,9 @@ import java.util.List;
  */
 public class UserData extends Data {
 
+    public UserData() {
+        setPermissions(new ArrayList<>());
+    }
 
     public String getLogin() {
         return get("login");

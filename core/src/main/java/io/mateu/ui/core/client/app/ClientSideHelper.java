@@ -4,6 +4,8 @@ import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractView;
 
+import java.util.List;
+
 /**
  * Created by miguel on 9/8/16.
  */
@@ -23,4 +25,6 @@ public interface ClientSideHelper {
     void run(Runnable runnable, Runnable onerror);
 
     void openView(AbstractView parentView, AbstractView view);
+
+    void notifyErrors(List<String> msgs);
 }

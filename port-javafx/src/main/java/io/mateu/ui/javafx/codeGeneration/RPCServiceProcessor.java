@@ -43,7 +43,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
         try {
             annotatedElements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("io.mateu.ui.core.communication.Service"));
             for (TypeElement element : ElementFilter.typesIn(annotatedElements)) {
-                generateInterfazAsincrona(element);
+                io.mateu.ui.core.codeGeneration.RPCServiceProcessor.generateInterfazAsincrona(messager, elementsUtils, typeUtils, filer, element);
                 //generateHessian(element);
                 generateClientSideImpl(element);
             }
@@ -90,7 +90,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
             pw.println(" * ");
             pw.println(" * @author Miguel");
             pw.println(" */");
-            pw.println("public class " + typeName + " implements " + clase.asType().toString() + "Async {");
+            pw.println("public class " + typeName + " implements " + pnc + "." + clase.getSimpleName().toString() + "Async {");
             pw.println();
 
             for (ExecutableElement m : ElementFilter.methodsIn(clase.getEnclosedElements())) {

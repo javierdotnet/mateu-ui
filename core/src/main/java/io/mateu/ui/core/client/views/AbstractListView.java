@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by miguel on 21/10/16.
  */
-public abstract class AbstractListView extends AbstractView {
+public abstract class AbstractListView extends AbstractView implements ListView {
 
     private List<AbstractColumn> columns;
 
@@ -22,6 +22,7 @@ public abstract class AbstractListView extends AbstractView {
     private List<ListViewListener> listViewListeners = new ArrayList<>();
 
 
+    @Override
     public List<AbstractColumn> getColumns() {
         if (columns == null) {
             columns = createColumns();
@@ -29,6 +30,7 @@ public abstract class AbstractListView extends AbstractView {
         return columns;
     }
 
+    @Override
     public int getMaxFieldsInHeader() {
         return 1;
     }
@@ -67,6 +69,7 @@ public abstract class AbstractListView extends AbstractView {
         search();
     }
 
+    @Override
     public void search() {
         for (ListViewListener l : listViewListeners) l.onSearch();
 
@@ -89,8 +92,12 @@ public abstract class AbstractListView extends AbstractView {
                 });
             }
 
+    @Override
+    public List<Data> getSelection() {
+        return getForm().getData().getSelection("_data");
+    }
 
-
+    @Override
     public void addListViewListener(ListViewListener listener) {
         listViewListeners.add(listener);
     }

@@ -26,6 +26,8 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
 
     private boolean required;
 
+    private boolean unmodifiable;
+
     private List<FieldValidator> validators = new ArrayList<>();
 
     private List<FieldListener> listeners = new ArrayList<>();
@@ -93,6 +95,15 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
 
     public T setRequired(boolean required) {
         this.required = required;
+        return (T) this;
+    }
+
+    public boolean isUnmodifiable() {
+        return unmodifiable;
+    }
+
+    public T setUnmodifiable(boolean unmodifiable) {
+        this.unmodifiable = unmodifiable;
         return (T) this;
     }
 

@@ -66,8 +66,8 @@
     <orderEntry type="module" module-name="port-vaadin-dummy" />
     <orderEntry type="module" module-name="sample-app" />
     <orderEntry type="module" module-name="sample-app-core" />
-    <orderEntry type="module" module-name="code-generation" />
     <orderEntry type="module" module-name="port-javafx" />
+    <orderEntry type="module" module-name="code-generation" />
     <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.12" level="project" />
     <orderEntry type="module" module-name="codegeneration-vaadin" />
   </component>

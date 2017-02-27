@@ -1,6 +1,7 @@
 package io.mateu.ui.core.client.views;
 
 import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.shared.Data;
@@ -85,20 +86,25 @@ public abstract class AbstractEditorView extends AbstractView {
     }
 
     public void save() {
-        for (EditorViewListener l : getEditorViewListeners()) l.onLoad();
-        save(getForm().getData(), new Callback<Data>() {
+        List<String> errors = getForm().validate();
+        if (errors.size() > 0) {
+            MateuUI.notifyErrors(errors);
+        } else {
+            for (EditorViewListener l : getEditorViewListeners()) l.onSave();
+            save(getForm().getData(), new Callback<Data>() {
 
-            @Override
-            public void onFailure(Throwable caught) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
-                super.onFailure(caught);
-            }
+                @Override
+                public void onFailure(Throwable caught) {
+                    for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
+                    super.onFailure(caught);
+                }
 
-            @Override
-            public void onSuccess(Data result) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
-                getForm().setData(result);
-            }
-        });
+                @Override
+                public void onSuccess(Data result) {
+                    for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                    getForm().setData(result);
+                }
+            });
+        }
     }
 }

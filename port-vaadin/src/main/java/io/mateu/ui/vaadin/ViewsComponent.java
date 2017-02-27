@@ -57,6 +57,11 @@ public class ViewsComponent extends TabSheet {
                             }
                         }
                     }
+
+                    @Override
+                    public void setted(String k, Object v) {
+
+                    }
                 });
             }
 

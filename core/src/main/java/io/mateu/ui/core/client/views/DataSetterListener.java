@@ -9,4 +9,5 @@ public interface DataSetterListener {
 
     public void setted(Data newData);
 
+    public void setted(String k, Object v);
 }

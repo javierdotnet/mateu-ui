@@ -16,6 +16,8 @@ import java.util.List;
  */
 public abstract class AbstractCRUDView extends AbstractSqlListView {
 
+    private List<CRUDListener> listeners = new ArrayList<>();
+
     public abstract AbstractEditorView getNewEditorView();
 
     @Override
@@ -24,7 +26,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         as.add(new AbstractAction("New") {
             @Override
             public void run() {
-               MateuUI.openView(getNewEditorView());
+               openEditor(getNewEditorView());
             }
         });
         as.add(new AbstractAction("Delete") {
@@ -50,7 +52,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         cols.add(new LinkColumn("_id", "Id", 100) {
             @Override
             public void run(Data data) {
-                MateuUI.openView(getNewEditorView().setInitialId(data.get(getId())));
+                openEditor(getNewEditorView().setInitialId(data.get(getId())));
             }
         });
         cols.addAll(createExtraColumns());
@@ -60,4 +62,13 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
     public abstract List<AbstractColumn> createExtraColumns();
 
     public abstract void delete(List<Data> selection, AsyncCallback<Void> callback);
+
+    public void openEditor(AbstractEditorView e) {
+        for (CRUDListener l : listeners) l.openEditor(e);
+    }
+
+    public AbstractCRUDView addListener(CRUDListener l) {
+        listeners.add(l);
+        return this;
+    }
 }

@@ -77,4 +77,8 @@ public class MateuUI {
     public static void run(Runnable runnable, Runnable onerror) {
         getClientSideHelper().run(runnable, onerror);
     }
+
+    public static void notifyErrors(List<String> msgs) {
+        getClientSideHelper().notifyErrors(msgs);
+    }
 }

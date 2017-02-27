@@ -26,6 +26,6 @@ public class SampleApp extends AbstractApplication
 
     @Override
     public AbstractView getPublicHome() {
-        return new DataViewerView();
+        return new SearchFieldView();
     }
 }

@@ -41,7 +41,7 @@ public class GridView extends AbstractView {
                                 MateuUI.alert("Hello!");
                             }
                         }
-                        , new TextColumn("a", "a", 100, true)
+                        , new TextColumn("z", "a", 100, true)
                 )));
     }
 }

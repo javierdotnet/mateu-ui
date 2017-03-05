@@ -54,7 +54,7 @@
 
         <dependency>
             <groupId>io.mateu.ui</groupId>
-            <artifactId>sample-app</artifactId>
+            <artifactId>codegeneration-vaadin</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

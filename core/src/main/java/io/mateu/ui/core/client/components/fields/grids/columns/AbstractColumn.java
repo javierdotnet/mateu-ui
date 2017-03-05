@@ -7,8 +7,9 @@ public class AbstractColumn<T extends AbstractColumn<T>> {
 
     private String id;
     private String label;
-    private int width;
+    private int width = 100;
     private boolean editable;
+    private ColumnAlignment alignment = ColumnAlignment.LEFT;
 
     public AbstractColumn(String id, String label, int width, boolean editable) {
         this.id = id;
@@ -50,6 +51,15 @@ public class AbstractColumn<T extends AbstractColumn<T>> {
 
     public T setEditable(boolean editable) {
         this.editable = editable;
+        return (T) this;
+    }
+
+    public ColumnAlignment getAlignment() {
+        return alignment;
+    }
+
+    public T setAlignment(ColumnAlignment alignment) {
+        this.alignment = alignment;
         return (T) this;
     }
 }

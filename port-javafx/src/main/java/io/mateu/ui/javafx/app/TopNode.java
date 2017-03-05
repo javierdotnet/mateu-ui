@@ -396,6 +396,7 @@ public class TopNode extends ToolBar {
 
                 @Override
                 public void onFailure(Throwable caught) {
+                    caught.printStackTrace();
                     errorLabel.setText("" + caught.getClass().getName() + ": " + caught.getMessage());
                     loginButton.setDisable(false);
                     ((Button)loginButton).setText("Login");

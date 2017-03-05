@@ -5,4 +5,10 @@
     <inherits name="com.vaadin.DefaultWidgetSet"/>
 
     <inherits name="org.vaadin.ui.NumberFieldWidgetset" />
+
+    <inherits name="org.vaadin.teemu.ratingstars.gwt.RatingStarsWidgetset" />
+
+    <inherits name="org.vaadin.sparklines.SparklinesWidgetset" />
+
+    <inherits name="org.vaadin.grid.cellrenderers.RenderersCollectionWidgetSet" />
 </module>

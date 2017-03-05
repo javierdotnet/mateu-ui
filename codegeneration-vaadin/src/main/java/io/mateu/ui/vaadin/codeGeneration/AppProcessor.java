@@ -1,4 +1,4 @@
-package io.mateu.ui.core.codeGeneration;
+package io.mateu.ui.vaadin.codeGeneration;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;

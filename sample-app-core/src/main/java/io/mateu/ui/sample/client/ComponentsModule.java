@@ -1,6 +1,12 @@
 package io.mateu.ui.sample.client;
 
 import io.mateu.ui.core.client.app.*;
+import io.mateu.ui.core.client.components.fields.SelectByIdField;
+import io.mateu.ui.core.client.components.fields.TextField;
+import io.mateu.ui.core.client.views.AbstractDialog;
+import io.mateu.ui.core.client.views.AbstractForm;
+import io.mateu.ui.core.client.views.ViewForm;
+import io.mateu.ui.core.shared.Data;
 
 import java.util.Arrays;
 import java.util.List;
@@ -109,6 +115,31 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new ComplexFormView());
+                    }
+                }, (MenuEntry) new AbstractAction("Dialog") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new AbstractDialog() {
+                            @Override
+                            public void onOk(Data data) {
+                                MateuUI.alert("ok!!!");
+                            }
+
+                            @Override
+                            public String getTitle() {
+                                return "Test dialog";
+                            }
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return new ViewForm(this)
+                                        .add(new TextField("_id", "_id"))
+                                        .add(new TextField("field1", "Label for textfield"))
+                                        .add(new TextField("field2", "Label for textfield").setUnmodifiable(true))
+                                        .add(new SelectByIdField("filed3", "SearchById", "select x.id, x.firstname from customer x where x.id = xxxx "))
+                                        ;
+                            }
+                        });
                     }
                 });
             }

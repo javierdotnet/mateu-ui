@@ -53,15 +53,14 @@ public class RPCServiceProcessor extends AbstractProcessor {
             for (TypeElement element : ElementFilter.typesIn(annotatedElements)) {
                 messager.printMessage(Kind.WARNING, "Generando fuentes para " + element.getQualifiedName());
                 generateInterfazAsincrona(messager, elementsUtils, typeUtils, filer, element);
-                //generateHessian(element);
-                //generateClientSideImpl(element);
+                generateClientSideImpl(element);
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
         // claim the annotation
-        return true;
+        return false;
     }
 
     private void generateClientSideImpl(TypeElement clase) {
@@ -74,20 +73,23 @@ public class RPCServiceProcessor extends AbstractProcessor {
             String pn = packageName;
 
 
+            String pnc = packageName.replaceAll("\\.shared\\.", ".client.");
+            if (pnc.endsWith(".shared")) pnc = pnc.substring(0, pnc.lastIndexOf(".") + 1) + "client";
+
             String pns = packageName.replaceAll("\\.shared\\.", ".server.");
             if (pns.endsWith(".shared")) pns = pns.substring(0, pns.lastIndexOf(".") + 1) + "server";
 
-
             messager.printMessage(Kind.NOTE, "" + packageName + "->" + pn);
 
-            JavaFileObject javaFile = filer.createSourceFile(pn + "." + typeName, clase);
+            JavaFileObject javaFile = filer.createSourceFile(pnc + "." + typeName, clase);
             messager.printMessage(Kind.NOTE, "generando " + javaFile.toUri() + "...");
             Writer writer = javaFile.openWriter();
             PrintWriter pw = new PrintWriter(writer);
 
-            pw.println("package " + pn + ";");
+            pw.println("package " + pnc + ";");
             pw.println("");
-            pw.println("import io.mateu.ui.core.app.AsyncCallback;");
+            pw.println("import io.mateu.ui.core.shared.AsyncCallback;");
+            pw.println("import io.mateu.ui.core.client.app.MateuUI;");
             pw.println("");
             pw.println("/**");
             pw.println(" * Generated class creating a default implementation the");
@@ -95,7 +97,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
             pw.println(" * ");
             pw.println(" * @author Miguel");
             pw.println(" */");
-            pw.println("public class " + typeName + " implements " + clase.asType().toString() + "Async {");
+            pw.println("public class " + typeName + " implements " + pnc + "." + clase.getSimpleName().toString() + "Async {");
             pw.println();
 
             for (ExecutableElement m : ElementFilter.methodsIn(clase.getEnclosedElements())) {
@@ -116,7 +118,13 @@ public class RPCServiceProcessor extends AbstractProcessor {
                 s += ")";
 
                 s += " {\n\n";
+
+                s += "MateuUI.run(new Runnable() {\n" +
+                        "            @Override\n" +
+                        "            public void run() {";
+
                 s += "\t\ttry {\n\n\t\t\t\t";
+
 
                 if (!TypeKind.VOID.equals(m.getReturnType().getKind())) s += getTipoCallback(m.getReturnType()) + " r = ";
                 //s += "new " + pns + "." + simpleName + "Impl().";
@@ -135,11 +143,30 @@ public class RPCServiceProcessor extends AbstractProcessor {
 
                 s += "\n\n";
 
-                s += "\t\t\t\tcallback.onSuccess(r);";
+                s += "MateuUI.runInUIThread(new Runnable() {\n" +
+                        "                        @Override\n" +
+                        "                        public void run() {\n" +
+                        "\n" +
+                        "                            callback.onSuccess(" + ((TypeKind.VOID.equals(m.getReturnType().getKind()))?"null":"r") + ");\n" +
+                        "\n" +
+                        "                        }\n" +
+                        "                    });";
 
                 s += "\n\n\t\t} catch (Exception e) {";
-                s += "\n\n\t\t\t\te.printStackTrace();";
+
+                s += "MateuUI.runInUIThread(new Runnable() {\n" +
+                        "                        @Override\n" +
+                        "                        public void run() {\n" +
+                        "\n" +
+                        "                            callback.onFailure(e);\n" +
+                        "\n" +
+                        "                        }\n" +
+                        "                    });";
+
                 s += "\n\n\t\t}";
+
+                s += "            }\n" +
+                        "        });";
 
                 pw.println(s);
                 pw.println("\n\n\t}");

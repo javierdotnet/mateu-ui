@@ -1,7 +1,10 @@
 package io.mateu.ui.vaadin.data;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.sun.javafx.collections.ObservableMapWrapper;
 import io.mateu.ui.core.client.Mateu;
+import io.mateu.ui.core.client.data.ChangeListener;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
 import io.mateu.ui.core.shared.Pair;
@@ -20,7 +23,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
     private Data data;
     Map<String, Property> props = new LinkedHashMap<String, Property>();
-
 
     private javafx.beans.value.ChangeListener listenerx = new javafx.beans.value.ChangeListener<Object>() {
 

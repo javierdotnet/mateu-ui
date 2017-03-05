@@ -28,6 +28,8 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
 
     private boolean unmodifiable;
 
+    private boolean beginingOfLine;
+
     private List<FieldValidator> validators = new ArrayList<>();
 
     private List<FieldListener> listeners = new ArrayList<>();
@@ -148,4 +150,12 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
         listeners.add(l);
     }
 
+    public boolean isBeginingOfLine() {
+        return beginingOfLine;
+    }
+
+    public T setBeginingOfLine(boolean beginingOfLine) {
+        this.beginingOfLine = beginingOfLine;
+        return (T) this;
+    }
 }

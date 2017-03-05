@@ -1,19 +1,26 @@
 package io.mateu.ui.vaadin;
 
+import com.vaadin.client.widget.grid.datasources.ListDataSource;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.util.converter.DateToLongConverter;
+import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
-import io.mateu.ui.core.client.components.fields.IntegerField;
+import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
@@ -22,16 +29,21 @@ import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.vaadin.data.DataStore;
+import io.mateu.ui.vaadin.data.ViewNodeDataStore;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.vaadin.grid.cellrenderers.editoraware.CheckboxRenderer;
 import org.vaadin.ui.NumberField;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
+
+import static com.vaadin.ui.components.calendar.ContainerEventProvider.CAPTION_PROPERTY;
 
 /**
  * Created by miguel on 4/1/17.
@@ -44,9 +56,13 @@ public class ViewLayout extends VerticalLayout implements View {
 
     private final AbstractView view;
 
+    public AbstractView getView() {
+        return view;
+    }
+
     public ViewLayout(AbstractView view) {
         this.view = view;
-        this.dataStore = new DataStore(view.getForm().getData());
+        this.dataStore = new ViewNodeDataStore(this);
 
         view.getForm().addDataSetterListener(new DataSetterListener() {
             @Override
@@ -63,7 +79,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             @Override
             public void setted(String k, Object v) {
-
+                dataStore.set(k, v);
             }
         });
         dataStore.set("_title", view.getTitle());
@@ -78,19 +94,21 @@ public class ViewLayout extends VerticalLayout implements View {
             else t += " " + id;
         }
 
-        Label h1 = new Label(t);
-        h1.addStyleName(ValoTheme.LABEL_H1);
+        if (!(view instanceof AbstractDialog)) {
+            Label h1 = new Label(t);
+            h1.addStyleName(ValoTheme.LABEL_H1);
 
-        Property p = dataStore.getProperty("_title");
-        p.addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                h1.setValue((newValue != null)?"" + newValue:null);
-            }
-        });
-        p.setValue(t);
+            Property p = dataStore.getProperty("_title");
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    h1.setValue((newValue != null)?"" + newValue:null);
+                }
+            });
+            p.setValue(t);
 
-        addComponent(h1);
+            addComponent(h1);
+        }
 
 
 //        setContent(new MVerticalLayout(new MHorizontalLayout(c, d).withFullWidth())
@@ -209,14 +227,26 @@ public class ViewLayout extends VerticalLayout implements View {
     }
 
     private void buildBody() {
+
+        HorizontalLayout row = null;
+
+        /*
         FormLayout row = new FormLayout();
         row.setWidth("100%");
         row.setSpacing(true);
         addComponent(row);
+        */
 
         int posField = 0;
         for (io.mateu.ui.core.client.components.Component c : view.getForm().getComponentsSequence()) {
             if (c instanceof AbstractField) {
+
+                if (row == null || ((AbstractField)c).isBeginingOfLine()) {
+                    row = new HorizontalLayout();
+                    row.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
+                    row.setSpacing(true);
+                    addComponent(row);
+                }
 
                 add(row, (AbstractField) c);
 
@@ -266,6 +296,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 @Override
                 public void buttonClick(Button.ClickEvent clickEvent) {
                     a.run();
+                    if ("save".equalsIgnoreCase(a.getName())) MateuUI.alert("Done!");
                 }
             }));
         }
@@ -313,30 +344,118 @@ public class ViewLayout extends VerticalLayout implements View {
 
         if (field instanceof GridField) {
 
+            Property<ObservableList<DataStore>> p = dataStore.getObservableListProperty(field.getId());
+
             GridField g = (GridField) field;
 
-            Table table = new Table((g.getLabel() != null) ? g.getLabel().getText() : null);
+            IndexedContainer ds = new IndexedContainer();
 
-// Define two columns for the built-in container
-            {
-                table.addContainerProperty("_selected", CheckBox.class, null, "Sel.", null, Table.Align.CENTER);
-            }
+            ds.addContainerProperty("_selected", Boolean.class, null);
             for (AbstractColumn col : g.getColumns()) {
                 if (col instanceof LinkColumn) {
-                    table.addContainerProperty(col.getId(), Button.class, null, col.getLabel(), null, null);
+                    ds.addContainerProperty(col.getId(), AbstractAction.class, null);
                 } else {
-                    table.addContainerProperty(col.getId(), Object.class, null, col.getLabel(), null, null);
+                    ds.addContainerProperty(col.getId(), Object.class, null);
                 }
-                table.setColumnWidth(col.getId(), col.getWidth());
             }
+            ds.addContainerProperty("_dummycol", Boolean.class, null);
 
-            Property<ObservableList<DataStore>> p = dataStore.getObservableListProperty(field.getId());
+            Grid table = new Grid((g.getLabel() != null) ? g.getLabel().getText() : null);
+
+            table.setContainerDataSource(ds);
+
+            table.setSelectionMode(Grid.SelectionMode.MULTI);
+
+            table.setWidth("100%");
+
+            table.addSelectionListener(new SelectionEvent.SelectionListener() {
+                @Override
+                public void select(SelectionEvent selectionEvent) {
+                    for (Object o : selectionEvent.getSelected()) {
+                        System.out.println("selected:" + o);
+                        ds.getItem(o).getItemProperty("_selected").setValue(true);
+                        p.getValue().get(ds.indexOfId(o)).set("_selected", true);
+                    }
+                    for (Object o : selectionEvent.getAdded()) {
+                        System.out.println("added:" + o);
+                        ds.getItem(o).getItemProperty("_selected").setValue(true);
+                        p.getValue().get(ds.indexOfId(o)).set("_selected", true);
+                    }
+                    for (Object o : selectionEvent.getRemoved()) {
+                        System.out.println("removed:" + o);
+                        ds.getItem(o).getItemProperty("_selected").setValue(false);
+                        p.getValue().get(ds.indexOfId(o)).set("_selected", false);
+                    }
+
+                }
+            });
+
+// Define two columns for the built-in container
+            if (true) {
+                table.getColumn("_selected").setHidden(true);
+            }
+            for (AbstractColumn col : g.getColumns()) {
+                Grid.Column colx;
+                if (col instanceof LinkColumn) {
+
+                    colx = table.getColumn(col.getId()).setHeaderCaption(col.getLabel()).setConverter(new Converter<String, AbstractAction>() {
+
+                        @Override
+                        public AbstractAction convertToModel(String s, Class<? extends AbstractAction> aClass, Locale locale) throws ConversionException {
+                            return null;
+                        }
+
+                        @Override
+                        public String convertToPresentation(AbstractAction o, Class<? extends String> aClass, Locale locale) throws ConversionException {
+                            return o.getName();
+                        }
+
+                        @Override
+                        public Class<AbstractAction> getModelType() {
+                            return AbstractAction.class;
+                        }
+
+                        @Override
+                        public Class<String> getPresentationType() {
+                            return String.class;
+                        }
+                    }).setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
+                        @Override
+                        public void click(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                            System.out.println("" + rendererClickEvent.getItemId());
+                            ((AbstractAction)ds.getItem(rendererClickEvent.getItemId()).getItemProperty(rendererClickEvent.getPropertyId()).getValue()).run();
+                            //((LinkColumn) col).run(rendererClickEvent.);
+                        }
+                    }));
+                } else {
+                    colx = table.getColumn(col.getId()).setHeaderCaption(col.getLabel());
+                }
+                colx.setWidth(col.getWidth());
+                Table.Align align = null;
+                switch (col.getAlignment()) {
+                    case CENTER:
+                        align = Table.Align.CENTER;
+                        break;
+                    case RIGHT:
+                        align = Table.Align.RIGHT;
+                        break;
+                    case LEFT:
+                        align = Table.Align.LEFT;
+                        break;
+                }
+                //colx.set(col.getId(), align);
+            }
+            table.getColumn("_dummycol").setWidthUndefined().setHeaderCaption("");
+
+
             Component finalC = c;
             p.getValue().addListener(new ListChangeListener<DataStore>() {
                 @Override
                 public void onChanged(Change<? extends DataStore> c) {
 
                     System.out.println(field.getId() + " changed!!!");
+
+                    table.getSelectionModel().reset();
 
                     List<DataStore> l = (List<DataStore>) p.getValue(); //c.getList();
                     List ll = new ArrayList();
@@ -350,11 +469,11 @@ public class ViewLayout extends VerticalLayout implements View {
 
                     System.out.println("recovered " + l.size() + " rows");
 
-                    table.removeAllItems();
+                    ds.removeAllItems();
                     int pos = 0;
                     for (DataStore x : l) {
-                        List<Object> cells = new ArrayList();
-                        {
+                        Item cells = ds.addItem(pos++);
+                        if (false) {
                             CheckBox b = new CheckBox();
                             b.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
                                 @Override
@@ -362,7 +481,9 @@ public class ViewLayout extends VerticalLayout implements View {
                                     x.set("_selected", valueChangeEvent.getProperty().getValue());
                                 }
                             });
-                            cells.add(b);
+                            cells.getItemProperty("_selected").setValue(b);
+                        } else {
+                            cells.getItemProperty("_selected").setValue(x.get("_selected"));
                         }
                         for (AbstractColumn col : g.getColumns()) {
                             if (col instanceof LinkColumn) {
@@ -374,19 +495,23 @@ public class ViewLayout extends VerticalLayout implements View {
                                         ((LinkColumn) col).run(x.getData());
                                     }
                                 });
-                                cells.add(b);
+                                cells.getItemProperty(col.getId()).setValue(new AbstractAction("" + x.get(col.getId())) {
+                                    @Override
+                                    public void run() {
+                                        ((LinkColumn) col).run(x.getData());
+                                    }
+                                });
                             } else {
-                                cells.add(x.get(col.getId()));
+                                cells.getItemProperty(col.getId()).setValue(x.get(col.getId()));
                             }
                         }
-                        table.addItem(cells.toArray(), pos++);
                     }
                 }
             });
 
-            table.setPageLength(10);
+            //table.setPageLength(10);
 
-            c = table;
+            c = (Component) table;
         } else if (field instanceof AutocompleteField) {
 
             AutocompleteField rf = (AutocompleteField) field;
@@ -440,32 +565,50 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    cb.setValue((Date) newValue);
+                    cb.setValue((newValue == null)?null:Date.from(((LocalDate)newValue).atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
             });
             cb.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
                 @Override
                 public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
-                    p.setValue(valueChangeEvent.getProperty().getValue());
+                    p.setValue((valueChangeEvent.getProperty().getValue() == null)?null:Instant.ofEpochMilli(((Date)valueChangeEvent.getProperty().getValue()).getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
                 }
             });
 
         } else if (field instanceof CheckBoxField) {
 
-            CheckBox cb;
-            c = cb = new CheckBox((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null, (v != null && v instanceof Boolean && ((Boolean) v)) ? true : false);
+            CheckBoxField rf = (CheckBoxField) field;
+
+            OptionGroup og;
+            c = og = new OptionGroup((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+
+            og.setMultiSelect(true);
+
+            og.addItem("Yes");
+
+
+            if (v != null) {
+                for (Object o : og.getItemIds()) {
+                    if (v instanceof Boolean && ((Boolean)v)) og.select(o); else og.unselect(o);
+                }
+            }
 
             Property p = dataStore.getProperty(field.getId());
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    cb.setValue((newValue != null && newValue instanceof Boolean && ((Boolean) newValue)) ? true : false);
+                    //og.select(newValue);
+
+                    for (Object o : og.getItemIds()) {
+                        if (newValue instanceof Boolean && ((Boolean)newValue)) og.select(o); else og.unselect(o);
+                    }
+
                 }
             });
-            cb.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+            og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
                 @Override
                 public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
-                    p.setValue(valueChangeEvent.getProperty().getValue());
+                    p.setValue(valueChangeEvent.getProperty().getValue() != null);
                 }
             });
 
@@ -674,17 +817,65 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
-        } else if (field instanceof ShowTextField) {
-            c = new Label((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+        } else if (field instanceof SelectByIdField) {
+            SelectByIdField rf = (SelectByIdField) field;
 
-            if (v != null) ((Label) c).setValue("" + v);
+
+            HorizontalLayout hl = new HorizontalLayout();
+            c = hl;
+
+            TextField tf;
+            hl.addComponent(tf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null));
+            Label l;
+            hl.addComponent(l = new Label());
+
+            if (v != null && v instanceof Pair) {
+                tf.setValue("" + ((Pair) v).getValue());
+                l.setValue("" + ((Pair) v).getText());
+            }
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    tf.setValue((newValue != null)?"" + ((Pair) newValue).getValue():null);
+                    l.setValue((newValue != null)?"" + ((Pair) newValue).getText():null);
+                }
+            });
+
+            tf.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
+                @Override
+                public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
+                    rf.call(rf.getQl().replaceAll("xxxx", "" + valueChangeEvent.getProperty().getValue()), new AsyncCallback<Object[][]>() {
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            p.setValue(null);
+                            l.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(Object[][] result) {
+                            if (result.length > 0) {
+                                p.setValue(new Pair(result[0][0], "" + result[0][1]));
+                            } else {
+                                p.setValue(null);
+                            }
+                        }
+                    });
+                }
+            });
+
+        } else if (field instanceof ShowTextField) {
+            c = new TextField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            ((TextField)c).setEnabled(false);
+            if (v != null) ((TextField) c).setValue("" + v);
 
             Property p = dataStore.getProperty(field.getId());
             Component finalC = c;
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    ((Label) finalC).setValue((newValue != null)?"" + newValue:null);
+                    ((TextField) finalC).setValue((newValue != null)?"" + newValue:null);
                 }
             });
         } else if (field instanceof SqlComboBoxField) {

@@ -38,10 +38,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.hsqldb:hsqldb:2.3.4" level="project" />
     <orderEntry type="module" module-name="sample-app-core" />
-    <orderEntry type="module" module-name="port-javafx" />
-    <orderEntry type="module" module-name="code-generation" />
-    <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.12" level="project" />
     <orderEntry type="module" module-name="codegeneration-vaadin" />
+    <orderEntry type="module" module-name="code-generation" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.10" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:15.0" level="project" />

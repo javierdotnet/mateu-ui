@@ -1,2 +1,1 @@
-io.mateu.ui.core.codeGeneration.AppProcessor
-io.mateu.ui.core.codeGeneration.RPCServiceProcessor
+io.mateu.ui.vaadin.codeGeneration.AppProcessor

@@ -11,6 +11,7 @@ import java.util.List;
 public abstract class AbstractApplication {
 
     private UserData userData;
+    private String baseUrl;
 
     public abstract String getName();
 
@@ -31,5 +32,12 @@ public abstract class AbstractApplication {
     public AbstractView getPublicHome() { return null; };
 
     public AbstractView getPrivateHome() { return null; };
+
+    public String getBaseUrl() { return baseUrl; };
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
 
 }

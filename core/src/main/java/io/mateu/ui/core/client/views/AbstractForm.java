@@ -102,6 +102,9 @@ public abstract class AbstractForm extends FieldContainer {
     }
 
     public AbstractForm add(Component component) {
+        if (component instanceof AbstractField) {
+            ((AbstractField)component).setForm(this);
+        }
         super.add(component);
         if (component instanceof PKField || (component instanceof AbstractField && ((AbstractField)component).isUnmodifiable())) {
             addPropertyListener("_id", new ChangeListener() {

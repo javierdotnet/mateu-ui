@@ -4,6 +4,8 @@ import io.mateu.ui.core.shared.*;
 import io.mateu.ui.core.client.app.MateuUI;
 import javafx.application.Platform;
 
+import java.net.URL;
+
 /**
  * Created by miguel on 29/12/16.
  */
@@ -412,5 +414,45 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
             }
         });
+    }
+
+    @Override
+    public void dump(Data parameters, AsyncCallback<URL> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).dump(parameters);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(null);
+
+                        }
+                    });
+
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+
     }
 }

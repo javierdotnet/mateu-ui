@@ -6,6 +6,7 @@ import org.hsqldb.jdbc.JDBCDataSource;
 
 import javax.sql.DataSource;
 import java.io.*;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -28,5 +29,4 @@ public class ServerSideHelper {
         }
         return serverSideApp;
     }
-
 }

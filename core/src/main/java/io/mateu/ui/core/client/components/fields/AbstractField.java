@@ -1,6 +1,7 @@
 package io.mateu.ui.core.client.components.fields;
 
 import io.mateu.ui.core.client.components.*;
+import io.mateu.ui.core.client.views.AbstractForm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
  * Created by miguel on 9/8/16.
  */
 public abstract class AbstractField<T extends AbstractField<T>> extends BaseComponent implements Component {
+
+    private AbstractForm form;
 
     private boolean visible = true;
 
@@ -157,5 +160,13 @@ public abstract class AbstractField<T extends AbstractField<T>> extends BaseComp
     public T setBeginingOfLine(boolean beginingOfLine) {
         this.beginingOfLine = beginingOfLine;
         return (T) this;
+    }
+
+    public AbstractForm getForm() {
+        return form;
+    }
+
+    public void setForm(AbstractForm form) {
+        this.form = form;
     }
 }

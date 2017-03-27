@@ -5,6 +5,8 @@ import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
 import io.mateu.ui.core.shared.UserData;
 
+import java.net.URL;
+
 /**
  * Created by miguel on 27/12/16.
  */
@@ -83,6 +85,11 @@ public class BaseServiceImpl implements BaseService {
     @Override
     public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception {
         ServerSideHelper.getServerSideApp().updateProfile(login, name, email, foto);
+    }
+
+    @Override
+    public URL dump(Data parameters) throws Exception {
+        return ServerSideHelper.getServerSideApp().dump(parameters);
     }
 
 }

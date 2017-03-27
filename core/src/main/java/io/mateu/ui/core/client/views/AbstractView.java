@@ -32,7 +32,6 @@ public abstract class AbstractView {
         listeners.add(listener);
     }
 
-
     public List<AbstractAction> createActions() {
         return new ArrayList<>();
     }

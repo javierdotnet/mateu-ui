@@ -6,6 +6,7 @@ import io.mateu.ui.core.shared.FileLocator;
 import io.mateu.ui.core.shared.UserData;
 
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by miguel on 1/1/17.
@@ -43,6 +44,10 @@ public interface ServerSideApp {
     void changePassword(String login, String oldPassword, String newPassword) throws Exception;
 
     void updateProfile(String login, String name, String email, FileLocator foto) throws Exception;
+
+    URL dump(Data parameters) throws ClassNotFoundException, Exception;
+
+    String getXslfoForListing() throws Exception;
 }
 
 

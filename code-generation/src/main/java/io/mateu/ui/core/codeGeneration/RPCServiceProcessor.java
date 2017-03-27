@@ -119,6 +119,118 @@ public class RPCServiceProcessor extends AbstractProcessor {
 
                 s += " {\n\n";
 
+                s += "";
+
+                s += "\t\ttry {\n\n\t\t\t\t";
+
+
+                if (!TypeKind.VOID.equals(m.getReturnType().getKind())) s += getTipoCallback(m.getReturnType()) + " r = ";
+                //s += "new " + pns + "." + simpleName + "Impl().";
+                s += "((" + clase.asType().toString() + ")Class.forName(\"" + pns + "." + simpleName + "Impl\").newInstance()).";
+
+                s += m.getSimpleName();
+                s += "(";
+                int pos = 0;
+                for (VariableElement p : m.getParameters()) {
+                    if (pos++ > 0) s += ", ";
+                    s += p.getSimpleName();
+                }
+                s += ")";
+
+                s += ";";
+
+                s += "\n\n";
+
+                s += "" +
+                        "\n" +
+                        "                            callback.onSuccess(" + ((TypeKind.VOID.equals(m.getReturnType().getKind()))?"null":"r") + ");\n" +
+                        "\n" +
+                        "                        ";
+
+                s += "\n\n\t\t} catch (Exception e) {\n" +
+                        "e.printStackTrace();";
+
+                s += "\n" +
+                        "\n" +
+                        "                            callback.onFailure(e);\n" +
+                        "\n" +
+                        "                        ";
+
+                s += "\n\n\t\t}";
+
+                s += "            ";
+
+                pw.println(s);
+                pw.println("\n\n\t}");
+                pw.println();
+
+
+            }
+
+            pw.println("}");
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void generateThreadedClientSideImpl(TypeElement clase) {
+        messager.printMessage(Kind.NOTE, "generando implementación lado cliente...");
+        try {
+            String simpleName = clase.getSimpleName().toString();
+            String packageName = elementsUtils.getPackageOf(clase).getQualifiedName().toString();
+            String typeName = clase.getSimpleName().toString() + "ClientSideImpl";
+
+            String pn = packageName;
+
+
+            String pnc = packageName.replaceAll("\\.shared\\.", ".client.");
+            if (pnc.endsWith(".shared")) pnc = pnc.substring(0, pnc.lastIndexOf(".") + 1) + "client";
+
+            String pns = packageName.replaceAll("\\.shared\\.", ".server.");
+            if (pns.endsWith(".shared")) pns = pns.substring(0, pns.lastIndexOf(".") + 1) + "server";
+
+            messager.printMessage(Kind.NOTE, "" + packageName + "->" + pn);
+
+            JavaFileObject javaFile = filer.createSourceFile(pnc + "." + typeName, clase);
+            messager.printMessage(Kind.NOTE, "generando " + javaFile.toUri() + "...");
+            Writer writer = javaFile.openWriter();
+            PrintWriter pw = new PrintWriter(writer);
+
+            pw.println("package " + pnc + ";");
+            pw.println("");
+            pw.println("import io.mateu.ui.core.shared.AsyncCallback;");
+            pw.println("import io.mateu.ui.core.client.app.MateuUI;");
+            pw.println("");
+            pw.println("/**");
+            pw.println(" * Generated class creating a default implementation the");
+            pw.println(" * for the class {@link " + clase.getQualifiedName().toString() + "}");
+            pw.println(" * ");
+            pw.println(" * @author Miguel");
+            pw.println(" */");
+            pw.println("public class " + typeName + " implements " + pnc + "." + clase.getSimpleName().toString() + "Async {");
+            pw.println();
+
+            for (ExecutableElement m : ElementFilter.methodsIn(clase.getEnclosedElements())) {
+
+                pw.println("\t@Override");
+
+                String s = "\tpublic void ";
+
+                s += m.getSimpleName();
+                s += "(";
+                for (VariableElement p : m.getParameters()) {
+                    s += p.asType().toString();
+                    s += " ";
+                    s += p.getSimpleName();
+                    s += ", ";
+                }
+                s += "AsyncCallback<" + getTipoCallback(m.getReturnType()) + "> callback";
+                s += ")";
+
+                s += " {\n\n";
+
                 s += "MateuUI.run(new Runnable() {\n" +
                         "            @Override\n" +
                         "            public void run() {";
@@ -152,7 +264,8 @@ public class RPCServiceProcessor extends AbstractProcessor {
                         "                        }\n" +
                         "                    });";
 
-                s += "\n\n\t\t} catch (Exception e) {";
+                s += "\n\n\t\t} catch (Exception e) {\n" +
+                        "e.printStackTrace();";
 
                 s += "MateuUI.runInUIThread(new Runnable() {\n" +
                         "                        @Override\n" +
@@ -181,6 +294,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
             e.printStackTrace();
         }
     }
+
 
     private void generateHessian(TypeElement clase) {
         messager.printMessage(Kind.NOTE, "generando hessian...");

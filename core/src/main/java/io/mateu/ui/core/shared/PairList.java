@@ -26,4 +26,18 @@ public class PairList {
     public void setValues(List<Pair> values) {
         this.values = values;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("[");
+        boolean primero = true;
+        for (Pair p : getValues()) {
+            if (primero) primero = false;
+            else sb.append(", ");
+            sb.append(p);
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }

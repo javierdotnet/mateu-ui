@@ -7,6 +7,7 @@ import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.shared.Data;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public abstract class AbstractListView extends AbstractView implements ListView 
 
     private List<ListViewListener> listViewListeners = new ArrayList<>();
 
+    public Data getMetadata() {
+        return null;
+    }
 
     @Override
     public List<AbstractColumn> getColumns() {
@@ -39,11 +43,18 @@ public abstract class AbstractListView extends AbstractView implements ListView 
 
     @Override
     public List<AbstractAction> createActions() {
+
+        Object _this = this;
+
         List<AbstractAction> as = super.createActions();
         as.add(new AbstractAction("Search") {
 
             @Override
             public void run() {
+
+                reset();
+                search();
+/*
                 MateuUI.run(new Runnable() {
                     @Override
                     public void run() {
@@ -56,8 +67,43 @@ public abstract class AbstractListView extends AbstractView implements ListView 
                         for (ListViewListener l : listViewListeners) l.onSuccess();
                     }
                 });
+                */
             }
         });
+
+        as.add(new AbstractAction("Excel") {
+            @Override
+            public void run() {
+                Data p = getForm().getData();
+                p.set("_format", "excel");
+                p.set("_listview", _this.getClass().getName());
+                p.set("_baseurl", MateuUI.getApp().getBaseUrl());
+                if (getMetadata() != null) p.set("_metadata", getMetadata());
+                MateuUI.getBaseService().dump(p, new Callback<URL>() {
+                    @Override
+                    public void onSuccess(URL result) {
+                        MateuUI.open(result);
+                    }
+                });
+            }
+        });
+        as.add(new AbstractAction("Pdf") {
+            @Override
+            public void run() {
+                Data p = getForm().getData();
+                p.set("_format", "pdf");
+                p.set("_listview", _this.getClass().getName());
+                p.set("_baseurl", MateuUI.getApp().getBaseUrl());
+                if (getMetadata() != null) p.set("_metadata", getMetadata());
+                MateuUI.getBaseService().dump(p, new Callback<URL>() {
+                    @Override
+                    public void onSuccess(URL result) {
+                        MateuUI.open(result);
+                    }
+                });
+            }
+        });
+
         return as;
     }
 

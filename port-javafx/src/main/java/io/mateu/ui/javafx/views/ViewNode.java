@@ -3,6 +3,7 @@ package io.mateu.ui.javafx.views;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.Component;
+import io.mateu.ui.core.client.components.Tab;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.views.ListView;
@@ -24,8 +25,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
+import javafx.geometry.*;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -45,6 +46,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.*;
 import javafx.util.Callback;
+import javafx.util.converter.DateTimeStringConverter;
+import javafx.util.converter.LocalDateTimeStringConverter;
+import org.controlsfx.control.ListSelectionView;
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -57,6 +61,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
@@ -97,7 +102,6 @@ public class ViewNode extends StackPane {
         this();
         this.view = view;
         dataStore = new ViewNodeDataStore(this);
-        build();
         view.getForm().addDataSetterListener(new DataSetterListener() {
             @Override
             public void setted(Data newData) {
@@ -109,6 +113,7 @@ public class ViewNode extends StackPane {
                 getDataStore().set(k, v);
             }
         });
+        build();
         getChildren().add(maskerPane = new MaskerPane());
         maskerPane.setVisible(false);
     }
@@ -148,10 +153,11 @@ public class ViewNode extends StackPane {
 
         bp = new BorderPane();
         bp.setTop(createToolBar(view.getActions()));
-        ScrollPane sp = new ScrollPane(componentsCotainer = new Pane());
+        ScrollPane sp = new ScrollPane(componentsCotainer = new VBox());
         sp.getStyleClass().add("mateu-view-scroll");
         bp.setCenter(sp);
         componentsCotainer.getStyleClass().add("mateu-view");
+        componentsCotainer.setPadding(new Insets(10, 20, 10, 20));
         if (false) addEventHandler(Event.ANY, e -> {
             System.out.println("caught " + e.getEventType().getName());
         });
@@ -420,6 +426,23 @@ public class ViewNode extends StackPane {
 
     private void build(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField, boolean inToolBar) {
 
+        HBox badgesPane;
+        overallContainer.getChildren().add(badgesPane = new HBox(2));
+
+        Property<ObservableList<DataStore>> pb = getDataStore().getObservableListProperty("_badges");
+        ChangeListener<ObservableList<DataStore>> pl;
+        pb.addListener(pl = new ChangeListener<ObservableList<DataStore>>() {
+            @Override
+            public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
+                badgesPane.getChildren().clear();
+                if (newValue != null) for (DataStore x : newValue) {
+                    badgesPane.getChildren().add(new Label(x.get("_value")));
+                }
+            }
+        });
+        pl.changed(null, null, pb.getValue());
+
+
         List<Pane> panels = new ArrayList<>();
         panels.add(new VBox(2));
 
@@ -434,11 +457,20 @@ public class ViewNode extends StackPane {
             for (Component c : cs) {
                 Node n = null;
                 if (!(c instanceof AbstractField) || posField >= fromField) {
+                    /*
                     if (c instanceof ColumnStart) panels.add(new VBox(2));
                     else if (c instanceof RowStart) panels.add(new FlowPane(5, 2));
                     else if (c instanceof ColumnEnd) panels.remove(panels.size() - 1);
                     else if (c instanceof RowEnd) panels.remove(panels.size() - 1);
-                    else n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
+                    else {
+                    */
+                        if (posField == 0 || (c instanceof  AbstractField && ((AbstractField)c).isBeginingOfLine())) {
+                            FlowPane fp;
+                            panels.add(fp = new FlowPane(5, 2));
+                            fp.setPrefWidth(5000);
+                        }
+                        n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
+                    //}
                 }
                 if (n != null) lastNode = n;
                 if (c instanceof AbstractField) posField++;
@@ -486,14 +518,53 @@ public class ViewNode extends StackPane {
 
         Node n = null;
 
-        Pane donde = container;
+        /*
+                Pane donde = container;
         if (donde instanceof VBox) {
             container = donde;
             ((VBox) donde).getChildren().add(donde = new FlowPane());
             donde.setPrefWidth(5000);
         }
+         */
+        Pane donde = container;
+        if (donde instanceof FlowPane) {
+            container = donde;
+            ((FlowPane) donde).getChildren().add(donde = new VBox());
+            //donde.setPrefWidth(5000);
+        }
 
-        if (c instanceof AbstractField) {
+
+        if (c instanceof Tabs) {
+
+            Tabs tabs = (Tabs) c;
+
+            TabPane tp;
+            n = tp = new TabPane();
+
+            for (Tab t : tabs.getTabs()) {
+
+                javafx.scene.control.Tab tc = new javafx.scene.control.Tab(t.getCaption());
+                tc.setClosable(false);
+                tp.getTabs().add(tc);
+
+
+                ScrollPane sp = new ScrollPane(componentsCotainer = new VBox());
+                sp.getStyleClass().add("mateu-view-scroll");
+                componentsCotainer.getStyleClass().add("mateu-view");
+                componentsCotainer.setPadding(new Insets(10, 20, 10, 20));
+
+
+                tc.setContent(sp);
+
+                build(validationSupport, sp, componentsCotainer, t, 0, false);
+
+            }
+
+            donde.getChildren().add(tp);
+
+        } else if (c instanceof AbstractField) {
+
+            Control control = null;
 
             if (showLabels) {
                 if (((AbstractField) c).getLabel() != null) {
@@ -521,8 +592,8 @@ public class ViewNode extends StackPane {
 
                     javafx.scene.control.Label l;
                     donde.getChildren().add(l = new javafx.scene.control.Label(((AbstractField) c).getLabel().getText()));
-                    if (!inToolBar) l.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-right;");
-                    else l.setStyle("-fx-alignment: baseline-right;");
+                    if (!inToolBar) l.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-left;");
+                    else l.setStyle("-fx-alignment: baseline-left;");
 
                     /*
                     if (((AbstractField)c).isRequired()) {
@@ -559,7 +630,7 @@ public class ViewNode extends StackPane {
 
                 cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
 
-                n = cmb;
+                n = control = cmb;
 
 
                 ObservableList<Pair> data = cmb.getItems();
@@ -642,17 +713,20 @@ public class ViewNode extends StackPane {
 
             } else if (c instanceof CalendarField || c instanceof DateField) {
                 DatePicker tf;
-                n = tf = new DatePicker();
+                n = control = tf = new DatePicker();
                 tf.valueProperty().bindBidirectional(dataStore.getLocalDateProperty(((AbstractField) c).getId()));
-                tf.getEditor().textProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        System.out.println("date field changed to " + newValue);
-                    }
-                });
+            } else if (c instanceof DateTimeField) {
+                TextField tf;
+                n = control = tf = new TextField();
+
+                String pattern = "yyyy-MM-dd HH:mm";
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+                tf.setTooltip(new Tooltip(pattern));
+
+                tf.textProperty().bindBidirectional(dataStore.getLocalDateTimeProperty(((AbstractField) c).getId()), new LocalDateTimeStringConverter(formatter, null));
             } else if (c instanceof CheckBoxField) {
                 CheckBox tf;
-                n = tf = new CheckBox();
+                n = control = tf = new CheckBox();
                 String text = ((CheckBoxField) c).getText();
                 if (text != null) tf.setText(text);
                 tf.selectedProperty().bindBidirectional(dataStore.getBooleanProperty(((AbstractField) c).getId()));
@@ -718,7 +792,7 @@ public class ViewNode extends StackPane {
 
                 cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
 
-                n = cmb;
+                n = control = cmb;
 
             } else if (c instanceof DataViewerField) {
 
@@ -776,11 +850,11 @@ public class ViewNode extends StackPane {
 
                 //cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
 
-                n = t;
+                n = control = t;
 
             } else if (c instanceof DoubleField) {
                 TextField tf;
-                n = tf = new TextField() {
+                n = control = tf = new TextField() {
                     public void replaceText(int start, int end, String text) {
                         //System.out.println("replaceText(" + start + "," + end + "," + text + ")");
                         String s = getText();
@@ -938,7 +1012,7 @@ public class ViewNode extends StackPane {
                 sp.getChildren().add(tf);
             } else if (c instanceof IntegerField) {
                 TextField tf;
-                n = tf = new TextField() {
+                n = control = tf = new TextField() {
                     public void replaceText(int start, int end, String text) {
                         //System.out.println("replaceText(" + start + "," + end + "," + text + ")");
                         String s = getText();
@@ -990,6 +1064,72 @@ public class ViewNode extends StackPane {
                 } else {
                     tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 }
+            } else if (c instanceof ListSelectionField) {
+
+                ListSelectionField lsf = (ListSelectionField) c;
+
+                Pane h;
+                n = h = new HBox(6);
+
+                Label l;
+                h.getChildren().add(l = new Label());
+                Button b;
+                h.getChildren().add(b = new Button("+"));
+
+                Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
+
+                ChangeListener<PairList> cl;
+                prop.addListener(cl = new ChangeListener<PairList>() {
+                    @Override
+                    public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
+                        StringBuffer s = new StringBuffer();
+                        boolean empty = true;
+                        if (newValue != null) {
+                            for (Pair p : newValue.getValues()) {
+                                if (empty) empty = false;
+                                else s.append(", ");
+                                s.append(p.getText());
+                            }
+                        }
+                        l.setText((empty)?"empty (no item selected)":s.toString());
+                    }
+                });
+                cl.changed(null, null, null);
+
+                b.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        ListSelectionView<Pair> v = new ListSelectionView<>();
+                        ObservableList<Pair> sourceValues = FXCollections.observableArrayList(lsf.getValues());
+                        ObservableList<Pair> targetValues = FXCollections.observableArrayList(prop.getValue().getValues());
+                        sourceValues.removeAll(targetValues);
+                        v.setSourceItems(sourceValues);
+                        v.setTargetItems(targetValues);
+
+                        Dialog d = new Dialog();
+                        d.setTitle("Select values from list");
+                        d.setResizable(true);
+                        d.getDialogPane().setContent(v);
+
+                        ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+                        d.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+                        Optional<ButtonType> result = d.showAndWait();
+                        if (result.get() == loginButtonType) { //ButtonType.OK){
+                            // ... user chose OK
+                            PairList pl = new PairList();
+                            pl.setValues(targetValues);
+                            prop.setValue(pl);
+                        } else {
+                            // ... user chose CANCEL or closed the dialog
+                        }
+
+                    }
+                });
+
+
+
             } else if (c instanceof RadioButtonField) {
 
                 ToggleGroup g = new ToggleGroup();
@@ -1047,7 +1187,7 @@ public class ViewNode extends StackPane {
                         dataStore.getStringProperty(((AbstractField) c).getId()).setValue(tf.getHtmlText());
                     }
                 });
-                n = tf;
+                n = control = tf;
             } else if (c instanceof SearchField) {
                 SearchField sf = (SearchField) c;
                 HBox h = new HBox();
@@ -1363,7 +1503,7 @@ public class ViewNode extends StackPane {
                 });
 
                 cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField) c).getId()));
-                n = cmb;
+                n = control = cmb;
 
                 ((SqlComboBoxField) c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
                     @Override
@@ -1381,6 +1521,85 @@ public class ViewNode extends StackPane {
                         });
                     }
                 });
+
+            } else if (c instanceof SqlListSelectionField) {
+
+                SqlListSelectionField lsf = (SqlListSelectionField) c;
+
+                Pane h;
+                n = h = new HBox(6);
+
+                Label l;
+                h.getChildren().add(l = new Label());
+                Button b;
+                h.getChildren().add(b = new Button("+"));
+
+                Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
+
+                ChangeListener<PairList> cl;
+                prop.addListener(cl = new ChangeListener<PairList>() {
+                    @Override
+                    public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
+                        StringBuffer s = new StringBuffer();
+                        boolean empty = true;
+                        if (newValue != null) {
+                            for (Pair p : newValue.getValues()) {
+                                if (empty) empty = false;
+                                else s.append(", ");
+                                s.append(p.getText());
+                            }
+                        }
+                        l.setText((empty)?"empty (no item selected)":s.toString());
+                    }
+                });
+                cl.changed(null, null, null);
+
+                b.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        lsf.call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
+                            @Override
+                            public void onSuccess(Object[][] result) {
+                                MateuUI.runInUIThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        List<Pair> l = new ArrayList<>();
+                                        for (Object[] r : result) {
+                                            l.add(new Pair(r[0], (r[1] == null) ? null : "" + r[1]));
+                                        }
+                                        ListSelectionView<Pair> v = new ListSelectionView<>();
+                                        ObservableList<Pair> sourceValues = FXCollections.observableArrayList(l);
+                                        ObservableList<Pair> targetValues = FXCollections.observableArrayList(prop.getValue().getValues());
+                                        sourceValues.removeAll(targetValues);
+                                        v.setSourceItems(sourceValues);
+                                        v.setTargetItems(targetValues);
+
+                                        Dialog d = new Dialog();
+                                        d.setTitle("Select values from list");
+                                        d.setResizable(true);
+                                        d.getDialogPane().setContent(v);
+
+                                        ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+                                        d.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+
+                                        Optional<ButtonType> result = d.showAndWait();
+                                        if (result.get() == loginButtonType) { //ButtonType.OK){
+                                            // ... user chose OK
+                                            PairList pl = new PairList();
+                                            pl.setValues(targetValues);
+                                            prop.setValue(pl);
+                                        } else {
+                                            // ... user chose CANCEL or closed the dialog
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                    }
+                });
+
 
             } else if (c instanceof SqlRadioButtonField) {
 
@@ -1437,11 +1656,11 @@ public class ViewNode extends StackPane {
             } else if (c instanceof TextAreaField) {
                 javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
-                n = tf;
+                n = control = tf;
             } else if (c instanceof io.mateu.ui.core.client.components.fields.TextField) {
                 javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((io.mateu.ui.core.client.components.fields.TextField) c).getId()));
-                n = tf;
+                n = control = tf;
 
                 if (firstField == null) {
                     firstField = tf;
@@ -1504,8 +1723,8 @@ public class ViewNode extends StackPane {
 
             }
 
-            if (((AbstractField) c).isRequired()) {
-                validationSupport.registerValidator((Control) n, Validator.createEmptyValidator("Required field"));
+            if (((AbstractField) c).isRequired() && control != null) {
+                validationSupport.registerValidator(control, Validator.createEmptyValidator("Required field"));
             }
 
         } else {

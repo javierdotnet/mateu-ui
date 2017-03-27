@@ -21,10 +21,53 @@ public abstract class AbstractEditorView extends AbstractView {
     @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> actions = new ArrayList<>();
+        actions.add(new AbstractAction("Refresh") {
+            @Override
+            public void run() {
+                load();
+            }
+        });
+        actions.add(new AbstractAction("Reset") {
+            @Override
+            public void run() {
+                getForm().setData(initializeData());
+            }
+        });
         actions.add(new AbstractAction("Save") {
             @Override
             public void run() {
                 save();
+            }
+        });
+        actions.add(new AbstractAction("Save and close") {
+            @Override
+            public void run() {
+                saveAndClose();
+            }
+        });
+        actions.add(new AbstractAction("Save and duplicate") {
+            @Override
+            public void run() {
+                saveAndDuplicate();
+            }
+        });
+        actions.add(new AbstractAction("Save and reset") {
+            @Override
+            public void run() {
+                saveAndReset();
+            }
+        });
+        actions.add(new AbstractAction("Duplicate") {
+            @Override
+            public void run() {
+                getForm().set("_id", null);
+                MateuUI.notifyDone("Note that on saving you will create a new " + getTitle());
+            }
+        });
+        actions.add(new AbstractAction("Close") {
+            @Override
+            public void run() {
+                close();
             }
         });
         return actions;
@@ -54,8 +97,9 @@ public abstract class AbstractEditorView extends AbstractView {
         return super.getViewId() + "-" + getInitialId();
     }
 
-    public void addEditorViewListener(EditorViewListener listener) {
+    public AbstractEditorView addEditorViewListener(EditorViewListener listener) {
         editorViewListeners.add(listener);
+        return this;
     }
 
     public List<EditorViewListener> getEditorViewListeners() {
@@ -74,8 +118,8 @@ public abstract class AbstractEditorView extends AbstractView {
 
             @Override
             public void onSuccess(Data result) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
                 getForm().setData(result);
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
             }
         });
     }
@@ -85,26 +129,104 @@ public abstract class AbstractEditorView extends AbstractView {
         else return getInitialId();
     }
 
+    public void saveAndClose() {
+        save(new Callback<Data>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
+                super.onFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(Data result) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                getForm().setData(result);
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        close();
+                    }
+                });
+                MateuUI.notifyDone("Saved!");
+            }
+        });
+    }
+
+    public void saveAndDuplicate() {
+        save(new Callback<Data>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
+                super.onFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(Data result) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                getForm().setData(result);
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getForm().set("_id", null);
+                        MateuUI.notifyDone("Note that on saving you will create a new " + getTitle());
+                    }
+                });
+            }
+        });
+    }
+
+    public void saveAndReset() {
+        save(new Callback<Data>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
+                super.onFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(Data result) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getForm().setData(initializeData());
+                    }
+                });
+                MateuUI.notifyDone("Saved!");
+            }
+        });
+    }
+
     public void save() {
+        save(new Callback<Data>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
+                super.onFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(Data result) {
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                getForm().setData(result);
+                MateuUI.notifyDone("Saved!");
+            }
+        });
+    }
+
+    public void save(Callback<Data> callback) {
         List<String> errors = getForm().validate();
         if (errors.size() > 0) {
             MateuUI.notifyErrors(errors);
         } else {
             for (EditorViewListener l : getEditorViewListeners()) l.onSave();
-            save(getForm().getData(), new Callback<Data>() {
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    for (EditorViewListener l : getEditorViewListeners()) l.onFailure(caught);
-                    super.onFailure(caught);
-                }
-
-                @Override
-                public void onSuccess(Data result) {
-                    for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
-                    getForm().setData(result);
-                }
-            });
+            Data d = getForm().getData();
+            if (MateuUI.getApp().getUserData() != null) d.set("_user", MateuUI.getApp().getUserData().getLogin());
+            save(d, callback);
         }
     }
 }

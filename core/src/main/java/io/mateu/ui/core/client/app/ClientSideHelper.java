@@ -1,9 +1,11 @@
 package io.mateu.ui.core.client.app;
 
+import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractView;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -27,4 +29,14 @@ public interface ClientSideHelper {
     void openView(AbstractView parentView, AbstractView view);
 
     void notifyErrors(List<String> msgs);
+
+    AbstractApplication getApp();
+
+    void notifyError(String msg);
+
+    void notifyInfo(String msg);
+
+    void notifyDone(String msg);
+
+    void open(URL url);
 }

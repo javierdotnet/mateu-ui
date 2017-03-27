@@ -33,4 +33,6 @@ public class RadioButtonField extends AbstractField<RadioButtonField> {
 
     public List<Pair> getValues() {
         return values;
-    }}
+    }
+
+}

@@ -1,16 +1,37 @@
 package io.mateu.ui.core.server;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.ColumnAlignment;
+import io.mateu.ui.core.client.views.AbstractListView;
+import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.BaseService;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.fop.apps.*;
+import org.apache.poi.hssf.usermodel.*;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.xml.sax.SAXException;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
+import javax.xml.transform.*;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -305,7 +326,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
                         sql+= ") values (";
                         pos = 0;
                         for (String n : ns) {
-                            if (!n.startsWith("_")) {
+                            if (!n.startsWith("_") && !"id".equalsIgnoreCase(n)) {
                                 Object v = data.get(n);
                                 if (v == null) {
                                     sql += "null";
@@ -353,4 +374,369 @@ public abstract class BaseServerSideApp implements ServerSideApp {
 
     }
 
+    @Override
+    public URL dump(Data parameters) throws Exception {
+        AbstractListView lv = null;
+        if (parameters.containsKey("_metadata")) lv = (AbstractListView) Class.forName(parameters.getString("_listview")).getDeclaredConstructor(Data.class).newInstance((Data)parameters.get("_metadata"));
+        else lv = (AbstractListView) Class.forName(parameters.getString("_listview")).newInstance();
+
+        if ("excel".equalsIgnoreCase(parameters.get("_format"))) {
+            return listToExcel(parameters, lv);
+        } else {
+            return listToPdf(parameters, lv);
+        }
+    }
+
+    public URL listToPdf(Data parameters, AbstractListView view) throws Exception {
+
+        String xslfo = ServerSideHelper.getServerSideApp().getXslfoForListing();
+
+        long t0 = new Date().getTime();
+
+
+        try {
+
+
+            Document xml = new Document();
+            Element arrel = new Element("root");
+            xml.addContent(arrel);
+
+
+            Element cab = new Element("header");
+            arrel.addContent(cab);
+
+            Element lineas = new Element("lines");
+            arrel.addContent(lineas);
+
+            int xx = 1;
+            int pixels = 0;
+
+            for (AbstractColumn c : view.getColumns()){
+                String alineado = "left";
+                Element aux = new Element("column");
+                cab.addContent(aux);
+                aux.setAttribute("label", c.getLabel());
+                aux.setAttribute("width", "" +  c.getWidth() / 1.5);
+                if (ColumnAlignment.CENTER.equals(c.getAlignment())) alineado = "center";
+                if (ColumnAlignment.RIGHT.equals(c.getAlignment())) alineado = "right";
+                aux.setAttribute("align", alineado);
+                pixels += c.getWidth();
+                //System.out.println("clase:" + c.getClase());
+            }
+
+            String ancho = "21cm";
+            String alto = "29.7cm";
+            if (pixels > 750){
+                alto = "21cm";
+                ancho = "29.7cm";
+            }
+            arrel.setAttribute("width", ancho);
+            arrel.setAttribute("height", alto);
+
+
+
+            Data[] r = new Data[1];
+            Exception[] ex = new Exception[1];
+
+            /*
+
+            view.rpc(parameters, new AsyncCallback<Data>() {
+                @Override
+                public void onFailure(Throwable caught) {
+                    caught.printStackTrace();
+                    ex[0] = new Exception(caught);
+                }
+
+                @Override
+                public void onSuccess(Data result) {
+                    r[0] = result;
+                }
+            });
+
+            synchronized(r){
+                r.wait(120000);
+            }
+            */
+
+            view.rpc(parameters, new AsyncCallback<Data>() {
+                @Override
+                public void onFailure(Throwable caught) {
+                    caught.printStackTrace();
+                }
+
+                @Override
+                public void onSuccess(Data result) {
+                    r[0] = result;
+                }
+            });
+
+            if (ex[0] != null) throw ex[0];
+
+            List<Data> data = r[0].getList("_data");
+
+
+            for (Data x : data){
+
+                Element linea = new Element("line");
+                lineas.addContent(linea);
+
+                for (AbstractColumn c : view.getColumns()){
+
+                    Element cell = new Element("cell");
+                    linea.addContent(cell);
+                    Object v = x.get(c.getId());
+                    String text = "";
+                    if (v != null) text += v;
+                    if (v instanceof Double){
+                        DecimalFormat dfm = new DecimalFormat("#0.00");
+                        text = dfm.format(((Double)v));
+                    }
+                    cell.setText(text);
+
+                }
+
+            }
+
+            if (data.size() >= 5000) {
+                Element linea = new Element("line");
+                lineas.addContent(linea);
+
+                Element txt = new Element("cell");
+                linea.addContent(txt);
+
+                txt.setText("HAY MAS DE 5000 LINEAS. CONTACTA CON EL DEPARTAMENTO DE DESARROLLO SI QUIERES EL EXCEL COMPLETO...");
+            }
+
+            try {
+                String archivo = UUID.randomUUID().toString();
+
+                File temp = (System.getProperty("tmpdir") == null)?File.createTempFile(archivo, ".pdf"):new File(new File(System.getProperty("tmpdir")), archivo + ".pdf");
+
+
+                System.out.println("java.io.tmpdir=" + System.getProperty("java.io.tmpdir"));
+                System.out.println("Temp file : " + temp.getAbsolutePath());
+
+                FileOutputStream fileOut = new FileOutputStream(temp);
+                String sxml = new XMLOutputter(Format.getPrettyFormat()).outputString(xml);
+                System.out.println("xslfo=" + xslfo);
+                System.out.println("xml=" + sxml);
+                fileOut.write(fop(new StreamSource(new StringReader(xslfo)), new StreamSource(new StringReader(sxml))));
+                fileOut.close();
+
+                String baseUrl = System.getProperty("tmpurl");
+                if (baseUrl == null) {
+                    return temp.toURI().toURL();
+                }
+                return new URL(baseUrl + "/" + temp.getName());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
+
+        return null;
+    }
+
+    public static byte[] fop(Source xslfo, Source xml) throws IOException, SAXException {
+        long t0 = new Date().getTime();
+
+
+// Step 1: Construct a FopFactory by specifying a reference to the configuration file
+// (reuse if you plan to render multiple documents!)
+
+        FopFactoryBuilder builder = new FopFactoryBuilder(new File(".").toURI());
+        builder.setStrictFOValidation(false);
+        builder.setBreakIndentInheritanceOnReferenceAreaBoundary(true);
+        builder.setSourceResolution(96); // =96dpi (dots/pixels per Inch)
+        FopFactory fopFactory = builder.build();
+        //FopFactory fopFactory = FopFactory.newInstance(new File("C:/Temp/fop.xconf"));
+
+
+        // Step 2: Set up output stream.
+// Note: Using BufferedOutputStream for performance reasons (helpful with FileOutputStreams).
+        //OutputStream out = new BufferedOutputStream(new FileOutputStream(new File("C:/Temp/myfile.pdf")));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+             // Step 3: Construct fop with desired output format
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
+
+            // Step 4: Setup JAXP using identity transformer
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer(xslfo); // identity transformer
+
+		    /*
+		    StreamResult xmlOutput = new StreamResult(new StringWriter());
+		    //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		    //transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		    transformer.transform(src, xmlOutput);
+
+		    System.out.println(xmlOutput.getWriter().toString());
+		    */
+
+            // Step 5: Setup input and output for XSLT transformation
+            // Setup input stream
+            //Source src = new StreamSource(new StringReader(xml));
+
+            // Resulting SAX events (the generated FO) must be piped through to FOP
+            Result res = new SAXResult(fop.getDefaultHandler());
+
+            // Step 6: Start XSLT transformation and FOP processing
+            transformer.transform(xml, res);
+
+        } catch (FOPException e) {
+            e.printStackTrace();
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        } finally {
+            //Clean-up
+            out.close();
+        }
+
+        return out.toByteArray();
+    }
+
+
+    public URL listToExcel(Data parameters, AbstractListView view) throws Exception {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+
+        HSSFCellStyle cellStyleDate = workbook.createCellStyle();
+        cellStyleDate.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+
+        HSSFSheet sheet = workbook.createSheet("Report");
+
+        HSSFRow row = null;
+        HSSFCell cell = null;
+
+        //LINEA SUPERIOR
+        int numfila = 0;
+        int numcol = 0;
+
+        numcol = 0;
+        row = sheet.createRow(numfila++);
+
+        for (AbstractColumn c : view.getColumns()){
+            cell = row.createCell(numcol++);
+            cell.setCellValue(c.getLabel());
+        }
+
+		Data[] r = new Data[1];
+		Exception[] ex = new Exception[1];
+
+
+/*
+		view.rpc(parameters, new AsyncCallback<Data>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                caught.printStackTrace();
+                ex[0] = new Exception(caught);
+                synchronized(r){
+                    r.notify();
+                }
+            }
+
+            @Override
+            public void onSuccess(Data result) {
+                r[0] = result;
+                synchronized(r){
+                    r.notify();
+                }
+            }
+        });
+
+        synchronized(r){
+            r.wait(120000);
+        }
+ */
+
+        view.rpc(parameters, new AsyncCallback<Data>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                caught.printStackTrace();
+                ex[0] = new Exception(caught);
+            }
+
+            @Override
+            public void onSuccess(Data result) {
+                r[0] = result;
+            }
+        });
+
+		if (ex[0] != null) throw ex[0];
+
+		List<Data> data = r[0].getList("_data");
+
+        for (Data x : data){
+
+            row = sheet.createRow(numfila++);
+
+            numcol = 0;
+            for (AbstractColumn c : view.getColumns()){
+                cell = row.createCell(numcol++);
+
+                Object o = x.get(c.getId());
+
+                if (o == null) cell.setCellValue((String) null);
+				else if (o instanceof String) cell.setCellValue((String) o);
+				else if (o instanceof Double) cell.setCellValue((Double)o);
+				else if (o instanceof BigDecimal) cell.setCellValue(((BigDecimal)o).doubleValue());
+				else if (o instanceof Integer) cell.setCellValue(new Double((Integer) o));
+				else if (o instanceof BigInteger) cell.setCellValue(((BigInteger) o).doubleValue());
+				else if (o instanceof Long) cell.setCellValue(new Double((Long) o));
+				else if (o instanceof Date) {
+					  cell.setCellStyle(cellStyleDate);
+					  cell.setCellValue((Date) o);
+				} else if (o instanceof Boolean) cell.setCellValue((Boolean)o);
+				else cell.setCellValue("" + o);
+
+            }
+
+            if (numfila >= 65530) break;
+
+        }
+
+        if (data.size() >= 65530) {
+            row = sheet.createRow(numfila++);
+            cell = row.createCell(0);
+            cell.setCellValue("HAY MAS DE 65535 LINEAS. CONTACTA CON EL DEPARTAMENTO DE DESARROLLO SI QUIERES EL EXCEL COMPLETO...");
+        }
+
+        try {
+            String archivo = UUID.randomUUID().toString();
+
+            File temp = (System.getProperty("tmpdir") == null)?File.createTempFile(archivo, ".xls"):new File(new File(System.getProperty("tmpdir")), archivo + ".xls");
+
+
+            System.out.println("java.io.tmpdir=" + System.getProperty("java.io.tmpdir"));
+            System.out.println("Temp file : " + temp.getAbsolutePath());
+
+            System.out.println(System.getProperty("java.io.tmpdir"));
+
+            FileOutputStream fileOut = new FileOutputStream(temp);
+            workbook.write(fileOut);
+            fileOut.close();
+
+            String baseUrl = System.getProperty("tmpurl");
+            if (baseUrl == null) {
+                return temp.toURI().toURL();
+            }
+            return new URL(baseUrl + "/" + temp.getName());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public String getXslfoForListing() throws Exception {
+        return Resources.toString(Resources.getResource(BaseServerSideApp.class, "listing.xsl"), Charsets.UTF_8);
+    }
 }

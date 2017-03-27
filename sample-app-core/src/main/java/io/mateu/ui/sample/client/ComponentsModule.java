@@ -86,6 +86,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new TextFieldView());
                     }
+                }, (MenuEntry) new AbstractAction("ListSelectionField") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new ListSelectionFieldView());
+                    }
                 }, (MenuEntry) new AbstractAction("Property listener") {
                     @Override
                     public void run() {
@@ -105,6 +110,11 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new GridView());
+                    }
+                }, (MenuEntry) new AbstractAction("Tabs") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new TabsView());
                     }
                 });
             }
@@ -136,7 +146,6 @@ public class ComponentsModule extends AbstractModule {
                                         .add(new TextField("_id", "_id"))
                                         .add(new TextField("field1", "Label for textfield"))
                                         .add(new TextField("field2", "Label for textfield").setUnmodifiable(true))
-                                        .add(new SelectByIdField("filed3", "SearchById", "select x.id, x.firstname from customer x where x.id = xxxx "))
                                         ;
                             }
                         });

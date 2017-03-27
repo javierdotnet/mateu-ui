@@ -2,6 +2,8 @@ package io.mateu.ui.core.shared;
 
 import io.mateu.ui.core.communication.Service;
 
+import java.net.URL;
+
 /**
  * Created by miguel on 27/12/16.
  */
@@ -30,5 +32,6 @@ public interface BaseService {
 
     public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception;
 
+    public URL dump(Data parameters) throws Exception;
 
 }

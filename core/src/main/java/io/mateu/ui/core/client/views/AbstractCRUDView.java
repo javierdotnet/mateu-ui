@@ -64,6 +64,30 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
     public abstract void delete(List<Data> selection, AsyncCallback<Void> callback);
 
     public void openEditor(AbstractEditorView e) {
+        e.addEditorViewListener(new EditorViewListener() {
+            @Override
+            public void onLoad() {
+
+            }
+
+            @Override
+            public void onSave() {
+            }
+
+            @Override
+            public void onSuccess() {
+                try {
+                    search();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+
+            }
+        });
         for (CRUDListener l : listeners) l.openEditor(e);
     }
 

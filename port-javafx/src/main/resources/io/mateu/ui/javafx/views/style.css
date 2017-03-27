@@ -42,6 +42,7 @@
 */
 
 
+
 .tree-table-row-cell .dataviewer {
     -fx-background-color: -fx-table-cell-border-color, -fx-control-inner-background;
     -fx-background-insets: 0, 0 0 1 0;
@@ -53,7 +54,8 @@
     -fx-background-insets: 0, 1, 2;
 }
 
-/*
+
+
 .tree-table-row-cell.dataviewer:odd {
     -fx-background-color: -fx-table-cell-border-color, derive(-fx-control-inner-background,-5%);
     -fx-background-insets: 0, 0 0 1 0;
@@ -63,11 +65,12 @@
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
     -fx-background-insets: 0, 1, 2;
 }
-*/
 
+/*
 .tree-table-row-cell.leaf {
     -fx-background-color: -fx-table-cell-border-color, #ffffe7;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;
     -fx-text-fill: -fx-text-inner-color;
 }
+*/

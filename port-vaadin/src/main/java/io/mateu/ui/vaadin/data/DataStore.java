@@ -78,6 +78,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
                 }
                 else if (data.get(n) instanceof ArrayList || data.get(n) instanceof ObservableList)
                 {
+
                     ObservableList l = getObservableListProperty(n).getValue();
                     //if (l instanceof FilteredList) l = ((FilteredList)l).getSource();
                     List ll = new ArrayList();

@@ -16,9 +16,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import io.mateu.ui.core.client.app.ClientSideHelper;
 import io.mateu.ui.core.client.app.MateuUI;
@@ -26,6 +28,12 @@ import javafx.stage.Window;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -303,6 +311,65 @@ public class JavafxPort extends Application {
                 }
 
                 Notifications.create().title("Errors").text(sb.toString()).position(Pos.BOTTOM_RIGHT).hideAfter(Duration.seconds(5)).darkStyle().showError();
+            }
+
+            @Override
+            public AbstractApplication getApp() {
+                return app;
+            }
+
+            @Override
+            public void notifyError(String msg) {
+                Notifications.create().title("Error").text(msg).position(Pos.BOTTOM_RIGHT).hideAfter(Duration.seconds(5)).darkStyle().showError();
+            }
+
+            @Override
+            public void notifyInfo(String msg) {
+                Notifications.create().title("Info").text(msg).position(Pos.BOTTOM_RIGHT).hideAfter(Duration.seconds(5)).darkStyle().showInformation();
+            }
+
+            @Override
+            public void notifyDone(String msg) {
+                Notifications.create().title("Done").text(msg).position(Pos.BOTTOM_RIGHT).hideAfter(Duration.seconds(5)).darkStyle().showConfirm();
+            }
+
+            @Override
+            public void open(URL url) {
+                try {
+                    Desktop.getDesktop().open(new File(url.toURI()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+                if (false) MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Stage s = new Stage();
+                        s.setWidth(800);
+                        s.setHeight(600);
+                        s.setTitle(url.toString());
+                        s.initOwner(mainStage);
+
+                        System.out.println(url);
+
+                        WebView v = new WebView();
+                        v.getEngine().loadContent("<html><body><h1>Un momento por favor...</h1></body></html>");
+                        StackPane root = new StackPane();
+                        root.getChildren().add(v);
+
+                        Scene scene = new Scene(root);
+                        //scene.getStylesheets().add(getClass().getResource("autenticado.css").toExternalForm());
+                        s.setScene(scene);
+                        s.show();
+
+                        System.out.println("abriendo " + url);
+
+                        v.getEngine().load(url.toString());
+
+                    }
+                });
             }
         });
 

@@ -1,9 +1,11 @@
 package io.mateu.ui.core.client.app;
 
+import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractView;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -21,6 +23,10 @@ public class MateuUI {
 
     public static ClientSideHelper getClientSideHelper() {
         return clientSideHelper;
+    }
+
+    public static AbstractApplication getApp() {
+        return getClientSideHelper().getApp();
     }
 
     public static void setClientSideHelper(ClientSideHelper clientSideHelper) {
@@ -81,4 +87,18 @@ public class MateuUI {
     public static void notifyErrors(List<String> msgs) {
         getClientSideHelper().notifyErrors(msgs);
     }
+
+    public static void notifyError(String msg) {
+        getClientSideHelper().notifyError(msg);
+    }
+
+    public static void notifyInfo(String msg) {
+        getClientSideHelper().notifyInfo(msg);
+    }
+
+    public static void notifyDone(String msg) {
+        getClientSideHelper().notifyDone(msg);
+    }
+
+    public static void open(URL url) { getClientSideHelper().open(url); }
 }

@@ -16,7 +16,7 @@ public abstract class AbstractSqlListView extends AbstractListView {
     @Override
     public void rpc(Data parameters, AsyncCallback<Data> callback) {
         parameters.set("_sql", getSql());
-        parameters.set("_rowsperpage", 100);
+        parameters.set("_rowsperpage", 3000);
         MateuUI.getBaseService().selectPaginated(parameters, callback);
     }
 

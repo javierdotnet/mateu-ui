@@ -64,6 +64,30 @@
           <scope>compile</scope>
       </dependency>
 
+      <dependency>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>fop</artifactId>
+          <version>2.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi</artifactId>
+          <version>3.15</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.jdom</groupId>
+          <artifactId>jdom2</artifactId>
+          <version>2.0.6</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>21.0</version>
+      </dependency>
+
   </dependencies>
 
 

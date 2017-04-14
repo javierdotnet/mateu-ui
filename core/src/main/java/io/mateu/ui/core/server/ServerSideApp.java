@@ -15,39 +15,41 @@ public interface ServerSideApp {
 
     public BaseService getBaseServiceImpl();
 
-    public Object[][] select(String sql) throws Exception;
+    public Object[][] select(String sql)throws Throwable;
 
-    public void execute(String sql) throws Exception;
+    public void execute(String sql)throws Throwable;
 
-    public Object selectSingleValue(String sql) throws Exception;
+    public Object selectSingleValue(String sql)throws Throwable;
 
-    public void update(String sql) throws Exception;
+    public void update(String sql)throws Throwable;
 
     public int getNumberOfRows(String sql);
 
-    public Object[][] selectPage(String sql, int desdeFila, int numeroFilas) throws Exception;
+    public Object[][] selectPage(String sql, int desdeFila, int numeroFilas)throws Throwable;
 
-    public void runSqlBatch(String b) throws Exception;
+    public void runSqlBatch(String b)throws Throwable;
 
-    public void transact(SQLTransaction t) throws Exception;
+    public void transact(SQLTransaction t)throws Throwable;
 
-    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws IOException, Exception;
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Throwable;
 
-    public void notransact(SQLTransaction t) throws Exception;
+    public void notransact(SQLTransaction t)throws Throwable;
 
-    public Data getFromSql(String sql) throws Exception;
+    public Data getFromSql(String sql)throws Throwable;
 
-    public void setToSql(Data data, String tableName) throws Exception;
+    public void setToSql(Data data, String tableName)throws Throwable;
 
-    UserData authenticate(String login, String password) throws Exception;
+    UserData authenticate(String login, String password)throws Throwable;
 
-    void changePassword(String login, String oldPassword, String newPassword) throws Exception;
+    void changePassword(String login, String oldPassword, String newPassword)throws Throwable;
 
-    void updateProfile(String login, String name, String email, FileLocator foto) throws Exception;
+    void updateProfile(String login, String name, String email, FileLocator foto)throws Throwable;
 
-    URL dump(Data parameters) throws ClassNotFoundException, Exception;
+    URL dump(Data parameters) throws Throwable;
 
-    String getXslfoForListing() throws Exception;
+    String getXslfoForListing()throws Throwable;
+
+    void updateFoto(String login, FileLocator foto)throws Throwable;
 }
 
 

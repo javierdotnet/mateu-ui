@@ -34,7 +34,7 @@ public class DatabaseTest extends TestCase {
     /**
      * Rigourous Test :-)
      */
-    public void testDatabasePopulation() throws Exception {
+    public void testDatabasePopulation() throws Throwable {
 
         ServerSideHelper.getServerSideApp().transact(new SQLTransaction() {
             @Override

@@ -1,5 +1,6 @@
 package io.mateu.ui.core.server;
 
+import com.google.common.io.Files;
 import io.mateu.ui.core.shared.Data;
 
 import java.io.*;
@@ -44,7 +45,7 @@ public class Utils {
         return s.toString();
     }
 
-    public static Data getFromSql(String sql) throws Exception {
+    public static Data getFromSql(String sql) throws Throwable {
         final Data[] r = {null};
 
         ServerSideHelper.getServerSideApp().notransact(new SQLTransaction() {
@@ -78,7 +79,7 @@ public class Utils {
 
     }
 
-    public static void setToSql(Data data, String tableName) throws Exception {
+    public static void setToSql(Data data, String tableName) throws Throwable {
 
         if (data != null) {
 
@@ -162,6 +163,15 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static byte[] readBytes(String fn) throws IOException {
+        return readBytes(new File(fn));
+    }
+
+    public static byte[] readBytes(File f) throws IOException {
+        System.out.println("writing " + f.getAbsolutePath());
+        return Files.asByteSource(f).read();
     }
 
 }

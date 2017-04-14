@@ -18,7 +18,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
 
     private List<CRUDListener> listeners = new ArrayList<>();
 
-    public abstract AbstractEditorView getNewEditorView();
+    public abstract AbstractEditorView getNewEditorView() throws Throwable;
 
     @Override
     public List<AbstractAction> createActions() {
@@ -26,7 +26,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         as.add(new AbstractAction("New") {
             @Override
             public void run() {
-               openEditor(getNewEditorView());
+               openNew();
             }
         });
         as.add(new AbstractAction("Delete") {
@@ -46,17 +46,33 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         return as;
     }
 
+    public void openNew() {
+        try {
+            openEditor(getNewEditorView());
+        } catch (Throwable e) {
+            MateuUI.notifyError(e.getMessage());
+        }
+    }
+
     @Override
     public List<AbstractColumn> createColumns() {
         List<AbstractColumn> cols = new ArrayList<>();
         cols.add(new LinkColumn("_id", "Id", 100) {
             @Override
             public void run(Data data) {
-                openEditor(getNewEditorView().setInitialId(data.get(getId())));
+                open(getId(), data);
             }
         });
         cols.addAll(createExtraColumns());
         return cols;
+    }
+
+    public void open(String propertyId, Data data) {
+        try {
+            openEditor(getNewEditorView().setInitialId(data.get(propertyId)));
+        } catch (Throwable e) {
+            MateuUI.notifyError(e.getMessage());
+        }
     }
 
     public abstract List<AbstractColumn> createExtraColumns();
@@ -75,7 +91,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
             }
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(Data result) {
                 try {
                     search();
                 } catch (Exception e) {

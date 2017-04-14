@@ -119,7 +119,7 @@ public abstract class AbstractEditorView extends AbstractView {
             @Override
             public void onSuccess(Data result) {
                 getForm().setData(result);
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess(result);
             }
         });
     }
@@ -140,7 +140,7 @@ public abstract class AbstractEditorView extends AbstractView {
 
             @Override
             public void onSuccess(Data result) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess(result);
                 getForm().setData(result);
                 MateuUI.runInUIThread(new Runnable() {
                     @Override
@@ -164,7 +164,7 @@ public abstract class AbstractEditorView extends AbstractView {
 
             @Override
             public void onSuccess(Data result) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess(result);
                 getForm().setData(result);
                 MateuUI.runInUIThread(new Runnable() {
                     @Override
@@ -188,7 +188,7 @@ public abstract class AbstractEditorView extends AbstractView {
 
             @Override
             public void onSuccess(Data result) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess(result);
                 MateuUI.runInUIThread(new Runnable() {
                     @Override
                     public void run() {
@@ -211,7 +211,7 @@ public abstract class AbstractEditorView extends AbstractView {
 
             @Override
             public void onSuccess(Data result) {
-                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess();
+                for (EditorViewListener l : getEditorViewListeners()) l.onSuccess(result);
                 getForm().setData(result);
                 MateuUI.notifyDone("Saved!");
             }

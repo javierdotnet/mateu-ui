@@ -26,10 +26,15 @@ public class ViewsComponent extends TabSheet {
     }
 
     public void addView(AbstractView view) {
+
         if (tabs.containsKey(view.getViewId())) {
             Tab t = tabs.get(view.getViewId());
-            setSelectedTab(t);
-        } else {
+            removeTab(t);
+            Tab x = tabs.remove(view.getViewId());
+            keys.remove(x);
+        }
+
+        {
             Tab t = addTab(new ViewLayout(view), view.getTitle());
             t.setClosable(true);
 

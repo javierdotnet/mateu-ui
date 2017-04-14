@@ -31,7 +31,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -74,7 +74,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -115,7 +115,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -156,7 +156,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -197,7 +197,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -238,7 +238,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -278,7 +278,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -318,7 +318,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -358,7 +358,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -397,7 +397,46 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void updateFoto(String login, FileLocator foto, AsyncCallback<Void> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).updateFoto(login, foto);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(null);
+
+                        }
+                    });
+
+
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -436,7 +475,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     });
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 

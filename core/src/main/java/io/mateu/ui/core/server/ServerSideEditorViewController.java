@@ -7,9 +7,9 @@ import io.mateu.ui.core.shared.Data;
  */
 public abstract class ServerSideEditorViewController {
 
-    public abstract Data get(Object id) throws Exception;
+    public abstract Data get(Object id) throws Throwable;
 
-    public abstract Object set(Data data) throws Exception;
+    public abstract Object set(Data data) throws Throwable;
 
     public abstract String getKey();
 }

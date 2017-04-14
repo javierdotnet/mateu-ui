@@ -3,9 +3,11 @@ package io.mateu.ui.sample.client;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.OutputColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.AsyncCallback;
+import io.mateu.ui.core.shared.CellStyleGenerator;
 import io.mateu.ui.core.shared.Data;
 
 import java.util.Arrays;
@@ -71,9 +73,17 @@ public class CRUDView extends AbstractCRUDView {
 
     @Override
     public List<AbstractColumn> createExtraColumns() {
-        return Arrays.asList(new TextColumn("col1", "First Name", 100, false)
-        , new TextColumn("col2", "Last Name", 100, false)
-                , new TextColumn("col3", "Street", 200, false));
+        return Arrays.asList(new OutputColumn("col1", "First Name", 100).setStyleGenerator(new CellStyleGenerator() {
+                    @Override
+                    public String getStyle(Object value) {
+                        if ("Laura".equalsIgnoreCase("" + value)) return "danger";
+                        else if ("james".equalsIgnoreCase("" + value)) return "done";
+                        else if ("bill".equalsIgnoreCase("" + value)) return "cancelled red";
+                        return null;
+                    }
+                })
+        , new OutputColumn("col2", "Last Name", 100)
+                , new OutputColumn("col3", "Street", 200));
     }
 
     @Override

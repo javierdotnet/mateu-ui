@@ -51,4 +51,12 @@ public class UserData extends Data {
     public void setData(Data data) {
         set("data", data);
     }
+
+    public String getPhoto() {
+        return get("photo");
+    }
+
+    public void setPhoto(String photo) {
+        set("photo", photo);
+    }
 }

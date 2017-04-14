@@ -19,7 +19,7 @@ public class SampleApp extends BaseServerSideApp implements ServerSideApp {
     private static JDBCDataSource jdbcDataSource;
     private static boolean populated;
 
-    public DataSource getJdbcDataSource() throws Exception {
+    public DataSource getJdbcDataSource() throws Throwable {
         if (jdbcDataSource == null) {
             System.out.println("Creating datasource");
             jdbcDataSource = new JDBCDataSource();
@@ -40,7 +40,7 @@ public class SampleApp extends BaseServerSideApp implements ServerSideApp {
     }
 
 
-    private void populate(JDBCDataSource jdbcDataSource) throws Exception {
+    private void populate(JDBCDataSource jdbcDataSource) throws Throwable {
 
         runSqlBatch(Utils.read(SampleApp.class.getResourceAsStream("data.sql")));
 
@@ -69,6 +69,11 @@ public class SampleApp extends BaseServerSideApp implements ServerSideApp {
 
     @Override
     public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception {
+
+    }
+
+    @Override
+    public void updateFoto(String login, FileLocator foto) {
 
     }
 }

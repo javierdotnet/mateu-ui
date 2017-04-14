@@ -12,22 +12,22 @@ import java.net.URL;
  */
 public class BaseServiceImpl implements BaseService {
     @Override
-    public Object[][] select(String sql) throws Exception {
+    public Object[][] select(String sql)throws Throwable {
         return ServerSideHelper.getServerSideApp().select(sql);
     }
 
     @Override
-    public Object selectSingleValue(String sql) throws Exception {
+    public Object selectSingleValue(String sql)throws Throwable {
         return ServerSideHelper.getServerSideApp().selectSingleValue(sql);
     }
 
     @Override
-    public void execute(String sql) throws Exception {
+    public void execute(String sql)throws Throwable {
         ServerSideHelper.getServerSideApp().execute(sql);
     }
 
     @Override
-    public Data selectPaginated(Data parameters) throws Exception {
+    public Data selectPaginated(Data parameters)throws Throwable {
 
 
 
@@ -55,40 +55,45 @@ public class BaseServiceImpl implements BaseService {
     }
 
     @Override
-    public Data set(String serverSideControllerKey, Data data) throws Exception {
+    public Data set(String serverSideControllerKey, Data data) throws Throwable {
         System.out.println("set(" + serverSideControllerKey + "," + data + ")");
         Object id = EditorViewControllerRegistry.getController(serverSideControllerKey).set(data);
         return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
     }
 
     @Override
-    public Data get(String serverSideControllerKey, Object id) throws Exception {
+    public Data get(String serverSideControllerKey, Object id) throws Throwable {
         System.out.println("get(" + serverSideControllerKey + "," + id + ")");
         return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
     }
 
     @Override
-    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Exception {
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary)throws Throwable {
         return ServerSideHelper.getServerSideApp().upload(fileName, bytes, temporary);
     }
 
     @Override
-    public UserData authenticate(String login, String password) throws Exception {
+    public UserData authenticate(String login, String password)throws Throwable {
         return ServerSideHelper.getServerSideApp().authenticate(login, password);
     }
 
     @Override
-    public void changePassword(String login, String oldPassword, String newPassword) throws Exception {
+    public void changePassword(String login, String oldPassword, String newPassword)throws Throwable {
         ServerSideHelper.getServerSideApp().changePassword(login, oldPassword, newPassword);
     }
 
     @Override
-    public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception {
+    public void updateProfile(String login, String name, String email, FileLocator foto)throws Throwable {
         ServerSideHelper.getServerSideApp().updateProfile(login, name, email, foto);
     }
 
     @Override
-    public URL dump(Data parameters) throws Exception {
+    public void updateFoto(String login, FileLocator foto)throws Throwable {
+        ServerSideHelper.getServerSideApp().updateFoto(login, foto);
+    }
+
+    @Override
+    public URL dump(Data parameters)throws Throwable {
         return ServerSideHelper.getServerSideApp().dump(parameters);
     }
 

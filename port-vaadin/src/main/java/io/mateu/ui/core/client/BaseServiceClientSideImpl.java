@@ -21,7 +21,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -46,7 +46,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -70,7 +70,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -92,7 +92,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                     callback.onSuccess(r);
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -113,7 +113,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
                             callback.onSuccess(r);
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -137,7 +137,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -162,7 +162,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -185,7 +185,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -211,7 +211,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -219,6 +219,27 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
                 }
+
+    }
+
+    @Override
+    public void updateFoto(String login, FileLocator foto, AsyncCallback<Void> callback) {
+        try {
+
+            ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).updateFoto(login, foto);
+
+
+            callback.onSuccess(null);
+
+
+        } catch (Throwable e) {
+
+            e.printStackTrace();
+
+            callback.onFailure(e);
+
+
+        }
 
     }
 
@@ -235,7 +256,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 
@@ -259,7 +280,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     e.printStackTrace();
 

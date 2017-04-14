@@ -104,6 +104,13 @@ public abstract class AbstractListView extends AbstractView implements ListView 
             }
         });
 
+        as.add(new AbstractAction("Close") {
+            @Override
+            public void run() {
+                close();
+            }
+        });
+
         return as;
     }
 

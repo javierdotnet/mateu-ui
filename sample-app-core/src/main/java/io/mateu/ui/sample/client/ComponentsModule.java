@@ -86,6 +86,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new TextFieldView());
                     }
+                }, (MenuEntry) new AbstractAction("ComboBoxField") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new ComboBoxFieldView());
+                    }
                 }, (MenuEntry) new AbstractAction("ListSelectionField") {
                     @Override
                     public void run() {
@@ -115,6 +120,11 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new TabsView());
+                    }
+                }, (MenuEntry) new AbstractAction("File field") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new FileFieldView());
                     }
                 });
             }

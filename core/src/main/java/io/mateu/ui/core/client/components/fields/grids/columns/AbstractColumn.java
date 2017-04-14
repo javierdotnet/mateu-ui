@@ -1,5 +1,7 @@
 package io.mateu.ui.core.client.components.fields.grids.columns;
 
+import io.mateu.ui.core.shared.CellStyleGenerator;
+
 /**
  * Created by miguel on 23/10/16.
  */
@@ -10,6 +12,7 @@ public class AbstractColumn<T extends AbstractColumn<T>> {
     private int width = 100;
     private boolean editable;
     private ColumnAlignment alignment = ColumnAlignment.LEFT;
+    private CellStyleGenerator styleGenerator;
 
     public AbstractColumn(String id, String label, int width, boolean editable) {
         this.id = id;
@@ -60,6 +63,15 @@ public class AbstractColumn<T extends AbstractColumn<T>> {
 
     public T setAlignment(ColumnAlignment alignment) {
         this.alignment = alignment;
+        return (T) this;
+    }
+
+    public CellStyleGenerator getStyleGenerator() {
+        return styleGenerator;
+    }
+
+    public T setStyleGenerator(CellStyleGenerator styleGenerator) {
+        this.styleGenerator = styleGenerator;
         return (T) this;
     }
 }

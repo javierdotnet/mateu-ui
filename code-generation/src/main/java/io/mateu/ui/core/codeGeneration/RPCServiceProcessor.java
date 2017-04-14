@@ -147,7 +147,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
                         "\n" +
                         "                        ";
 
-                s += "\n\n\t\t} catch (Exception e) {\n" +
+                s += "\n\n\t\t} catch (Throwable e) {\n" +
                         "e.printStackTrace();";
 
                 s += "\n" +

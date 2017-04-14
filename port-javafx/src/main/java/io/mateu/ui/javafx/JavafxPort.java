@@ -115,8 +115,6 @@ public class JavafxPort extends Application {
                                 ViewTab tcrud;
                                 d.getDialogPane().setContent(tabPane = new TabPane(tcrud = new ViewTab(view)));
                                 tcrud.setClosable(false);
-                                tabPane.setPrefWidth(600);
-                                tabPane.setPrefHeight(400);
                                 ((CRUDDialog)view).getCrud().addListener(new CRUDListener() {
                                     @Override
                                     public void openEditor(AbstractEditorView view) {
@@ -374,8 +372,8 @@ public class JavafxPort extends Application {
         });
 
         //primaryStage.setFullScreen(true);
-        primaryStage.setWidth(800);
-        primaryStage.setHeight(600);
+        primaryStage.setWidth(1024);
+        primaryStage.setHeight(800);
         primaryStage.setScene(new Scene(new AppNode()));
 
 

@@ -49,12 +49,12 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public Object[][] select(String sql) throws Exception {
+    public Object[][] select(String sql)throws Throwable {
         final Object[][][] r = {null};
 
         notransact(new SQLTransaction() {
             @Override
-            public void run(Connection conn) throws Exception {
+            public void run(Connection conn)throws Exception {
 
                 System.out.println("sql: " + sql); //prettySQLFormat(sql));
 
@@ -83,11 +83,11 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public void execute(String sql) throws Exception {
+    public void execute(String sql)throws Throwable {
 
         transact(new SQLTransaction() {
             @Override
-            public void run(Connection conn) throws Exception {
+            public void run(Connection conn)throws Exception {
 
                 Statement s = conn.createStatement();
                 s.execute(sql);
@@ -98,7 +98,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public Object selectSingleValue(String sql) throws Exception {
+    public Object selectSingleValue(String sql)throws Throwable {
         Object o = null;
         Object[][] r = select(sql);
         if (r.length > 0 && r[0].length > 0) o = r[0][0];
@@ -106,11 +106,11 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public void update(String sql) throws Exception {
+    public void update(String sql)throws Throwable {
 
         transact(new SQLTransaction() {
             @Override
-            public void run(Connection conn) throws Exception {
+            public void run(Connection conn)throws Exception {
                 Statement s = conn.createStatement();
                 s.executeUpdate(sql);
             }
@@ -138,7 +138,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
 
                 String aux = "select count(*) from (" + sql + ") x";
                 total = ((Long) selectSingleValue(aux)).intValue();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -146,15 +146,15 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public Object[][] selectPage(String sql, int desdeFila, int numeroFilas) throws Exception {
+    public Object[][] selectPage(String sql, int desdeFila, int numeroFilas)throws Throwable {
         return select(sql + " LIMIT " + numeroFilas + " OFFSET " + desdeFila);
     }
 
-    public Connection getConn() throws Exception {
+    public Connection getConn()throws Throwable {
         return getDataSource().getConnection();
     }
 
-    public DataSource getDataSource() throws Exception {
+    public DataSource getDataSource()throws Throwable {
         if (jdbcDataSource == null) {
             jdbcDataSource = getJdbcDataSource();
             System.out.println("Datasource available");
@@ -162,18 +162,18 @@ public abstract class BaseServerSideApp implements ServerSideApp {
         return jdbcDataSource;
     }
 
-    public abstract DataSource getJdbcDataSource() throws Exception;
+    public abstract DataSource getJdbcDataSource()throws Throwable;
 
 
     @Override
-    public void runSqlBatch(String b) throws Exception {
+    public void runSqlBatch(String b)throws Throwable {
 
         long t0 = new Date().getTime();
 
         transact(new SQLTransaction() {
 
             @Override
-            public void run(Connection conn) throws Exception {
+            public void run(Connection conn)throws Exception {
 
                 String bx = b.replaceAll("\\/\\*.*\\*\\/", "");
 
@@ -190,7 +190,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Exception {
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary)throws Throwable {
         long id = fileId++;
         String extension = ".tmp";
         if (fileName == null || "".equals(fileName.trim())) fileName = "" + id;
@@ -200,11 +200,11 @@ public abstract class BaseServerSideApp implements ServerSideApp {
         }
         File temp = File.createTempFile(fileName, extension);
         Utils.write(temp, bytes);
-        return new FileLocator(id, temp.getName(), temp.getAbsolutePath());
+        return new FileLocator(id, temp.getName(), temp.getAbsolutePath(), temp.getAbsolutePath());
     }
 
     @Override
-    public void notransact(SQLTransaction t) throws Exception {
+    public void notransact(SQLTransaction t)throws Throwable {
         Connection conn = null;
         try {
 
@@ -223,7 +223,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public void transact(SQLTransaction t) throws Exception {
+    public void transact(SQLTransaction t)throws Throwable {
 
         Connection conn = null;
 
@@ -267,12 +267,12 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public Data getFromSql(String sql) throws Exception {
+    public Data getFromSql(String sql)throws Throwable {
         final Data[] r = {null};
 
         notransact(new SQLTransaction() {
             @Override
-            public void run(Connection conn) throws Exception {
+            public void run(Connection conn)throws Exception {
 
                 System.out.println("sql: " + sql); //prettySQLFormat(sql));
 
@@ -302,13 +302,13 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public void setToSql(Data data, String tableName) throws Exception {
+    public void setToSql(Data data, String tableName)throws Throwable {
 
         if (data != null) {
 
             transact(new SQLTransaction() {
                 @Override
-                public void run(Connection conn) throws Exception {
+                public void run(Connection conn)throws Exception {
 
                     String sql = "";
 
@@ -375,7 +375,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public URL dump(Data parameters) throws Exception {
+    public URL dump(Data parameters)throws Throwable {
         AbstractListView lv = null;
         if (parameters.containsKey("_metadata")) lv = (AbstractListView) Class.forName(parameters.getString("_listview")).getDeclaredConstructor(Data.class).newInstance((Data)parameters.get("_metadata"));
         else lv = (AbstractListView) Class.forName(parameters.getString("_listview")).newInstance();
@@ -387,7 +387,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
         }
     }
 
-    public URL listToPdf(Data parameters, AbstractListView view) throws Exception {
+    public URL listToPdf(Data parameters, AbstractListView view)throws Throwable {
 
         String xslfo = ServerSideHelper.getServerSideApp().getXslfoForListing();
 
@@ -604,7 +604,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
 
-    public URL listToExcel(Data parameters, AbstractListView view) throws Exception {
+    public URL listToExcel(Data parameters, AbstractListView view)throws Throwable {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         HSSFCellStyle cellStyleDate = workbook.createCellStyle();
@@ -736,7 +736,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
     }
 
     @Override
-    public String getXslfoForListing() throws Exception {
+    public String getXslfoForListing()throws Throwable {
         return Resources.toString(Resources.getResource(BaseServerSideApp.class, "listing.xsl"), Charsets.UTF_8);
     }
 }

@@ -10,28 +10,30 @@ import java.net.URL;
 @Service()
 public interface BaseService {
 
-    public Object[][] select(String sql) throws Exception;
+    public Object[][] select(String sql) throws Throwable;
 
-    public Object selectSingleValue(String sql) throws Exception;
+    public Object selectSingleValue(String sql) throws Throwable;
 
-    public void execute(String sql) throws Exception;
+    public void execute(String sql) throws Throwable;
 
-    public Data selectPaginated(Data parameters) throws Exception;
-
-
-    public Data set(String serverSideControllerKey, Data data) throws Exception;
-
-    public Data get(String serverSideControllerKey, Object id) throws IllegalAccessException, InstantiationException, Exception;
+    public Data selectPaginated(Data parameters) throws Throwable;
 
 
-    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Exception;
+    public Data set(String serverSideControllerKey, Data data) throws Throwable;
 
-    public UserData authenticate(String login, String password) throws Exception;
+    public Data get(String serverSideControllerKey, Object id) throws Throwable;
 
-    public void changePassword(String login, String oldPassword, String newPassword) throws Exception;
 
-    public void updateProfile(String login, String name, String email, FileLocator foto) throws Exception;
+    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Throwable;
 
-    public URL dump(Data parameters) throws Exception;
+    public UserData authenticate(String login, String password) throws Throwable;
+
+    public void changePassword(String login, String oldPassword, String newPassword) throws Throwable;
+
+    public void updateProfile(String login, String name, String email, FileLocator foto) throws Throwable;
+
+    public void updateFoto(String login, FileLocator foto) throws Throwable;
+
+    public URL dump(Data parameters) throws Throwable;
 
 }

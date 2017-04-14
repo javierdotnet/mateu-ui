@@ -5,6 +5,7 @@ import io.mateu.ui.core.client.components.fields.IntegerField;
 import io.mateu.ui.core.client.components.fields.PKField;
 import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.OutputColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.AsyncCallback;
@@ -59,8 +60,8 @@ public class CRUDViewForCurrencies extends AbstractCRUDView {
 
     @Override
     public List<AbstractColumn> createExtraColumns() {
-        return Arrays.asList(new TextColumn("col1", "Name", 100, false)
-        , new TextColumn("col2", "Decimals", 100, false)
+        return Arrays.asList(new OutputColumn("col1", "Name", 100)
+        , new OutputColumn("col2", "Decimals", 100)
         );
     }
 

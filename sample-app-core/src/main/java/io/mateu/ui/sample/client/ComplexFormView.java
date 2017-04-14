@@ -52,6 +52,8 @@ public class ComplexFormView extends AbstractView {
                 .add(new TextField("f2", "Adress"))
                 .add(new TextField("f3", "Country"))
                 .add(new TextField("f1", "Name repeated"))
+                .add(new TextField("_title", "_title"))
+                .add(new TextField("_tostring", "_tostring"))
                 .add(new GridField("g1", "Hobbies", new AbstractColumn[]{
                         new TextColumn("col1", "Col1", 100, true)
                         , new TextColumn("col2", "Col2", 100, true)

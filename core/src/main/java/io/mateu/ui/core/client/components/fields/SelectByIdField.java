@@ -7,8 +7,6 @@ import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 
-import static org.apache.fop.fonts.type1.AdobeStandardEncoding.e;
-
 /**
  * Created by miguel on 20/1/17.
  */
@@ -56,11 +54,15 @@ public abstract class SelectByIdField extends TextField {
             }
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(Data result) {
                 System.out.println("******ONSUCESS*****");
-                Data d = editor.getForm().getData();
-                getForm().set(getId(), getPair(d));
-                editor.close();
+                getForm().set(getId(), getPair(result));
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        editor.close();
+                    }
+                });
             }
 
             @Override
@@ -85,10 +87,9 @@ public abstract class SelectByIdField extends TextField {
             }
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(Data result) {
                 System.out.println("******ONSUCESS*****");
-                Data d = editor.getForm().getData();
-                getForm().set(getId(), getPair(d));
+                getForm().set(getId(), getPair(result));
                 editor.close();
             }
 

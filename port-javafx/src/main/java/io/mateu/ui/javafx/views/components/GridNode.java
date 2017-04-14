@@ -1,5 +1,8 @@
 package io.mateu.ui.javafx.views.components;
 
+import com.google.common.base.Strings;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.ActionOnRow;
 import io.mateu.ui.core.client.app.Callback;
@@ -218,7 +221,8 @@ public class GridNode extends VBox {
         });
 
 
-        t.setPrefHeight(150);
+        t.setPrefHeight(400);
+        t.setPrefWidth(900);
 
         return t;
     }
@@ -289,7 +293,7 @@ public class GridNode extends VBox {
                 }
             }));
             c1.setEditable(true);
-        } else if (c instanceof LinkColumn) {
+            } else if (c instanceof LinkColumn) {
                 c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
                 c1.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override
@@ -330,6 +334,76 @@ public class GridNode extends VBox {
                     }
                 }));
                 c1.setEditable(true);
+            } else if (c instanceof OutputColumn) {
+                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                c1.setCellFactory(column -> {
+                    return new TableCell<Data, Object>() {
+
+                        @Override
+                        protected void updateItem(Object item, boolean empty) {
+                            super.updateItem(item, empty);
+
+                            getStyleClass().clear();
+                            getStyleClass().addAll("cell", "indexed-cell", "table-cell", "table-column");
+
+                            if (item == null || empty) {
+                                setText(null);
+                                setStyle("");
+                                setGraphic(null);
+                            } else {
+                                // Format date.
+                                setText("" + item);
+                                setGraphic(null);
+                                setStyle("");
+                                if (c.getStyleGenerator() != null) {
+                                    String s = c.getStyleGenerator().getStyle(item);
+                                    if (s != null) for (String x : s.split(" ")) if (!Strings.isNullOrEmpty(x)) getStyleClass().add(x);
+                                    if (s == null) {
+                                    } else if (s.contains("pending")) {
+                                        setText(null);
+                                        setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CIRCLE_THIN));
+                                        setStyle("-fx-alignment: center;");
+                                    } else if (s.contains("done")) {
+                                        setText(null);
+                                        setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
+                                        setStyle("-fx-alignment: center;");
+                                    } else if (s.contains("cancelled")) {
+                                        setText(null);
+                                        setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOSE));
+                                        setStyle("-fx-alignment: center;");
+                                    } else if (s.contains("expired")) {
+                                        setText(null);
+                                        setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOCK_ALT));
+                                        setStyle("-fx-alignment: center;");
+                                    }
+                                }
+/*
+                                // Style all dates in March with a different color.
+                                if (item.getMonth() == Month.MARCH) {
+                                    setTextFill(Color.CHOCOLATE);
+                                    setStyle("-fx-background-color: yellow");
+                                } else {
+                                    setTextFill(Color.BLACK);
+                                    setStyle("");
+                                }
+                                */
+                            }
+                        }
+                    };
+                });
+                /*
+                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                    @Override
+                    public String toString(Object object) {
+                        return (object == null)?null:"" + object;
+                    }
+
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                }));
+                */
             }
 
             c1.setPrefWidth(c.getWidth());

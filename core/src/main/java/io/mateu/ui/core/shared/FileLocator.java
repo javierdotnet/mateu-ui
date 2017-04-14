@@ -20,6 +20,14 @@ public class FileLocator extends Data {
         }
     }
 
+    public FileLocator(long id, String fileName, String url, String tmpPath) {
+        setId(id);
+        setFileName(fileName);
+        setUrl(url);
+        setModified(true);
+        setTmpPath(tmpPath);
+    }
+
     public String getUrl() {
         return get("_url");
     }
@@ -43,4 +51,17 @@ public class FileLocator extends Data {
     public void setFileName(String fileName) {
         set("_filename", fileName);
     }
+
+    public boolean isModified() { return get("_modified"); }
+
+    public void setModified(boolean modified) { set("_modified", modified); }
+
+    public String getTmpPath() {
+        return get("_tmppath");
+    }
+
+    public void setTmpPath(String tmpPath) {
+        set("_tmppath", tmpPath);
+    }
+
 }

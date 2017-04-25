@@ -67,6 +67,11 @@ public class ViewsComponent extends TabSheet {
                     public void setted(String k, Object v) {
 
                     }
+
+                    @Override
+                    public void idsResetted() {
+
+                    }
                 });
             }
 

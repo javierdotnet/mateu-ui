@@ -2,6 +2,8 @@ package io.mateu.ui.sample.client;
 
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
+import io.mateu.ui.core.client.components.fields.IntegerField;
+import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.client.components.fields.grids.columns.*;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractView;
@@ -42,6 +44,15 @@ public class GridView extends AbstractView {
                             }
                         }
                         , new TextColumn("z", "a", 100, true)
-                )));
+                )) {
+                    @Override
+                    public AbstractForm getDataForm(Data initialData) {
+                        AbstractForm f = new AbstractForm() {
+                        };
+                        f.add(new TextField("a", "A"));
+                        f.add(new IntegerField("b", "B"));
+                        return f;
+                    }
+                });
     }
 }

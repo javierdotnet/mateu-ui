@@ -220,4 +220,12 @@ public class Data implements Serializable, DataContainer {
         return s;
 
     }
+
+    public void setAll(Data data) {
+        if (data != null) {
+            for (String k : data.getPropertyNames()) {
+                set(k, data.get(k));
+            }
+        }
+    }
 }

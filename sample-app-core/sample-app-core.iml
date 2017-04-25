@@ -51,9 +51,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom2:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:21.0" level="project" />
-    <orderEntry type="module" module-name="port-javafx" />
+    <orderEntry type="module" module-name="codegeneration-vaadin" />
     <orderEntry type="module" module-name="code-generation" />
-    <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.12" level="project" />
-    <orderEntry type="library" name="Maven: de.jensd:fontawesomefx:8.9" level="project" />
   </component>
 </module>

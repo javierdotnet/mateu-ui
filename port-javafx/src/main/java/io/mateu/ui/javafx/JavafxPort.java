@@ -17,6 +17,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
@@ -24,9 +26,11 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import io.mateu.ui.core.client.app.ClientSideHelper;
 import io.mateu.ui.core.client.app.MateuUI;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.control.action.Action;
 
 import java.awt.*;
 import java.io.File;
@@ -34,10 +38,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import static javafx.scene.control.ButtonType.CANCEL;
+import static javafx.scene.control.ButtonType.OK;
 
 /**
  * Created by miguel on 9/8/16.
@@ -84,10 +89,10 @@ public class JavafxPort extends Application {
         mainStage = primaryStage;
 
         try {
-            System.out.println("Loading font " + JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm());
+            //System.out.println("Loading font " + JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm());
 
-            Font.loadFont(JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm(), 10);
-            Font.loadFont(JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/lato/Lato-Regular.ttf").toExternalForm(), 10);
+            //Font.loadFont(JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/tron/TRON.ttf").toExternalForm(), 10);
+            //Font.loadFont(JavafxPort.class.getResource("/io/mateu/ui/javafx/fonts/lato/Lato-Regular.ttf").toExternalForm(), 10);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,6 +156,11 @@ public class JavafxPort extends Application {
                                                     public void setted(String k, Object v) {
                                                         // do nothing
                                                     }
+
+                                                    @Override
+                                                    public void idsResetted() {
+
+                                                    }
                                                 });
                                             }
                                             t.setOnClosed(new EventHandler<Event>() {
@@ -183,7 +193,7 @@ public class JavafxPort extends Application {
 
 
                             ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
-                            d.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+                            d.getDialogPane().getButtonTypes().addAll(loginButtonType, CANCEL);
 
                             Optional<ButtonType> result = d.showAndWait();
                             if (result.get() == loginButtonType) { //ButtonType.OK){
@@ -367,6 +377,58 @@ public class JavafxPort extends Application {
                         v.getEngine().load(url.toString());
 
                     }
+                });
+            }
+
+            @Override
+            public void confirm(String text, Runnable onOk) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initStyle(StageStyle.UTILITY);
+                alert.setTitle("Choose an option");
+                alert.setHeaderText("Please confirm");
+                alert.setContentText(text);
+
+                //To make enter key press the actual focused button, not the first one. Just like pressing "space".
+                alert.getDialogPane().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode().equals(KeyCode.ENTER)) {
+                        event.consume();
+                        try {
+                            Robot r = new Robot();
+                            r.keyPress(java.awt.event.KeyEvent.VK_SPACE);
+                            r.keyRelease(java.awt.event.KeyEvent.VK_SPACE);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                List<ButtonType> buttons = new ArrayList<>();
+                for (ButtonType bt : new ButtonType[]{OK, CANCEL}) {
+                    buttons.add(bt);
+                }
+
+                alert.getButtonTypes().setAll(buttons);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (!result.isPresent()) {
+                    //return CANCEL;
+                } else {
+                    if (OK.equals(result.get())) onOk.run();
+                }
+            }
+
+            @Override
+            public void open(AbstractWizard wizard) {
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        WizardDialog d = new WizardDialog(wizard);
+
+                        Optional<ButtonType> result = d.showAndWait();
+
+                    }
+
                 });
             }
         });

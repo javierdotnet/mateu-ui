@@ -3,9 +3,7 @@ package io.mateu.ui.sample.client;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.fields.SelectByIdField;
 import io.mateu.ui.core.client.components.fields.TextField;
-import io.mateu.ui.core.client.views.AbstractDialog;
-import io.mateu.ui.core.client.views.AbstractForm;
-import io.mateu.ui.core.client.views.ViewForm;
+import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
 
 import java.util.Arrays;
@@ -45,6 +43,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
 
                     }
+                }, (MenuEntry) new AbstractAction("EditorView") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new EditorView());
+                    }
                 }, (MenuEntry) new AbstractAction("AbstractListView") {
                     @Override
                     public void run() {
@@ -59,6 +62,11 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         MateuUI.openView(new CRUDViewForCurrencies());
+                    }
+                }, (MenuEntry) new AbstractAction("Crimes CRUD view") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new CRUDCrimesView());
                     }
                 }, (MenuEntry) new AbstractAction("AbstractCRUDView 2") {
                     @Override
@@ -159,6 +167,41 @@ public class ComponentsModule extends AbstractModule {
                                         ;
                             }
                         });
+                    }
+                }, (MenuEntry) new AbstractAction("Wizard") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().open(new BaseWizard("My first wizard").addPage(new BaseWizardPageView() {
+                            @Override
+                            public String getTitle() {
+                                return "First page";
+                            }
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return new ViewForm(this).add(new TextField("f1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                            }
+                        }).addPage(new BaseWizardPageView() {
+                            @Override
+                            public String getTitle() {
+                                return "Second page";
+                            }
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return new ViewForm(this).add(new TextField("f2", "Field 2").setRequired(true));
+                            }
+                        }).addPage(new BaseWizardPageView() {
+                            @Override
+                            public String getTitle() {
+                                return "Third page";
+                            }
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return new ViewForm(this).add(new TextField("f3", "Field 3"));
+                            }
+                        }));
                     }
                 });
             }

@@ -216,6 +216,15 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         return p;
     }
 
+    public Property<Long> getLongProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleLongProperty());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
+
     public Property<Number> getNumberProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
@@ -281,5 +290,22 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             p.addListener(listenerx);
         }
         return p;
+    }
+
+    public void resetIds() {
+        for (String n : props.keySet()) {
+            if ("_id".equals(n)) props.get(n).setValue(null);
+            else if (props.get(n).getValue() != null) {
+                Class c = props.get(n).getValue().getClass();
+                if (List.class.isAssignableFrom(c)) {
+                    for (Object o : ((List)props.get(n).getValue())) {
+                        if (o instanceof DataStore) {
+                            DataStore x = (DataStore) o;
+                            x.resetIds();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

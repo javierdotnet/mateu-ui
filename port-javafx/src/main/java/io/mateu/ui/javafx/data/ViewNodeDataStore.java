@@ -11,7 +11,7 @@ public class ViewNodeDataStore extends DataStore {
     private final ViewNode viewNode;
 
     public ViewNodeDataStore(ViewNode viewNode) {
-        super(viewNode.getView().getForm().getData());
+        super(viewNode.getView().initializeData());
         this.viewNode = viewNode;
     }
 

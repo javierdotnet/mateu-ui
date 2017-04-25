@@ -20,24 +20,37 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
 
     public abstract AbstractEditorView getNewEditorView() throws Throwable;
 
+    public boolean canCreate() {
+        return true;
+    }
+
+    public boolean canDelete() {
+        return true;
+    }
+
     @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> as = super.createActions();
-        as.add(new AbstractAction("New") {
+        if (canCreate()) as.add(new AbstractAction("New") {
             @Override
             public void run() {
                openNew();
             }
         });
-        as.add(new AbstractAction("Delete") {
+        if (canDelete()) as.add(new AbstractAction("Delete") {
             @Override
             public void run() {
                 if (getSelection().size() == 0) MateuUI.alert("No rows selected");
                 else {
-                    delete(getSelection(), new Callback<Void>() {
+                    MateuUI.confirm("Are you sure you want to delete them?", new Runnable() {
                         @Override
-                        public void onSuccess(Void result) {
-                            search();
+                        public void run() {
+                            delete(getSelection(), new Callback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    search();
+                                }
+                            });
                         }
                     });
                 }

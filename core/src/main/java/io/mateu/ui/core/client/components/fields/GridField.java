@@ -5,6 +5,7 @@ import io.mateu.ui.core.client.app.AbstractExecutable;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.GriRowFormatter;
 import io.mateu.ui.core.client.components.fields.grids.GridFieldHelper;
+import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.data.GridFilter;
 
@@ -194,6 +195,15 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     public String getInfoSeleccion() {
         return "" + ((GridFieldHelper)getHelper()).getSelection().size() + " rows selected.";
+    }
+
+    public AbstractForm getDataForm() {
+        return getDataForm(null);
+    }
+
+
+    public AbstractForm getDataForm(Data initialData) {
+        return null;
     }
 
     public int getHeight() {

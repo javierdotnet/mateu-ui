@@ -175,12 +175,22 @@ public abstract class BaseServerSideApp implements ServerSideApp {
             @Override
             public void run(Connection conn)throws Exception {
 
-                String bx = b.replaceAll("\\/\\*.*\\*\\/", "");
+                String bx = b.replaceAll("--.*\\n", "").replaceAll("\\n", "");
+
+                while (bx.contains("/*")) {
+                    bx = bx.substring(0, bx.indexOf("/*")) + bx.substring(bx.indexOf("*/") + "*/".length());
+                }
+
 
                 Statement s = conn.createStatement();
                 for (String l : bx.split("\\;")) {
-                    s.executeUpdate(l.trim());
+                    String sql = l.trim();
+                    if (!"".equals(sql)) {
+                        System.out.println(sql);
+                        s.executeUpdate(sql);
+                    }
                 }
+
 
             }
         });

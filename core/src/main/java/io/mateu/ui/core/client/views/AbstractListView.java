@@ -76,7 +76,7 @@ public abstract class AbstractListView extends AbstractView implements ListView 
             public void run() {
                 Data p = getForm().getData();
                 p.set("_format", "excel");
-                p.set("_listview", _this.getClass().getName());
+                p.set("_listview", (_this.getClass().isAnonymousClass())?_this.getClass().getSuperclass().getName():_this.getClass().getName());
                 p.set("_baseurl", MateuUI.getApp().getBaseUrl());
                 if (getMetadata() != null) p.set("_metadata", getMetadata());
                 MateuUI.getBaseService().dump(p, new Callback<URL>() {
@@ -92,7 +92,7 @@ public abstract class AbstractListView extends AbstractView implements ListView 
             public void run() {
                 Data p = getForm().getData();
                 p.set("_format", "pdf");
-                p.set("_listview", _this.getClass().getName());
+                p.set("_listview", (_this.getClass().isAnonymousClass())?_this.getClass().getSuperclass().getName():_this.getClass().getName());
                 p.set("_baseurl", MateuUI.getApp().getBaseUrl());
                 if (getMetadata() != null) p.set("_metadata", getMetadata());
                 MateuUI.getBaseService().dump(p, new Callback<URL>() {

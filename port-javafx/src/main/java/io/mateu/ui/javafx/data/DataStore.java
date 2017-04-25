@@ -22,8 +22,10 @@ import java.util.*;
  */
 public class DataStore {
 
-    private Data data;
+    //private Data data;
     Map<String, Property> props = new LinkedHashMap<String, Property>();
+
+    private String dataClassName;
 
 
     private javafx.beans.value.ChangeListener listenerx = new javafx.beans.value.ChangeListener<Object>() {
@@ -31,7 +33,7 @@ public class DataStore {
         @Override
         public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
             for (String k : props.keySet()) if (props.get(k).equals(observable)) {
-                data.set(k, newValue); // set value in form's data
+                //data.set(k, newValue); // set value in form's data
                 hasChanged(k, oldValue, newValue);
                 break;
             }
@@ -44,14 +46,15 @@ public class DataStore {
 
 
     public DataStore(Data data) {
+        dataClassName = data.getClass().getName();
         setData(data);
-        set("_selected", false);
-        set("__id", UUID.randomUUID());
+        if (!props.containsKey("_selected")) set("_selected", false);
+        if (!props.containsKey("__id")) set("__id", UUID.randomUUID());
     }
 
 
     public void setData(Data data) {
-        this.data = data;
+        //this.data = data;
         //clear();
 
         List<String> vistas = new ArrayList<>();
@@ -92,7 +95,7 @@ public class DataStore {
 
         }
 
-        for (String n : props.keySet()) {
+        for (String n : props.keySet()) if (!n.startsWith("_")) {
             Property p = props.get(n);
             if (p != null && !vistas.contains(n)) {
                 if (p.getValue() != null && !(p.getValue() instanceof ObservableList)) {
@@ -103,7 +106,44 @@ public class DataStore {
     }
 
     public Data getData() {
+        Data data = null;
+        try {
+            data = (Data) Class.forName(dataClassName).newInstance();
+            fill(data);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return data;
+    }
+
+    private void fill(Data data) {
+        for (String n : props.keySet()) {
+            Property p = props.get(n);
+            if (p != null) {
+                Object v = p.getValue();
+                if (v != null) {
+                    if (v instanceof ObservableList) {
+                        List z = (List) p.getValue();
+                        List<Object> nl = new ArrayList<>();
+                        for (Object vv : z) {
+                            if (vv instanceof DataStore) {
+                                nl.add(((DataStore) vv).getData());
+                            } else {
+                                nl.add(vv);
+                            }
+                        }
+                        v = nl;
+                    } else if (v instanceof DataStore) {
+                        v = ((DataStore) v).getData();
+                    }
+                }
+                data.set(n, v);
+            }
+        }
     }
 
 
@@ -219,7 +259,7 @@ public class DataStore {
     public Property<Double> getDoubleProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleDoubleProperty());
+            props.put(id, p = new SimpleObjectProperty<Double>());
             p.addListener(listenerx);
         }
         return p;
@@ -228,16 +268,24 @@ public class DataStore {
     public Property<Integer> getIntegerProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleIntegerProperty());
+            props.put(id, p = new SimpleObjectProperty<Integer>());
             p.addListener(listenerx);
         }
         return p;
     }
 
+    public Property<Long> getLongProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<Long>());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
     public Property<Number> getNumberProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleIntegerProperty());
+            props.put(id, p = new SimpleObjectProperty<Integer>());
             p.addListener(listenerx);
         }
         return p;
@@ -246,7 +294,7 @@ public class DataStore {
     public Property<Boolean> getBooleanProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleBooleanProperty());
+            props.put(id, p = new SimpleObjectProperty<Boolean>());
             p.addListener(listenerx);
         }
         return p;
@@ -335,4 +383,22 @@ public class DataStore {
     public void clear() {
         props.clear();
     }
+
+    public void resetIds() {
+        for (String n : props.keySet()) {
+            if ("_id".equals(n)) props.get(n).setValue(null);
+            else if (props.get(n).getValue() != null) {
+                Class c = props.get(n).getValue().getClass();
+                if (List.class.isAssignableFrom(c)) {
+                    for (Object o : ((List)props.get(n).getValue())) {
+                        if (o instanceof DataStore) {
+                            DataStore x = (DataStore) o;
+                            x.resetIds();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

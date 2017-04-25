@@ -25,7 +25,11 @@
 
 package io.mateu.ui.javafx.views.components.table;
 
+import com.google.common.base.Strings;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.mateu.ui.core.client.app.ActionOnRow;
+import io.mateu.ui.core.shared.CellStyleGenerator;
 import io.mateu.ui.javafx.data.DataStore;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -64,6 +68,7 @@ import javafx.util.StringConverter;
 public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
 
     private final ActionOnRow action;
+    private final CellStyleGenerator cellStyleGenerator;
 
     /***************************************************************************
      *                                                                         *
@@ -72,10 +77,10 @@ public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
      **************************************************************************/
 
 
-    public static <S,T> Callback<TableColumn<S,T>, TableCell<S,T>> forTableColumn(final StringConverter<T> converter, ActionOnRow action) {
+    public static <S,T> Callback<TableColumn<S,T>, TableCell<S,T>> forTableColumn(final StringConverter<T> converter, ActionOnRow action, CellStyleGenerator cellStyleGenerator) {
         return new Callback<TableColumn<S,T>, TableCell<S,T>>() {
             @Override public TableCell<S,T> call(TableColumn<S,T> list) {
-                return new MateuLinkTableCell<S,T>(converter, action);
+                return new MateuLinkTableCell<S,T>(converter, action, cellStyleGenerator);
             }
         };
     }
@@ -110,14 +115,15 @@ public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
      *
      * @param converter A StringConverter that, given an object of type T, will return a
      *      String that can be used to represent the object visually.
+     * @param cellStyleGenerator
      */
-    public MateuLinkTableCell(final StringConverter<T> converter, ActionOnRow action) {
+    public MateuLinkTableCell(final StringConverter<T> converter, ActionOnRow action, CellStyleGenerator cellStyleGenerator) {
 
         this.action = action;
+        this.cellStyleGenerator = cellStyleGenerator;
         
         // we let getSelectedProperty be null here, as we can always defer to the
         // TableColumn
-        this.getStyleClass().add("check-box-table-cell");
 
         this.hyperlink = new Hyperlink();
 
@@ -223,8 +229,12 @@ public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
     @Override public void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
 
+        getStyleClass().clear();
+        getStyleClass().addAll("cell", "indexed-cell", "table-cell", "table-column");
+
         if (empty) {
             setText(null);
+            setStyle("");
             setGraphic(null);
         } else {
             StringConverter c = getConverter();
@@ -235,9 +245,40 @@ public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
             setGraphic(hyperlink);
 
             hyperlink.setText(c.toString(item));
-
+            // Format date.
+            setStyle("");
+            if (getCellStyleGenerator() != null) {
+                String s = getCellStyleGenerator().getStyle(item);
+                if (s != null) {
+                    System.out.println("s=" + s);
+                }
+                if (s != null) {
+                    for (String x : s.split(" ")) {
+                        if (!Strings.isNullOrEmpty(x)) {
+                            getStyleClass().add(x);
+                        }
+                    }
+                }
+                if (s == null) {
+                } else if (s.contains("pending")) {
+                    setText(null);
+                    setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CIRCLE_THIN));
+                    setStyle("-fx-alignment: center;");
+                } else if (s.contains("done")) {
+                    setText(null);
+                    setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
+                    setStyle("-fx-alignment: center;");
+                } else if (s.contains("cancelled")) {
+                    setText(null);
+                    setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOSE));
+                    setStyle("-fx-alignment: center;");
+                } else if (s.contains("expired")) {
+                    setText(null);
+                    setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOCK_ALT));
+                    setStyle("-fx-alignment: center;");
+                }
+            }
         }
-
 
     }
 
@@ -258,5 +299,9 @@ public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
         return getSelectedStateCallback() != null ?
                 getSelectedStateCallback().call(getIndex()) :
                 getTableColumn().getCellObservableValue(getIndex());
+    }
+
+    public CellStyleGenerator getCellStyleGenerator() {
+        return cellStyleGenerator;
     }
 }

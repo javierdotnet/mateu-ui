@@ -1,5 +1,6 @@
 package io.mateu.ui.javafx.views;
 
+import com.google.common.base.Strings;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.Component;
@@ -20,6 +21,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -94,21 +96,69 @@ public class ViewNode extends StackPane {
     public ViewNode(AbstractView view) {
         this();
         this.view = view;
+        view.getForm().setHelper(new FormHelper() {
+            @Override
+            public Data getData() {
+                return getDataStore().getData();
+            }
+        });
         dataStore = new ViewNodeDataStore(this);
+        view.getForm().getData();
         view.getForm().addDataSetterListener(new DataSetterListener() {
             @Override
             public void setted(Data newData) {
                 getDataStore().setData(newData);
+                if (getFirstField() != null) MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getFirstField().requestFocus();
+                    }
+                });
             }
 
             @Override
             public void setted(String k, Object v) {
                 getDataStore().set(k, v);
             }
+
+            @Override
+            public void idsResetted() {
+                dataStore.resetIds();
+            }
         });
         build();
         getChildren().add(maskerPane = new MaskerPane());
         maskerPane.setVisible(false);
+
+        AbstractAction shortcuttable = null;
+
+        if (view instanceof AbstractListView) {
+            shortcuttable = new AbstractAction("") {
+                @Override
+                public void run() {
+                    ((AbstractListView) view).search();
+                }
+            };
+        } else for (AbstractAction a : view.getActions()) {
+            if (a.isCallOnEnterKeyPressed()) {
+                shortcuttable = a;
+                break;
+            }
+        }
+        if (shortcuttable != null) {
+            AbstractAction finalShortcuttable = shortcuttable;
+            setOnKeyPressed(new EventHandler<KeyEvent>()
+            {
+                @Override
+                public void handle(KeyEvent ke)
+                {
+                    if (ke.getCode().equals(KeyCode.ENTER))
+                    {
+                        finalShortcuttable.run();
+                    }
+                }
+            });
+        }
     }
 
     public DataStore getDataStore() {
@@ -145,7 +195,7 @@ public class ViewNode extends StackPane {
         setStyle("-fx-background-color: white;");
 
         bp = new BorderPane();
-        bp.setTop(createToolBar(view.getActions()));
+        if (!(view instanceof  AbstractWizardPageView)) bp.setTop(createToolBar(view.getActions()));
         ScrollPane sp = new ScrollPane(componentsCotainer = new VBox(10));
         //sp.getStyleClass().add("mateu-view-scroll");
         bp.setCenter(sp);
@@ -162,6 +212,55 @@ public class ViewNode extends StackPane {
         h.getChildren().add(title = new Label());
         title.getStyleClass().add("title");
         title.textProperty().bind(dataStore.getStringProperty("_title"));
+
+        HBox badgesPane;
+        h.getChildren().add(badgesPane = new HBox(2));
+
+        Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_badges");
+        ListChangeListener<DataStore> pl;
+        pb.getValue().addListener(pl = new ListChangeListener<DataStore>() {
+            @Override
+            public void onChanged(Change<? extends DataStore> c) {
+                badgesPane.getChildren().clear();
+                for (DataStore x : pb.getValue()) {
+                    Label l = new Label("" + x.get("_value"));
+                    if (x.get("_css") != null) l.getStyleClass().add(x.get("_css"));
+                    badgesPane.getChildren().add(l);
+                }
+
+            }
+        });
+        pl.onChanged(new ListChangeListener.Change<DataStore>(pb.getValue()) {
+            @Override
+            public boolean next() {
+                return false;
+            }
+
+            @Override
+            public void reset() {
+
+            }
+
+            @Override
+            public int getFrom() {
+                return 0;
+            }
+
+            @Override
+            public int getTo() {
+                return 0;
+            }
+
+            @Override
+            public List<DataStore> getRemoved() {
+                return null;
+            }
+
+            @Override
+            protected int[] getPermutation() {
+                return new int[0];
+            }
+        });
 
         componentsCotainer.getChildren().add(h);
 
@@ -199,7 +298,15 @@ public class ViewNode extends StackPane {
 
         build(sp, componentsCotainer, view.getForm(), 0);
 
-        componentsCotainer.setPrefWidth(900);
+        componentsCotainer.setMinWidth(200);
+
+        sp.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                componentsCotainer.setPrefWidth(newValue.getWidth() - 60);
+            }
+        });
+
 
         addListeners();
 
@@ -303,18 +410,6 @@ public class ViewNode extends StackPane {
 
             }
         }
-
-        /*
-        if (view instanceof AbstractListView) {
-            List<Component> cs = view.getForm().getComponentsSequence();
-            int pos = 0;
-            for (Component c : cs) {
-                addComponent(null, toolBar, c, false);
-            }
-        } else {
-
-        }
-        */
 
         for (AbstractAction a : actions) {
             Button b;
@@ -422,97 +517,36 @@ public class ViewNode extends StackPane {
 
     private void build(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField, boolean inToolBar) {
 
-        HBox badgesPane;
-        overallContainer.getChildren().add(badgesPane = new HBox(2));
-
-        Property<ObservableList<DataStore>> pb = getDataStore().getObservableListProperty("_badges");
-        ChangeListener<ObservableList<DataStore>> pl;
-        pb.addListener(pl = new ChangeListener<ObservableList<DataStore>>() {
-            @Override
-            public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
-                badgesPane.getChildren().clear();
-                if (newValue != null) for (DataStore x : newValue) {
-                    badgesPane.getChildren().add(new Label(x.get("_value")));
-                }
-            }
-        });
-        pl.changed(null, null, pb.getValue());
-
-
         List<Pane> panels = new ArrayList<>();
         panels.add(new VBox(10));
 
         Node lastNode = null;
-        if (false && view instanceof ListView && !inToolBar) {
-            ListView lv = (ListView) view;
-            lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true, false, false);
-            lastNode.minWidth(900);
-            lastNode.minHeight(600);
-        } else {
-            int pos = 0;
-            int posField = 0;
-            List<Component> cs = form.getComponentsSequence();
-            for (Component c : cs) {
-                Node n = null;
-                if (!(c instanceof AbstractField) || posField >= fromField) {
-                    /*
-                    if (c instanceof ColumnStart) panels.add(new VBox(2));
-                    else if (c instanceof RowStart) panels.add(new FlowPane(5, 2));
-                    else if (c instanceof ColumnEnd) panels.remove(panels.size() - 1);
-                    else if (c instanceof RowEnd) panels.remove(panels.size() - 1);
-                    else {
-                    */
-                        if (posField == 0 || (c instanceof  AbstractField && ((AbstractField)c).isBeginingOfLine())) {
-                            FlowPane fp;
-                            panels.add(fp = new FlowPane(20, 10));
-                            //fp.setPrefWidth(5000);
-                        }
-                        n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
-                    //}
-                }
-                if (n != null) lastNode = n;
-                if (c instanceof AbstractField) posField++;
+        int pos = 0;
+        int posField = 0;
+        List<Component> cs = form.getComponentsSequence();
+        for (Component c : cs) {
+            Node n = null;
+            if (!(c instanceof AbstractField) || posField >= fromField) {
+
+                    if (posField == 0 || (c instanceof  AbstractField && ((AbstractField)c).isBeginingOfLine())) {
+                        FlowPane fp;
+                        panels.add(fp = new FlowPane(20, 10));
+                    }
+                    n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
+
             }
+            if (n != null) lastNode = n;
+            if (c instanceof AbstractField) posField++;
         }
 
         if (view instanceof ListView && !inToolBar) {
             ListView lv = (ListView) view;
             lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true, false, false);
-            lastNode.minWidth(900);
-            lastNode.minHeight(600);
         }
 
 
         overallContainer.getChildren().addAll(panels);
 
-        if (false && !form.isLastFieldMaximized()) {
-            Node finalLastNode = lastNode;
-            scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
-
-                Node lastNodex = finalLastNode;
-
-                @Override
-                public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-                    fixMins(overallContainer, lastNodex);
-                    System.out.println("bounds changed to " + newValue.toString());
-                    overallContainer.setPrefHeight(newValue.getHeight());
-                    overallContainer.setPrefWidth(newValue.getWidth());
-
-                }
-            });
-        }
-    }
-
-    private void fixMins(Pane componentsCotainer, Node lastNode) {
-
-        if ((true || !minsFixed) && lastNode != null && lastNode instanceof Region) {
-            Region r = (Region) lastNode;
-            componentsCotainer.setMinWidth(r.getBoundsInParent().getWidth() + r.getLocalToSceneTransform().transform(0, 0).getX() - componentsCotainer.getLocalToSceneTransform().transform(0, 0).getX());
-            componentsCotainer.setMinHeight(r.getBoundsInParent().getHeight() + r.getLocalToSceneTransform().transform(0, 0).getY() - componentsCotainer.getLocalToSceneTransform().transform(0, 0).getY());
-            System.out.println("mins=" + componentsCotainer.getMinWidth() + "," + componentsCotainer.getMinHeight());
-        }
-
-        minsFixed = true;
     }
 
     private Node addComponent(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, Pane container, Component c, boolean maximize, boolean inToolBar) {
@@ -524,23 +558,26 @@ public class ViewNode extends StackPane {
 
         Node n = null;
 
-        /*
-                Pane donde = container;
-        if (donde instanceof VBox) {
-            container = donde;
-            ((VBox) donde).getChildren().add(donde = new FlowPane());
-            donde.setPrefWidth(5000);
-        }
-         */
         Pane donde = container;
         if (donde instanceof FlowPane) {
             container = donde;
             ((FlowPane) donde).getChildren().add(donde = new VBox());
-            //donde.setPrefWidth(5000);
         }
 
 
-        if (c instanceof Tabs) {
+        if (c instanceof io.mateu.ui.core.client.components.Button) {
+            io.mateu.ui.core.client.components.Button b = (io.mateu.ui.core.client.components.Button) c;
+
+            Button x;
+            donde.getChildren().add(x = new Button(b.getName()));
+            x.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    b.run();
+                }
+            });
+
+        } else if (c instanceof Tabs) {
 
             Tabs tabs = (Tabs) c;
 
@@ -555,10 +592,7 @@ public class ViewNode extends StackPane {
 
 
                 ScrollPane sp = new ScrollPane(componentsCotainer = new VBox());
-                //sp.getStyleClass().add("mateu-view-scroll");
-                //componentsCotainer.getStyleClass().add("mateu-view");
                 componentsCotainer.setPadding(new Insets(10, 20, 10, 20));
-
 
                 tc.setContent(sp);
 
@@ -575,39 +609,10 @@ public class ViewNode extends StackPane {
             if (showLabels) {
                 if (((AbstractField) c).getLabel() != null) {
 
-                    /*
-                    TextFlow flow = new TextFlow();
-
-                    Text text1=new Text(((AbstractField) c).getLabel().getText());
-                    text1.setStyle("-fx-font-weight: regular");
-
-                    flow.getChildren().add(text1);
-
-                    if (((AbstractField)c).isRequired()) {
-                        Text text2=new Text("(*)");
-                        text2.setStyle("-fx-font-weight: bold");
-
-                        flow.getChildren().add(text2);
-                    }
-
-                    donde.getChildren().add(flow);
-                    if (!inToolBar) flow.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-right;");
-                    else flow.setStyle("-fx-alignment: baseline-right;");
-                       */
-
-
                     javafx.scene.control.Label l;
                     donde.getChildren().add(l = new javafx.scene.control.Label(((AbstractField) c).getLabel().getText()));
                     if (!inToolBar) l.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-left;");
                     else l.setStyle("-fx-alignment: baseline-left;");
-
-                    /*
-                    if (((AbstractField)c).isRequired()) {
-                        //l.setText(l.getText() + " (*)");
-                        Node requiredDecoration = new ImageView( REQUIRED_IMAGE );
-                        Decorator.addDecoration( l, new GraphicDecoration( requiredDecoration, Pos.TOP_LEFT ));
-                    }
-                    */
 
                 }
             }
@@ -617,7 +622,6 @@ public class ViewNode extends StackPane {
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
                 cmb.getStyleClass().add("l");
                 cmb.getItems().addAll(((AutocompleteField)c).getValues());
-                //cmb.getSelectionModel().selectFirst(); //select the first element
                 cmb.setCellFactory(new Callback<javafx.scene.control.ListView<Pair>, ListCell<Pair>>() {
                     @Override public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
                         return new ListCell<Pair>() {
@@ -808,9 +812,6 @@ public class ViewNode extends StackPane {
                 TreeTableView<Pair> t = new TreeTableView<>();
                 t.setShowRoot(true);
 
-//                row.getStyleClass().add("highlightedRow");
-//                  row.getStyleClass().removeAll(Collections.singleton("highlightedRow"));
-
                 t.setRowFactory(new Callback<TreeTableView<Pair>, TreeTableRow<Pair>>() {
                     @Override
                     public TreeTableRow<Pair> call(TreeTableView<Pair> param) {
@@ -857,6 +858,9 @@ public class ViewNode extends StackPane {
                     }
                 });
 
+                t.setPrefWidth(900);
+                t.setPrefHeight(600);
+
                 //cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
 
                 n = control = t;
@@ -879,46 +883,24 @@ public class ViewNode extends StackPane {
                 tf.setAlignment(Pos.BASELINE_RIGHT);
                 tf.getStyleClass().add("s");
 
-                /*
-                    DecimalFormat format = new DecimalFormat( "#.0" );
-                    tf.setTextFormatter( new TextFormatter<>(converter ->
-                    {
-                        if ( converter.getControlNewText().isEmpty() )
-                        {
-                            return converter;
-                        }
+                tf.textProperty().bindBidirectional(dataStore.getDoubleProperty(((DoubleField) c).getId()), new StringConverter<Double>() {
+                    @Override
+                    public String toString(Double object) {
+                        if (object == null) return null;
+                        else return "" + object;
+                    }
 
-                        ParsePosition parsePosition = new ParsePosition( 0 );
-                        Object object = format.parse( converter.getControlNewText(), parsePosition );
+                    @Override
+                    public Double fromString(String string) {
+                        Double d = null;
+                        try {
+                            d = new Double(string);
+                        } catch (Exception e) {
 
-                        if ( object == null || parsePosition.getIndex() < converter.getControlNewText().length() )
-                        {
-                            return null;
                         }
-                        else
-                        {
-                            return converter;
-                        }
-                    }));
-                    */
-                    tf.textProperty().bindBidirectional(dataStore.getDoubleProperty(((DoubleField) c).getId()), new StringConverter<Double>() {
-                        @Override
-                        public String toString(Double object) {
-                            if (object == null) return null;
-                            else return "" + object;
-                        }
-
-                        @Override
-                        public Double fromString(String string) {
-                            Double d = null;
-                            try {
-                                d = new Double(string);
-                            } catch (Exception e) {
-
-                            }
-                            return d;
-                        }
-                    });
+                        return d;
+                    }
+                });
 
                 n = tf;
 
@@ -1000,8 +982,6 @@ public class ViewNode extends StackPane {
 
             } else if (c instanceof GridField) {
                 n = new GridNode(this, (GridField) c);
-                n.minWidth(900);
-                n.minHeight(600);
             } else if (c instanceof HtmlField) {
                 WebView tf = new WebView();
                 dataStore.getStringProperty(((AbstractField) c).getId()).addListener(new ChangeListener<String>() {
@@ -1141,6 +1121,42 @@ public class ViewNode extends StackPane {
                 });
 
 
+            } else if (c instanceof LongField) {
+                TextField tf;
+                n = control = tf = new TextField() {
+                    public void replaceText(int start, int end, String text) {
+                        //System.out.println("replaceText(" + start + "," + end + "," + text + ")");
+                        String s = getText();
+                        if (s == null) s = "";
+                        s = s.substring(0, start) + text + s.substring(end);
+                        if (s.matches("[0-9]*")) {
+                            super.replaceText(start, end, text);
+                        } else {
+                            //Aga2.getHelper().display("Campo numérico entero. Solo acepta valores enteros, sin decimales");
+                        }
+                    };
+                };
+                tf.setAlignment(Pos.BASELINE_RIGHT);
+
+                tf.textProperty().bindBidirectional(dataStore.getLongProperty(((LongField) c).getId()), new StringConverter<Long>() {
+                    @Override
+                    public String toString(Long object) {
+                        if (object == null) return null;
+                        else return "" + object;
+                    }
+
+                    @Override
+                    public Long fromString(String string) {
+                        Long d = null;
+                        try {
+                            d = new Long(string);
+                        } catch (Exception e) {
+
+                        }
+                        return d;
+                    }
+                });
+                n = tf;
 
             } else if (c instanceof RadioButtonField) {
 
@@ -1545,7 +1561,6 @@ public class ViewNode extends StackPane {
                     }
                 });
 
-                cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField) c).getId()));
                 n = control = cmb;
 
                 ((SqlComboBoxField) c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
@@ -1560,6 +1575,10 @@ public class ViewNode extends StackPane {
                                 }
                                 cmb.getItems().add(new Pair(null, null));
                                 cmb.getItems().addAll(l);
+
+                                Property<Pair> p = dataStore.getPairProperty(((AbstractField) c).getId());
+
+                                cmb.valueProperty().bindBidirectional(p);
                             }
                         });
                     }
@@ -1771,6 +1790,13 @@ public class ViewNode extends StackPane {
                 validationSupport.registerValidator(control, Validator.createEmptyValidator("Required field"));
             }
 
+
+            if (!Strings.isNullOrEmpty(((AbstractField) c).getHelp())) {
+                final Tooltip tooltip = new Tooltip();
+                tooltip.setText(((AbstractField) c).getHelp());
+                control.setTooltip(tooltip);
+            }
+
         } else {
 
             if (c instanceof io.mateu.ui.core.client.components.Label) {
@@ -1780,23 +1806,25 @@ public class ViewNode extends StackPane {
             }
         }
 
-        if (false && maximize && n != null && n instanceof Region) {
+        if (n != null && n instanceof Region) {
             Region r = (Region) n;
 
             if (n instanceof GridNode) {
-                ((GridNode)n).getTableView().setPrefWidth(5000);
-                ((GridNode)n).getTableView().setPrefHeight(5000);
+                ((GridNode)n).getTableView().setMinWidth(200);
+                //((GridNode)n).getTableView().setPrefHeight(5000);
+
+                Node finalN = n;
+                scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                        //fixMins(componentsCotainer, finalN);
+                        //System.out.println("bounds changed to " + newValue.toString());
+                        //fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
+                        ((GridNode)finalN).getTableView().setPrefWidth(newValue.getWidth() - 40);
+                    }
+                });
             }
 
-            Node finalN = n;
-            scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
-                @Override
-                public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-                    fixMins(componentsCotainer, finalN);
-                    //System.out.println("bounds changed to " + newValue.toString());
-                    fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
-                }
-            });
 
         }
 
@@ -1855,18 +1883,5 @@ public class ViewNode extends StackPane {
         else if (alignment == Alignment.CENTER) return "center";
         else return "left";
     }
-
-    private void fixHeight(Pane overallContainer, Region r, double w, double h) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                double deltaY =  r.getLocalToSceneTransform().transform(0, 0).getY() - overallContainer.getLocalToSceneTransform().transform(0, 0).getY();
-                //System.out.println("deltay = " + deltaY + ", w = " + w + ", h = " + h);
-                r.setPrefHeight(h - deltaY);
-                r.setPrefWidth(w);
-            }
-        });
-    }
-
 
 }

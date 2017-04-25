@@ -6,14 +6,29 @@ package io.mateu.ui.core.client.app;
 public abstract class AbstractAction extends AbstractExecutable implements MenuEntry {
 
     private String name;
+    private boolean callOnEnterKeyPressed = false;
 
 
     public AbstractAction(String name) {
         this.name = name;
     }
 
+    public AbstractAction(String name, boolean callOnEnterKeyPressed) {
+        this.name = name;
+        this.callOnEnterKeyPressed = callOnEnterKeyPressed;
+    }
+
+
     public String getName() {
         return name;
     };
 
+    public boolean isCallOnEnterKeyPressed() {
+        return callOnEnterKeyPressed;
+    }
+
+    public AbstractAction setCallOnEnterKeyPressed(boolean callOnEnterKeyPressed) {
+        this.callOnEnterKeyPressed = callOnEnterKeyPressed;
+        return this;
+    }
 }

@@ -317,6 +317,7 @@ public class MateuCheckBoxTableCell<S,T> extends TableCell<S,T> {
         setGraphic(null);
 
         setSelectedStateCallback(getSelectedProperty);
+
         setConverter(converter);
 
 //        // alignment is styleable through css. Calling setAlignment

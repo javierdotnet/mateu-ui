@@ -5,35 +5,27 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.ActionOnRow;
-import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
 import io.mateu.ui.core.client.components.fields.grids.columns.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.client.views.ListView;
+import io.mateu.ui.core.shared.CellStyleGenerator;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
 import io.mateu.ui.javafx.views.components.table.*;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +65,10 @@ public class GridNode extends VBox {
                 pagination.setDisable(true);
 
                 //todo: añadir nº de registros por página!!!
+                Label rr;
+                paginationContainer.getChildren().add(rr = new Label());
+                rr.textProperty().bind(viewNode.getDataStore().getStringProperty(field.getId() + "_totalrows"));
+
 
                 ((ListView)viewNode.getView()).addListViewListener(new ListViewListener() {
                     @Override
@@ -128,7 +124,7 @@ public class GridNode extends VBox {
                     public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) {
                         if (!pagination.isDisabled() && !oldValue.equals(newValue)) {
                             System.out.println("LANZAMOS BÚSQUEDA POR CAMBIO DE PÁGINA");
-                            MateuUI.run(new Runnable() {
+                            MateuUI.runInUIThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     ((ListView) viewNode.getView()).search();
@@ -148,15 +144,30 @@ public class GridNode extends VBox {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    Data d;
-                    viewNode.getDataStore().getData().getList(field.getId()).add(d = new Data());
-                    DataStore ds = new DataStore(d);
-                    ds.getBooleanProperty("_selected");
-                    for (AbstractColumn c : field.getColumns()) {
-                        if (c instanceof CheckBoxColumn) ds.getBooleanProperty(c.getId());
-                        else ds.getProperty(c.getId());
+
+                    AbstractForm f = field.getDataForm();
+
+                    if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
+                    else {
+                        MateuUI.openView(new AbstractDialog() {
+                            @Override
+                            public void onOk(Data data) {
+                                DataStore ds = new DataStore(data);
+                                viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().add(ds);
+                            }
+
+                            @Override
+                            public String getTitle() {
+                                return "Add new record";
+                            }
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return field.getDataForm();
+                            }
+                        });
                     }
-                    viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().add(ds);
+
                 }
             });
             toolBar.getItems().add(b = new Button("Remove"));
@@ -188,38 +199,21 @@ public class GridNode extends VBox {
     private TableView<DataStore> buildTable(GridField c) {
         TableView<DataStore> t = new TableView<>();
 
-        t.getColumns().addAll(buildColumns(c));
+        t.getColumns().addAll(buildColumns(t, c));
 
         Property<ObservableList<DataStore>> i = viewNode.getDataStore().getObservableListProperty(c.getId());//dataStore.getFilteredObservableListProperty3(id, campo.getFiltros());
         t.itemsProperty().bindBidirectional(i);
 
-        t.getSelectionModel().setCellSelectionEnabled(true);
-        t.setEditable(true);
-
-        t.addEventHandler(KeyEvent.KEY_PRESSED, new javafx.event.EventHandler<KeyEvent>() {
-
+        t.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        t.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<DataStore>() {
             @Override
-            public void handle(final KeyEvent event) {
-
-                System.out.println("===TABLEVIEW.PRESSED===>" + event.getText() + "/" + event.getCode());
-
-
-                if (event.getCode() == KeyCode.TAB) {
-                    Platform.runLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            if (event.isShiftDown()) t.selectionModelProperty().get().selectPrevious();
-                            else t.selectionModelProperty().get().selectNext();
-                        }
-                    });
-
-                    event.consume();
-                }
-
+            public void onChanged(Change<? extends DataStore> c) {
+                for (DataStore d : t.getItems()) d.set("_selected", false);
+                for (DataStore d : t.getSelectionModel().getSelectedItems()) d.set("_selected", true);
+                System.out.println("***** " + t.getSelectionModel().getSelectedItems().size() + " items selected!!! *******");
             }
         });
-
+        t.setEditable(false);
 
         t.setPrefHeight(400);
         t.setPrefWidth(900);
@@ -227,75 +221,34 @@ public class GridNode extends VBox {
         return t;
     }
 
-    private List<TableColumn<DataStore, ?>> buildColumns(GridField g) {
+    private List<TableColumn<DataStore, ?>> buildColumns(TableView<DataStore> t, GridField g) {
         List<TableColumn<DataStore, ?>> l = new ArrayList<>();
-
-        {
-            TableColumn<DataStore, Boolean> c1;
-            l.add(c1 = new TableColumn<DataStore, Boolean>("Sel."));
-            c1.setCellValueFactory(new PropertyValueFactory<Boolean>("_selected"));
-            c1.setCellFactory(MateuCheckBoxTableCell.forTableColumn(c1));
-            c1.setEditable(true);
-            c1.setPrefWidth(30);
-        }
 
         for (AbstractColumn c : g.getColumns()) {
 
-            TableColumn c1;
+            TableColumn col = new TableColumn(c.getLabel());
 
-            if (c instanceof CheckBoxColumn) {
-                l.add(c1 = new TableColumn<DataStore, Boolean>(c.getLabel()));
-                c1.setCellValueFactory(new PropertyValueFactory<Boolean>(c.getId()));
-                c1.setCellFactory(MateuCheckBoxTableCell.forTableColumn(c1));
-                c1.setEditable(true);
-            } else if (c instanceof SqlComboBoxColumn) {
-                l.add(c1 = new TableColumn<DataStore, Pair>(c.getLabel()));
-                c1.setCellValueFactory(new PropertyValueFactory<Pair>(c.getId()));
-                ObservableList<Pair> vs = FXCollections.observableArrayList();
-                MateuUI.run(new Runnable() {
+            if (c instanceof DataColumn) {
+                col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override
-                    public void run() {
-                        ((SqlComboBoxColumn) c).call(new Callback<Object[][]>() {
-                            @Override
-                            public void onSuccess(Object[][] result) {
-                                List<Pair> ps = new ArrayList<>();
-                                for (Object[] x : result) {
-                                    ps.add(new Pair(x[0], "" + x[1]));
-                                }
-                                vs.setAll(ps);
-                            }
-                        });
+                    public String toString(Object object) {
+                        return (object == null) ? null : ((object instanceof DataStore)?((DataStore)object).get("_text"):"" + object);
                     }
-                });
-                c1.setCellFactory(ComboBoxTableCell.forTableColumn(vs));
-                c1.setEditable(true);
-            } else if (c instanceof ComboBoxColumn) {
-                l.add(c1 = new TableColumn<DataStore, Pair>(c.getLabel()));
-                c1.setCellValueFactory(new PropertyValueFactory<Pair>(c.getId()));
-                c1.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableList(((ComboBoxColumn)c).getValues())));
-                c1.setEditable(true);
-            } else {
-                l.add(c1 = new TableColumn(c.getLabel()));
-            }
 
-
-            if (c instanceof DoubleColumn) {
-            c1.setCellValueFactory(new PropertyValueFactory<Double>(c.getId()));
-            c1.setCellFactory(MateuDoubleFieldTableCell.<DataStore, Double>forTableColumn(new StringConverter<Double>() {
-                @Override
-                public String toString(Double object) {
-                    return (object == null) ? null : "" + object;
-                }
-
-                @Override
-                public Double fromString(String string) {
-                    return (string == null || "".equals(string.trim())) ? null : Double.parseDouble(string);
-                }
-            }));
-            c1.setEditable(true);
+                    @Override
+                    public Object fromString(String string) {
+                        return string;
+                    }
+                }, (ActionOnRow) c, new CellStyleGenerator() {
+                    @Override
+                    public String getStyle(Object value) {
+                        return (value != null && value instanceof DataStore)?((DataStore)value).get("_css"):null;
+                    }
+                }));
             } else if (c instanceof LinkColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                c1.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override
                     public String toString(Object object) {
                         return (object == null)?null:"" + object;
@@ -305,38 +258,15 @@ public class GridNode extends VBox {
                     public Object fromString(String string) {
                         return string;
                     }
-                }, (ActionOnRow) c));
-            } else if (c instanceof IntegerColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<Integer>(c.getId()));
-                c1.setCellFactory(MateuIntegerFieldTableCell.<DataStore, Integer>forTableColumn(new StringConverter<Integer>() {
+                }, (ActionOnRow) c, new CellStyleGenerator() {
                     @Override
-                    public String toString(Integer object) {
-                        return (object == null)?null:"" + object;
-                    }
-
-                    @Override
-                    public Integer fromString(String string) {
-                        return (string == null || "".equals(string.trim()))?null:Integer.parseInt(string);
+                    public String getStyle(Object value) {
+                        return (value != null && value instanceof DataStore)?((DataStore)value).get("_css"):null;
                     }
                 }));
-                c1.setEditable(true);
-            } else if (c instanceof TextColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
-                    @Override
-                    public String toString(Object object) {
-                        return (object == null)?null:"" + object;
-                    }
-
-                    @Override
-                    public Object fromString(String string) {
-                        return string;
-                    }
-                }));
-                c1.setEditable(true);
-            } else if (c instanceof OutputColumn) {
-                c1.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                c1.setCellFactory(column -> {
+            } else {
+                col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
+                col.setCellFactory(column -> {
                     return new TableCell<Data, Object>() {
 
                         @Override
@@ -377,36 +307,76 @@ public class GridNode extends VBox {
                                         setStyle("-fx-alignment: center;");
                                     }
                                 }
-/*
-                                // Style all dates in March with a different color.
-                                if (item.getMonth() == Month.MARCH) {
-                                    setTextFill(Color.CHOCOLATE);
-                                    setStyle("-fx-background-color: yellow");
-                                } else {
-                                    setTextFill(Color.BLACK);
-                                    setStyle("");
-                                }
-                                */
                             }
                         }
                     };
                 });
-                /*
-                c1.setCellFactory(MateuTextFieldTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
-                    @Override
-                    public String toString(Object object) {
-                        return (object == null)?null:"" + object;
-                    }
-
-                    @Override
-                    public Object fromString(String string) {
-                        return string;
-                    }
-                }));
-                */
             }
 
-            c1.setPrefWidth(c.getWidth());
+            col.setPrefWidth(c.getWidth());
+
+            l.add(col);
+        }
+
+        if (field.isExpandable()) {
+            TableColumn col = new TableColumn("Edit");
+
+            col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                @Override
+                public String toString(Object object) {
+                    return "Edit";
+                }
+
+                @Override
+                public Object fromString(String string) {
+                    return string;
+                }
+            }, new ActionOnRow() {
+                @Override
+                public void run(Data data) {
+                    AbstractForm f = g.getDataForm();
+
+                    if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
+                    else {
+                        MateuUI.openView(new AbstractDialog() {
+
+                            @Override
+                            public Data initializeData() {
+                                return data;
+                            }
+
+                            @Override
+                            public void onOk(Data data) {
+                                for (DataStore d : t.getItems()) {
+                                    if (d.get("__id").equals(data.get("__id"))) {
+                                        d.setData(data);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public String getTitle() {
+                                return "Add new record";
+                            }
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return g.getDataForm();
+                            }
+                        });
+                    }
+                }
+            }, new CellStyleGenerator() {
+                @Override
+                public String getStyle(Object value) {
+                    return null;
+                }
+            }));
+
+            col.setPrefWidth(60);
+
+            l.add(col);
         }
 
         return l;

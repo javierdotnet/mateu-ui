@@ -19,7 +19,6 @@
           <element id="library" level="project" name="Maven: com.vaadin.external.slf4j:vaadin-slf4j-jdk14:1.6.1" />
           <element id="library" level="project" name="Maven: com.vaadin:vaadin-themes:7.7.7" />
           <element id="library" level="project" name="Maven: org.vaadin:viritin:1.61" />
-          <element id="library" level="project" name="Maven: org.vaadin.addon:confirmdialog:2.1.3" />
           <element id="library" level="project" name="Maven: org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1" />
           <element id="library" level="project" name="Maven: commons-io:commons-io:2.4" />
           <element id="library" level="project" name="Maven: commons-beanutils:commons-beanutils:1.9.2" />
@@ -32,6 +31,7 @@
           <element id="library" level="project" name="Maven: org.vaadin.addons:sparklines:7.0.2" />
           <element id="library" level="project" name="Maven: org.vaadin.addons:gwt-graphics:1.0.0" />
           <element id="library" level="project" name="Maven: org.vaadin.addons:ratingstars:2.1" />
+          <element id="library" level="project" name="Maven: org.vaadin.addon:confirmdialog:3.1.1" />
           <element id="archive" name="core-1.0-SNAPSHOT.jar">
             <element id="module-output" name="core" />
           </element>

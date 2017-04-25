@@ -20,6 +20,8 @@ public abstract class AbstractForm extends FieldContainer {
 
     private Data data;
 
+    private FormHelper helper;
+
     private List<DataSetterListener> dataSetterListeners = new ArrayList<>();
 
     public void set(String k, Object v) {
@@ -73,14 +75,15 @@ public abstract class AbstractForm extends FieldContainer {
 
     public Data getData() {
         if (data == null) setData(initializeData());
-        return data;
+        return (helper != null)?helper.getData():data;
     }
 
     public void setData(Data data, boolean only_) {
         Data aux = this.data;
         if (aux == null) aux = new Data();
         if (only_) {
-            for (String n : data.getPropertyNames()) if (n.startsWith("_")) {
+            aux = getData();
+            for (String n : data.getPropertyNames()) {
                 aux.set(n, data.get(n));
             }
         } else {
@@ -147,5 +150,13 @@ public abstract class AbstractForm extends FieldContainer {
     public AbstractForm setColumnWidths(String columnWidths) {
         this.columnWidths = columnWidths;
         return this;
+    }
+
+    public void setHelper(FormHelper helper) {
+        this.helper = helper;
+    }
+
+    public void resetIds() {
+        for (DataSetterListener l : dataSetterListeners) l.idsResetted();
     }
 }

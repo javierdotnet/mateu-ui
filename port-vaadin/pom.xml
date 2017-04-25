@@ -128,6 +128,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.vaadin.addon</groupId>
+			<artifactId>confirmdialog</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>io.mateu.ui</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0-SNAPSHOT</version>

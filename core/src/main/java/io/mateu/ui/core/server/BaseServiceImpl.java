@@ -6,6 +6,7 @@ import io.mateu.ui.core.shared.FileLocator;
 import io.mateu.ui.core.shared.UserData;
 
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Created by miguel on 27/12/16.
@@ -33,8 +34,10 @@ public class BaseServiceImpl implements BaseService {
 
         Data d = new Data();
 
+        long t0 = new Date().getTime();
+
         int rowsPerPage = parameters.getInt("_rowsperpage");
-        int fromRow = rowsPerPage * parameters.getInt("_currentpageindex");
+        int fromRow = rowsPerPage * parameters.getInt("_data_currentpageindex");
         String sql = parameters.getString("_sql");
 
         d.getList("_data");
@@ -48,7 +51,10 @@ public class BaseServiceImpl implements BaseService {
         }
 
         int numRows = ServerSideHelper.getServerSideApp().getNumberOfRows(sql);
-        //d.set("_data_currentpageindex", from);
+        long t = new Date().getTime() - t0;
+        d.set("_subtitle", "" + numRows + " records found in " + t + "ms.");
+        d.set("_data_currentpageindex", fromRow / rowsPerPage);
+        d.set("_data_totalrows", numRows);
         d.set("_data_pagecount", numRows / rowsPerPage + ((numRows % rowsPerPage == 0)?0:1));
 
         return d;

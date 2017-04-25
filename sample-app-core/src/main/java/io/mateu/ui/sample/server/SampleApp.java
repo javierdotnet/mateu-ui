@@ -43,6 +43,7 @@ public class SampleApp extends BaseServerSideApp implements ServerSideApp {
     private void populate(JDBCDataSource jdbcDataSource) throws Throwable {
 
         runSqlBatch(Utils.read(SampleApp.class.getResourceAsStream("data.sql")));
+        runSqlBatch(Utils.read(SampleApp.class.getResourceAsStream("sacramento.sql")));
 
     }
 

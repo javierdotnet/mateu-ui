@@ -2,6 +2,9 @@ package io.mateu.ui.vaadin;
 
 import com.vaadin.ui.Grid;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
+import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.vaadin.data.DataStore;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +18,22 @@ public class CellStyleGenerator implements Grid.CellStyleGenerator {
     private final Map<String, io.mateu.ui.core.shared.CellStyleGenerator> generators = new HashMap<>();
 
     public CellStyleGenerator(List<AbstractColumn> columns) {
-        for (AbstractColumn c : columns) if (c.getStyleGenerator() != null) generators.put(c.getId(), c.getStyleGenerator());
+        for (AbstractColumn c : columns) {
+            if (c.getStyleGenerator() != null) generators.put(c.getId(), c.getStyleGenerator());
+            else if (c instanceof DataColumn) {
+                generators.put(c.getId(), new io.mateu.ui.core.shared.CellStyleGenerator() {
+                    @Override
+                    public String getStyle(Object value) {
+                        if (value instanceof DataStore) {
+                            return ((DataStore) value).get("_css");
+                        } else if (value instanceof Data) {
+                                return ((Data)value).get("_css");
+                        }
+                        return null;
+                    }
+                });
+            }
+        }
     }
 
     @Override

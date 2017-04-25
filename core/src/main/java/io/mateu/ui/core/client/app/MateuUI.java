@@ -2,6 +2,7 @@ package io.mateu.ui.core.client.app;
 
 import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
+import io.mateu.ui.core.client.views.AbstractWizard;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractView;
 
@@ -101,4 +102,19 @@ public class MateuUI {
     }
 
     public static void open(URL url) { getClientSideHelper().open(url); }
+
+    public static void open(AbstractWizard wizard) { getClientSideHelper().open(wizard); }
+
+    public static boolean hasPermission(int permissionId) {
+        boolean ok = false;
+        if (getApp().getUserData() != null) for (Integer p : getApp().getUserData().getPermissions()) if (p == permissionId) {
+            ok = true;
+            break;
+        }
+        return ok;
+    }
+
+    public static void confirm(String text, Runnable onOk) {
+        getClientSideHelper().confirm(text, onOk);
+    }
 }

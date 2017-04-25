@@ -60,7 +60,7 @@ public abstract class AbstractEditorView extends AbstractView {
         actions.add(new AbstractAction("Duplicate") {
             @Override
             public void run() {
-                getForm().set("_id", null);
+                getForm().resetIds();
                 MateuUI.notifyDone("Note that on saving you will create a new " + getTitle());
             }
         });

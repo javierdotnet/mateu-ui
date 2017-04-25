@@ -32,7 +32,7 @@ public class ViewsNode extends BorderPane {
 
         ViewTab t;
 
-        if (tabs.containsKey(view.getViewId())) {
+        if (view instanceof AbstractEditorView && tabs.containsKey(view.getViewId())) {
             t = tabs.get(view.getViewId());
             tabPane.getSelectionModel().select(t);
         } else {
@@ -61,6 +61,11 @@ public class ViewsNode extends BorderPane {
                     @Override
                     public void setted(String k, Object v) {
                         //do nothing
+                    }
+
+                    @Override
+                    public void idsResetted() {
+
                     }
                 });
             } else if (view instanceof AbstractListView) {

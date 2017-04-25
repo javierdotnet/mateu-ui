@@ -2,6 +2,7 @@ package io.mateu.ui.core.client.app;
 
 import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
+import io.mateu.ui.core.client.views.AbstractWizard;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractView;
 
@@ -39,4 +40,8 @@ public interface ClientSideHelper {
     void notifyDone(String msg);
 
     void open(URL url);
+
+    void confirm(String text, Runnable onOk);
+
+    void open(AbstractWizard wizard);
 }

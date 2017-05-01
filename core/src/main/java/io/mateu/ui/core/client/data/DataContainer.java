@@ -3,6 +3,8 @@ package io.mateu.ui.core.client.data;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +19,10 @@ public interface DataContainer {
     boolean getBoolean(String property);
 
     Date getDate(String property);
+
+    LocalDate getLocalDate(String property);
+
+    LocalDateTime getLocalDateTime(String property);
 
     int getInt(String property);
 

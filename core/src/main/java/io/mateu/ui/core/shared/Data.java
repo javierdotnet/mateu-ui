@@ -3,6 +3,8 @@ package io.mateu.ui.core.shared;
 import io.mateu.ui.core.client.data.DataContainer;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -68,6 +70,18 @@ public class Data implements Serializable, DataContainer {
         Object d = get(property);
         if (d instanceof Long) return new Date((Long) d);
         return (Date) d;
+    }
+
+    @Override
+    public LocalDate getLocalDate(String property) {
+        Object d = get(property);
+        return (LocalDate) d;
+    }
+
+    @Override
+    public LocalDateTime getLocalDateTime(String property) {
+        Object d = get(property);
+        return (LocalDateTime) d;
     }
 
     @Override

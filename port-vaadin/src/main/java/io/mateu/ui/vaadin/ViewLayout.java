@@ -196,6 +196,23 @@ public class ViewLayout extends VerticalLayout implements View {
             });
             bl.changed(null, null, pb.getValue());
 
+            pb.getValue().addListener(new ListChangeListener<DataStore>() {
+                @Override
+                public void onChanged(Change<? extends DataStore> c) {
+                    badges.removeAllComponents();
+                    if (pb.getValue() != null) for (DataStore x : pb.getValue()) {
+                        Label l = new Label("" + x.get("_value"));
+                        l.addStyleName("valo-badge-style");
+                        l.addStyleName("superbadge");
+                        if (x.get("_css") != null) {
+                            l.addStyleName("" + x.get("_css"));
+                        }
+                        badges.addComponent(l);
+                    }
+                }
+            });
+
+
             addComponent(hl);
 
             Label subtitleLabel;
@@ -258,27 +275,9 @@ public class ViewLayout extends VerticalLayout implements View {
     }
 
     public void startWaiting() {
-        MateuUI.runInUIThread(new Runnable() {
-            @Override
-            public void run() {
-
-                if (getUI() != null && win != null) {
-                    getUI().addWindow(win);
-                    win.center();
-                    //win.focus();
-                }
-
-            }
-        });
     }
 
     public void endWaiting() {
-        MateuUI.runInUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (getUI() != null && win != null) getUI().removeWindow(win);
-            }
-        });
     }
 
 

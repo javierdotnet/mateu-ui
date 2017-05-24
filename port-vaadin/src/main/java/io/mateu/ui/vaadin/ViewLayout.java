@@ -13,6 +13,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -172,48 +173,96 @@ public class ViewLayout extends VerticalLayout implements View {
             });
             p.setValue(t);
 
-            HorizontalLayout hl = new HorizontalLayout();
-            hl.addComponent(h1);
-            HorizontalLayout badges = new HorizontalLayout();
-            hl.addComponent(badges);
+            {
+                HorizontalLayout hl = new HorizontalLayout();
+                hl.addComponent(h1);
+                HorizontalLayout badges = new HorizontalLayout();
+                hl.addComponent(badges);
 
-            ChangeListener<ObservableList<DataStore>> bl;
-            Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_badges");
-            pb.addListener(bl = new ChangeListener<ObservableList<DataStore>>() {
-                @Override
-                public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
-                    badges.removeAllComponents();
-                    if (newValue != null) for (DataStore x : newValue) {
-                        Label l = new Label("" + x.get("_value"));
-                        l.addStyleName("valo-badge-style");
-                        l.addStyleName("superbadge");
-                        if (x.get("_css") != null) {
-                            l.addStyleName("" + x.get("_css"));
+                ChangeListener<ObservableList<DataStore>> bl;
+                Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_badges");
+                pb.addListener(bl = new ChangeListener<ObservableList<DataStore>>() {
+                    @Override
+                    public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
+                        badges.removeAllComponents();
+                        if (newValue != null) for (DataStore x : newValue) {
+                            Label l = new Label("" + x.get("_value"));
+                            l.addStyleName("valo-badge-style");
+                            l.addStyleName("superbadge");
+                            if (x.get("_css") != null) {
+                                l.addStyleName("" + x.get("_css"));
+                            }
+                            badges.addComponent(l);
                         }
-                        badges.addComponent(l);
                     }
-                }
-            });
-            bl.changed(null, null, pb.getValue());
+                });
+                bl.changed(null, null, pb.getValue());
 
-            pb.getValue().addListener(new ListChangeListener<DataStore>() {
-                @Override
-                public void onChanged(Change<? extends DataStore> c) {
-                    badges.removeAllComponents();
-                    if (pb.getValue() != null) for (DataStore x : pb.getValue()) {
-                        Label l = new Label("" + x.get("_value"));
-                        l.addStyleName("valo-badge-style");
-                        l.addStyleName("superbadge");
-                        if (x.get("_css") != null) {
-                            l.addStyleName("" + x.get("_css"));
+                pb.getValue().addListener(new ListChangeListener<DataStore>() {
+                    @Override
+                    public void onChanged(Change<? extends DataStore> c) {
+                        badges.removeAllComponents();
+                        if (pb.getValue() != null) for (DataStore x : pb.getValue()) {
+                            Label l = new Label("" + x.get("_value"));
+                            l.addStyleName("valo-badge-style");
+                            l.addStyleName("superbadge");
+                            if (x.get("_css") != null) {
+                                l.addStyleName("" + x.get("_css"));
+                            }
+                            badges.addComponent(l);
                         }
-                        badges.addComponent(l);
                     }
-                }
-            });
+                });
 
 
-            addComponent(hl);
+                addComponent(hl);
+            }
+
+            {
+                HorizontalLayout links = new HorizontalLayout();
+
+                ChangeListener<ObservableList<DataStore>> bl;
+                Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_links");
+                pb.addListener(bl = new ChangeListener<ObservableList<DataStore>>() {
+                    @Override
+                    public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
+                        links.removeAllComponents();
+                        if (newValue != null) for (DataStore x : newValue) {
+                            Button l = new Button("" + x.get("_caption"));
+                            l.addStyleName(ValoTheme.BUTTON_LINK);
+                            l.addClickListener(new Button.ClickListener() {
+                                @Override
+                                public void buttonClick(Button.ClickEvent clickEvent) {
+                                    ((AbstractAction) x.get("_action")).run();
+                                }
+                            });
+                            links.addComponent(l);
+                        }
+                    }
+                });
+                bl.changed(null, null, pb.getValue());
+
+                pb.getValue().addListener(new ListChangeListener<DataStore>() {
+                    @Override
+                    public void onChanged(Change<? extends DataStore> c) {
+                        links.removeAllComponents();
+                        if (pb.getValue() != null) for (DataStore x : pb.getValue()) {
+                            Button l = new Button("" + x.get("_caption"));
+                            l.addStyleName(ValoTheme.BUTTON_LINK);
+                            l.addClickListener(new Button.ClickListener() {
+                                @Override
+                                public void buttonClick(Button.ClickEvent clickEvent) {
+                                    ((AbstractAction) x.get("_action")).run();
+                                }
+                            });
+                            links.addComponent(l);
+                        }
+                    }
+                });
+
+
+                addComponent(links);
+            }
 
             Label subtitleLabel;
             addComponent(subtitleLabel = new Label());
@@ -1538,16 +1587,19 @@ public class ViewLayout extends VerticalLayout implements View {
             }
 
         } else if (field instanceof ShowTextField) {
-            TextField tf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            Label tf = new Label();
+            tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
             tf.addStyleName("l");
-            tf.setEnabled(false);
+            tf.setContentMode(ContentMode.HTML);
             if (v != null) tf.setValue("" + v);
 
             Property p = dataStore.getProperty(field.getId());
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    tf.setValue((newValue != null)?"" + newValue:null);
+                    String s = (newValue != null)?"" + newValue:null;
+                    if (s != null) s = s.replaceAll("\n", "<br/>");
+                    tf.setValue(s);
                 }
             });
 

@@ -1,6 +1,5 @@
 package io.mateu.ui.core.client.components.fields.grids;
 
-import io.mateu.ui.core.client.app.AbstractExecutable;
 import io.mateu.ui.core.shared.Data;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
  */
 public interface GridFieldHelper {
 
-    public void repaint(AbstractExecutable after);
+    public void repaint(Runnable after);
 
     public List<Data> getSelection();
 

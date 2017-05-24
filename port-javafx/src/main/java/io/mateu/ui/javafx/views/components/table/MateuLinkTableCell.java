@@ -250,9 +250,6 @@ public class MateuLinkTableCell<S,T> extends TableCell<S,T> {
             if (getCellStyleGenerator() != null) {
                 String s = getCellStyleGenerator().getStyle(item);
                 if (s != null) {
-                    System.out.println("s=" + s);
-                }
-                if (s != null) {
                     for (String x : s.split(" ")) {
                         if (!Strings.isNullOrEmpty(x)) {
                             getStyleClass().add(x);

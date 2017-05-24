@@ -64,7 +64,7 @@ public class DataStore {
             Collections.reverse(ns);
             for (String n : ns)
             {
-                if (data.get(n) instanceof Pair) {
+                if (data.get(n) instanceof Pair || data.get(n) instanceof FileLocator) {
                     set(n, data.get(n));
                 } else if (data.get(n) instanceof Data)
                 {
@@ -151,12 +151,14 @@ public class DataStore {
         if (value instanceof Date) {
             Property p = props.get(name);
             if (p != null && p instanceof StringProperty) {
-                getProperty(name).setValue((value != null)? "" + value:null);
+                getProperty(name).setValue((value != null) ? "" + value : null);
             } else {
-                Instant instant = Instant.ofEpochMilli(((Date)value).getTime());
+                Instant instant = Instant.ofEpochMilli(((Date) value).getTime());
                 LocalDate res = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
-                ((Property)getLocalDateTimeProperty(name)).setValue(res);
+                ((Property) getLocalDateTimeProperty(name)).setValue(res);
             }
+        } else if (value instanceof FileLocator) {
+            getFileLocatorProperty(name).setValue((FileLocator) value);
         } else if (value instanceof List<?>) {
             Property<ObservableList<DataStore>> p = getObservableListProperty(name);
             p.getValue().clear();

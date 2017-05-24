@@ -52,7 +52,7 @@ public class FileLocator extends Data {
         set("_filename", fileName);
     }
 
-    public boolean isModified() { return get("_modified"); }
+    public boolean isModified() { return getBoolean("_modified"); }
 
     public void setModified(boolean modified) { set("_modified", modified); }
 

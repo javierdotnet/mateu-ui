@@ -58,6 +58,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
@@ -195,7 +197,7 @@ public class ViewNode extends StackPane {
         setStyle("-fx-background-color: white;");
 
         bp = new BorderPane();
-        if (!(view instanceof  AbstractWizardPageView)) bp.setTop(createToolBar(view.getActions()));
+        if (!(view instanceof AbstractWizardPageView)) bp.setTop(createToolBar(view.getActions()));
         ScrollPane sp = new ScrollPane(componentsCotainer = new VBox(10));
         //sp.getStyleClass().add("mateu-view-scroll");
         bp.setCenter(sp);
@@ -213,56 +215,122 @@ public class ViewNode extends StackPane {
         title.getStyleClass().add("title");
         title.textProperty().bind(dataStore.getStringProperty("_title"));
 
-        HBox badgesPane;
-        h.getChildren().add(badgesPane = new HBox(2));
+        {
+            HBox badgesPane;
+            h.getChildren().add(badgesPane = new HBox(2));
 
-        Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_badges");
-        ListChangeListener<DataStore> pl;
-        pb.getValue().addListener(pl = new ListChangeListener<DataStore>() {
-            @Override
-            public void onChanged(Change<? extends DataStore> c) {
-                badgesPane.getChildren().clear();
-                for (DataStore x : pb.getValue()) {
-                    Label l = new Label("" + x.get("_value"));
-                    if (x.get("_css") != null) l.getStyleClass().add(x.get("_css"));
-                    badgesPane.getChildren().add(l);
+            Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_badges");
+            ListChangeListener<DataStore> pl;
+            pb.getValue().addListener(pl = new ListChangeListener<DataStore>() {
+                @Override
+                public void onChanged(Change<? extends DataStore> c) {
+                    badgesPane.getChildren().clear();
+                    for (DataStore x : pb.getValue()) {
+                        Label l = new Label("" + x.get("_value"));
+                        if (x.get("_css") != null) l.getStyleClass().add(x.get("_css"));
+                        badgesPane.getChildren().add(l);
+                    }
+
+                }
+            });
+            pl.onChanged(new ListChangeListener.Change<DataStore>(pb.getValue()) {
+                @Override
+                public boolean next() {
+                    return false;
                 }
 
-            }
-        });
-        pl.onChanged(new ListChangeListener.Change<DataStore>(pb.getValue()) {
-            @Override
-            public boolean next() {
-                return false;
-            }
+                @Override
+                public void reset() {
 
-            @Override
-            public void reset() {
+                }
 
-            }
+                @Override
+                public int getFrom() {
+                    return 0;
+                }
 
-            @Override
-            public int getFrom() {
-                return 0;
-            }
+                @Override
+                public int getTo() {
+                    return 0;
+                }
 
-            @Override
-            public int getTo() {
-                return 0;
-            }
+                @Override
+                public List<DataStore> getRemoved() {
+                    return null;
+                }
 
-            @Override
-            public List<DataStore> getRemoved() {
-                return null;
-            }
-
-            @Override
-            protected int[] getPermutation() {
-                return new int[0];
-            }
-        });
+                @Override
+                protected int[] getPermutation() {
+                    return new int[0];
+                }
+            });
+        }
 
         componentsCotainer.getChildren().add(h);
+
+        //links
+        {
+            HBox linksPane;
+            componentsCotainer.getChildren().add(linksPane = new HBox(2));
+
+            Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_links");
+            ListChangeListener<DataStore> pl;
+            pb.getValue().addListener(pl = new ListChangeListener<DataStore>() {
+                @Override
+                public void onChanged(Change<? extends DataStore> c) {
+                    linksPane.getChildren().clear();
+                    for (DataStore x : pb.getValue()) {
+                        Hyperlink l = new Hyperlink("" + x.get("_caption"));
+                        l.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                ((AbstractAction)x.get("_action")).run();
+                            }
+                        });
+                        linksPane.getChildren().add(l);
+                    }
+
+                }
+            });
+            pl.onChanged(new ListChangeListener.Change<DataStore>(pb.getValue()) {
+                @Override
+                public boolean next() {
+                    return false;
+                }
+
+                @Override
+                public void reset() {
+
+                }
+
+                @Override
+                public int getFrom() {
+                    return 0;
+                }
+
+                @Override
+                public int getTo() {
+                    return 0;
+                }
+
+                @Override
+                public List<DataStore> getRemoved() {
+                    return null;
+                }
+
+                @Override
+                protected int[] getPermutation() {
+                    return new int[0];
+                }
+            });
+
+
+        }
+        // end of links
+
+
+
+
 
 
         dataStore.set("_title", view.getTitle());
@@ -927,8 +995,8 @@ public class ViewNode extends StackPane {
                                 @Override
                                 public void handle(ActionEvent event) {
                                     try {
-                                        Desktop.getDesktop().open(new File(newValue.getUrl()));
-                                    } catch (IOException e) {
+                                        Desktop.getDesktop().open(new File(new URL(newValue.getUrl()).toURI()));
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                         MateuUI.alert("" + e.getClass().getName() + ":" + e.getMessage());
                                     }

@@ -29,7 +29,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         @Override
         public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
             for (String k : props.keySet()) if (props.get(k).equals(observable)) {
-                System.out.println("data.set(" + k + ", " + newValue + ")");
+                //System.out.println("data.set(" + k + ", " + newValue + ")");
                 if (newValue instanceof ArrayList) {
                     List ll = new ArrayList();
                     for (Object o : (List) newValue) {
@@ -69,7 +69,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             Collections.reverse(ns);
             for (String n : ns)
             {
-                if (data.get(n) instanceof Pair) {
+                if (data.get(n) instanceof Pair || data.get(n) instanceof FileLocator) {
                     set(n, data.get(n));
                 } else if (data.get(n) instanceof Data)
                 {

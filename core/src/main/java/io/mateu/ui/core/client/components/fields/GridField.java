@@ -1,7 +1,6 @@
 package io.mateu.ui.core.client.components.fields;
 
 import io.mateu.ui.core.client.app.AbstractAction;
-import io.mateu.ui.core.client.app.AbstractExecutable;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.GriRowFormatter;
 import io.mateu.ui.core.client.components.fields.grids.GridFieldHelper;
@@ -30,7 +29,7 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     private List<AbstractAction> contextualMenuActions = new ArrayList<AbstractAction>();
 
-    private AbstractExecutable after;
+    private Runnable after;
 
     private int height = 200;
 
@@ -158,7 +157,7 @@ public class GridField extends AbstractField implements GriRowFormatter {
         return null;
     }
 
-    public GridField setColumnas(List<AbstractColumn> columns, AbstractExecutable despues)
+    public GridField setColumnas(List<AbstractColumn> columns, Runnable despues)
     {
         this.columns = columns;
 
@@ -172,12 +171,12 @@ public class GridField extends AbstractField implements GriRowFormatter {
         return 20;
     }
 
-    public GridField setAfter(AbstractExecutable after) {
+    public GridField setAfter(Runnable after) {
         this.after = after;
         return this;
     }
 
-    public AbstractExecutable getAfter() {
+    public Runnable getAfter() {
         return after;
     }
 

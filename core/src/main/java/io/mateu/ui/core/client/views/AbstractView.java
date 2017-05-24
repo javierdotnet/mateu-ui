@@ -13,6 +13,7 @@ public abstract class AbstractView {
 
     private AbstractForm form;
     private List<AbstractAction> actions;
+    private List<AbstractAction> links;
     private List<ViewListener> listeners = new ArrayList<>();
 
     public abstract String getTitle();
@@ -41,6 +42,14 @@ public abstract class AbstractView {
         return actions;
     }
 
+    public List<AbstractAction> createLinks() {
+        return new ArrayList<>();
+    }
+
+    public List<AbstractAction> getLinks() {
+        if (links == null) links = createLinks();
+        return links;
+    }
 
     public String getViewId() {
         return getClass().getCanonicalName();

@@ -10,8 +10,13 @@ import java.util.List;
  */
 public abstract class AbstractApplication {
 
+    public static final String PORT_VAADIN = "vaadin";
+    public static final String PORT_JAVAFX = "javafx";
+
+
     private UserData userData;
     private String baseUrl;
+    private String port;
 
     public abstract String getName();
 
@@ -40,4 +45,11 @@ public abstract class AbstractApplication {
     }
 
 
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
 }

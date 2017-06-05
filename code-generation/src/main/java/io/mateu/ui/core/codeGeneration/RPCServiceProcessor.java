@@ -89,7 +89,6 @@ public class RPCServiceProcessor extends AbstractProcessor {
             pw.println("package " + pnc + ";");
             pw.println("");
             pw.println("import io.mateu.ui.core.shared.AsyncCallback;");
-            pw.println("import io.mateu.ui.core.client.app.MateuUI;");
             pw.println("");
             pw.println("/**");
             pw.println(" * Generated class creating a default implementation the");

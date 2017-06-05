@@ -50,11 +50,16 @@
           <element id="library" level="project" name="Maven: com.github.virtuald:curvesapi:1.04" />
           <element id="library" level="project" name="Maven: org.jdom:jdom2:2.0.6" />
           <element id="library" level="project" name="Maven: com.google.guava:guava:21.0" />
-          <element id="archive" name="codegeneration-vaadin-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="codegeneration-vaadin" />
+          <element id="archive" name="port-javafx-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="port-javafx" />
           </element>
           <element id="archive" name="code-generation-1.0-SNAPSHOT.jar">
             <element id="module-output" name="code-generation" />
+          </element>
+          <element id="library" level="project" name="Maven: org.controlsfx:controlsfx:8.40.12" />
+          <element id="library" level="project" name="Maven: de.jensd:fontawesomefx:8.9" />
+          <element id="archive" name="codegeneration-vaadin-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="codegeneration-vaadin" />
           </element>
         </element>
       </element>

@@ -57,6 +57,7 @@ public class JavafxPort extends Application {
     }
 
     public JavafxPort(AbstractApplication app) {
+        app.setPort(AbstractApplication.PORT_JAVAFX);
         this.app = app;
     }
 
@@ -344,7 +345,33 @@ public class JavafxPort extends Application {
             @Override
             public void open(URL url) {
                 try {
-                    Desktop.getDesktop().open(new File(url.toURI()));
+                    try {
+                        File f = new File(url.toURI());
+                        Desktop.getDesktop().open(f);
+                    } catch (IllegalArgumentException e) {
+                        //java.lang.IllegalArgumentException: URI scheme is not "file"
+                        Stage s = new Stage();
+                        s.setWidth(800);
+                        s.setHeight(600);
+                        s.setTitle(url.toString());
+                        s.initOwner(mainStage);
+
+                        System.out.println(url);
+
+                        WebView v = new WebView();
+                        v.getEngine().loadContent("<html><body><h1>Un momento por favor...</h1></body></html>");
+                        StackPane root = new StackPane();
+                        root.getChildren().add(v);
+
+                        Scene scene = new Scene(root);
+                        //scene.getStylesheets().add(getClass().getResource("autenticado.css").toExternalForm());
+                        s.setScene(scene);
+                        s.show();
+
+                        System.out.println("abriendo " + url);
+
+                        v.getEngine().load(url.toString());
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (URISyntaxException e) {

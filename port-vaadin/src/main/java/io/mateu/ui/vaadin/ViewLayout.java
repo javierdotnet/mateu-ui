@@ -1024,6 +1024,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             DateField cb;
             cb = new DateField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            cb.setDateFormat("dd/MM/yyyy");
             if (firstField == null) firstField = cb;
 
             if (v != null && v instanceof Date) cb.setValue((Date)v);
@@ -1050,6 +1051,7 @@ public class ViewLayout extends VerticalLayout implements View {
             DateField cb;
             cb = new DateField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
             cb.setResolution(Resolution.MINUTE);
+            cb.setDateFormat("dd/MM/yyyy HH:mm");
             if (firstField == null) firstField = cb;
 
             System.out.println("v=" + v);

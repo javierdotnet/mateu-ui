@@ -38,6 +38,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.hsqldb:hsqldb:2.3.4" level="project" />
     <orderEntry type="module" module-name="sample-app-core" />
+    <orderEntry type="module" module-name="codegeneration-vaadin" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.12-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.21.0-GA" level="project" />
@@ -75,8 +76,9 @@
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.04" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom2:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:21.0" level="project" />
-    <orderEntry type="module" module-name="codegeneration-vaadin" />
+    <orderEntry type="module" module-name="port-javafx" />
     <orderEntry type="module" module-name="code-generation" />
-    <orderEntry type="module" module-name="port-vaadin" />
+    <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.12" level="project" />
+    <orderEntry type="library" name="Maven: de.jensd:fontawesomefx:8.9" level="project" />
   </component>
 </module>

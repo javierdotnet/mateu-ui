@@ -743,6 +743,11 @@ public class ViewLayout extends VerticalLayout implements View {
                                     public AbstractForm createForm() {
                                         return g.getDataForm();
                                     }
+
+                                    @Override
+                                    public void build() {
+
+                                    }
                                 });
                             }
                         }
@@ -841,6 +846,11 @@ public class ViewLayout extends VerticalLayout implements View {
                                 @Override
                                 public AbstractForm createForm() {
                                     return g.getDataForm();
+                                }
+
+                                @Override
+                                public void build() {
+
                                 }
                             });
                         }

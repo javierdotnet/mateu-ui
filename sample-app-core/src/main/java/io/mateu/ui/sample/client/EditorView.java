@@ -28,9 +28,8 @@ public class EditorView extends AbstractEditorView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new TextField("f1", "Field1"))
+    public void build() {
+        add(new TextField("f1", "Field1"))
                 .add(new TextField("_title", "_title"))
                 .add(new TextField("_subtitle", "_subtitle"))
                 ;

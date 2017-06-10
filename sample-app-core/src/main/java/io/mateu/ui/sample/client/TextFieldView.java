@@ -26,6 +26,46 @@ public class TextFieldView extends AbstractView {
     }
 
     @Override
+    public void build() {
+        add(new TextField("_id", "_id"))
+                .add(new TextField("field1", "Label for textfield"))
+                .add(new TextField("field2", "Label for textfield").setUnmodifiable(true))
+                .add(new SelectByIdField("filed3", "SearchById", "select x.id, x.firstname from customer x where x.id = xxxx ") {
+
+                    @Override
+                    public AbstractEditorView getEditor() {
+                        return new AbstractEditorView() {
+                            @Override
+                            public void save(Data data, AsyncCallback<Data> callback) {
+                                callback.onSuccess(data);
+                            }
+
+                            @Override
+                            public void load(Object id, AsyncCallback<Data> callback) {
+                                callback.onSuccess(new Data("_id", 1002, "name", "uwdhed wediwed"));
+                            }
+
+                            @Override
+                            public String getTitle() {
+                                return "XXXX";
+                            }
+
+                            @Override
+                            public void build() {
+                                add(new TextField("name", "Name"));
+                            }
+                        };
+                    }
+
+                    @Override
+                    public Pair getPair(Data editorData) {
+                        return new Pair(editorData.get("_id"), editorData.get("name"));
+                    }
+                })
+        ;
+    }
+
+    @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> as = super.createActions();
         as.add(new AbstractAction("errors") {
@@ -60,46 +100,5 @@ public class TextFieldView extends AbstractView {
             }
         });
         return as;
-    }
-
-    @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new TextField("_id", "_id"))
-                .add(new TextField("field1", "Label for textfield"))
-                .add(new TextField("field2", "Label for textfield").setUnmodifiable(true))
-                .add(new SelectByIdField("filed3", "SearchById", "select x.id, x.firstname from customer x where x.id = xxxx ") {
-
-                    @Override
-                    public AbstractEditorView getEditor() {
-                        return new AbstractEditorView() {
-                            @Override
-                            public void save(Data data, AsyncCallback<Data> callback) {
-                                callback.onSuccess(data);
-                            }
-
-                            @Override
-                            public void load(Object id, AsyncCallback<Data> callback) {
-                                callback.onSuccess(new Data("_id", 1002, "name", "uwdhed wediwed"));
-                            }
-
-                            @Override
-                            public String getTitle() {
-                                return "XXXX";
-                            }
-
-                            @Override
-                            public AbstractForm createForm() {
-                                return new ViewForm(this).add(new TextField("name", "Name"));
-                            }
-                        };
-                    }
-
-                    @Override
-                    public Pair getPair(Data editorData) {
-                        return new Pair(editorData.get("_id"), editorData.get("name"));
-                    }
-                })
-                ;
     }
 }

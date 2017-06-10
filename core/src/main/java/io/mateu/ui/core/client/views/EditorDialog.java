@@ -27,4 +27,9 @@ public class EditorDialog extends AbstractDialog {
     public AbstractForm createForm() {
         return editor.getForm();
     }
+
+    @Override
+    public void build() {
+        editor.build();
+    }
 }

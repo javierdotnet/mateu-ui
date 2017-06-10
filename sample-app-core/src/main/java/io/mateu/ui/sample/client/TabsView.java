@@ -17,8 +17,8 @@ public class TabsView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this).add(new TextField("tf1", "TF1"))
+    public void build() {
+        add(new TextField("tf1", "TF1"))
                 .add(new Tabs()
                         .add(new Tab("tab 1").add(new TextField("tf2", "TF2")))
                         .add(new Tab("tab 2").add(new TextField("tf3", "TF3")))

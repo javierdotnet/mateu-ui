@@ -16,10 +16,9 @@ public class PropertyListenerView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
+    public void build() {
         TextField tf2;
-        return new ViewForm(this)
-                .add(new TextField("field1", "Label for field1"))
+        add(new TextField("field1", "Label for field1"))
                 .add(tf2 = new TextField("field2", "Label for field2 (hidden when field1 == x)"))
                 .add(new TextField("field1", "Label for field1(repeated)"))
                 .addPropertyListener("field1", new ChangeListener() {

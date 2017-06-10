@@ -29,8 +29,8 @@ public class CRUDViewForCurrencies extends AbstractCRUDView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this).add(new TextField("f", "Filter"));
+    public void build() {
+        add(new TextField("f", "Filter"));
     }
 
     @Override
@@ -48,9 +48,8 @@ public class CRUDViewForCurrencies extends AbstractCRUDView {
             }
 
             @Override
-            public AbstractForm createForm() {
-                return new ViewForm(this)
-                        .add(new PKField("id", "Code"))
+            public void build() {
+                add(new PKField("id", "Code"))
                         .add(new TextField("name", "Name"))
                         .add(new IntegerField("decimals", "Decimals"))
                         ;

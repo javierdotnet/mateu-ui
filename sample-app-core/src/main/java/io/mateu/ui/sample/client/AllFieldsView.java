@@ -28,40 +28,37 @@ public class AllFieldsView extends AbstractView {
         return "All fields";
     }
 
-    @Override
-    public AbstractForm createForm() {
-        AbstractForm f = new ViewForm(this);
 
-        f.add(new AutocompleteField("f1", "Autocomplete", "1", "aaaaaa", "2", "asxdd", "3", "bededeud", "4", "bbbb").setRequired(true));
-        f.add(new CalendarField("f2", "Calendar"));
-        f.add(new CheckBoxField("f3", "CheckBox"));
-        f.add(new CheckBoxListField("f4", "CheckBoxList", "1", "V1", "2", "V2"));
-        f.add(new ComboBoxField("f5", "ComboBox", "1", "V1", "2", "V2"));
-        f.add(new DateField("f6", "Date"));
-        f.add(new FileField("f7", "File"));
-        f.add(new GridField("f8", "Grid"));
-        f.add(new HtmlField("f24", "Html"));
-        f.add(new LinkField("f9", "Link") {
+    @Override
+    public void build() {
+        add(new AutocompleteField("f1", "Autocomplete", "1", "aaaaaa", "2", "asxdd", "3", "bededeud", "4", "bbbb").setRequired(true));
+        add(new CalendarField("f2", "Calendar"));
+        add(new CheckBoxField("f3", "CheckBox"));
+        add(new CheckBoxListField("f4", "CheckBoxList", "1", "V1", "2", "V2"));
+        add(new ComboBoxField("f5", "ComboBox", "1", "V1", "2", "V2"));
+        add(new DateField("f6", "Date"));
+        add(new FileField("f7", "File"));
+        add(new GridField("f8", "Grid"));
+        add(new HtmlField("f24", "Html"));
+        add(new LinkField("f9", "Link") {
             @Override
             public void run() {
                 MateuUI.alert("Click on link field!");
             }
         });
-        f.add(new RadioButtonField("f10", "RadioButton", "1", "V1", "2", "V2"));
-        f.add(new RichTextField("f25", "RichText"));
-        f.add(new SearchField("f25", "Search", new CRUDView()));
-        f.add(new ShowImageField("f20", "ShowImage"));
-        f.add(new ShowTextField("f21", "ShowText"));
-        f.add(new SqlAutocompleteField("f12", "SqlAutocomplete", "select id, lastname || ', ' || firstname from customer order by firstname"));
-        f.add(new SqlCheckBoxList("f13", "SqlCheckBoxList", "select id, name from currency order by name"));
-        f.add(new SqlComboBoxField("f14", "SqlComboBoxField", "select id, lastname || ', ' || firstname from customer order by firstname"));
-        f.add(new SqlRadioButtonField("f15", "SqlRadioButtonField", "select id, name from currency order by name"));
-        f.add(new TextAreaField("f22", "TextArea"));
-        f.add(new DoubleField("f17", "DoubleField"));
-        f.add(new IntegerField("f18", "IntegerField"));
-        f.add(new TextField("f19", "TextField"));
-        f.add(new WebField("f23", "Web"));
-
-        return f;
+        add(new RadioButtonField("f10", "RadioButton", "1", "V1", "2", "V2"));
+        add(new RichTextField("f25", "RichText"));
+        add(new SearchField("f25", "Search", new CRUDView()));
+        add(new ShowImageField("f20", "ShowImage"));
+        add(new ShowTextField("f21", "ShowText"));
+        add(new SqlAutocompleteField("f12", "SqlAutocomplete", "select id, lastname || ', ' || firstname from customer order by firstname"));
+        add(new SqlCheckBoxList("f13", "SqlCheckBoxList", "select id, name from currency order by name"));
+        add(new SqlComboBoxField("f14", "SqlComboBoxField", "select id, lastname || ', ' || firstname from customer order by firstname"));
+        add(new SqlRadioButtonField("f15", "SqlRadioButtonField", "select id, name from currency order by name"));
+        add(new TextAreaField("f22", "TextArea"));
+        add(new DoubleField("f17", "DoubleField"));
+        add(new IntegerField("f18", "IntegerField"));
+        add(new TextField("f19", "TextField"));
+        add(new WebField("f23", "Web"));
     }
 }

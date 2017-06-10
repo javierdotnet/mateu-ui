@@ -6,6 +6,7 @@ import io.mateu.ui.core.shared.UserData;
 import io.mateu.ui.javafx.JavafxPort;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -70,7 +71,7 @@ public class TopNode extends ToolBar {
 
         //setHgrow(areas, Priority.ALWAYS);
 
-        getItems().add(new TextField("Search in " + JavafxPort.getApp().getName()));
+        if (false) getItems().add(new TextField("Search in " + JavafxPort.getApp().getName()));
         botonLogin = new Button("Login");
         actionLogout = new ActionGroup("Aquí el nombre del usuario", new Action("Profile", new Consumer<ActionEvent>() {
             @Override
@@ -423,13 +424,24 @@ public class TopNode extends ToolBar {
             boolean isPublic = a.isPublicAccess();
             if (!JavafxPort.getApp().isAuthenticationNeeded() || (isPublic && JavafxPort.getApp().getUserData() == null) || (!isPublic && JavafxPort.getApp().getUserData() != null)) {
 
-                Menu m = new Menu(a.getName());
+                if (a.getName() != null) {
 
-                for (AbstractModule mod : a.getModules()) {
-                    buildMenu(m, mod);
+                    Menu m = new Menu(a.getName());
+
+                    for (AbstractModule mod : a.getModules()) {
+                        buildMenu(m, mod);
+                    }
+
+                    if (m.getItems().size() > 0) bar.getMenus().add(m);
+
+                } else {
+
+                    for (AbstractModule mod : a.getModules()) {
+                        buildMenu(bar, mod);
+                    }
+
                 }
 
-                if (m.getItems().size() > 0) bar.getMenus().add(m);
 
             }
 
@@ -438,6 +450,41 @@ public class TopNode extends ToolBar {
         AbstractView h = (JavafxPort.getApp().getUserData() != null)?JavafxPort.getApp().getPrivateHome():JavafxPort.getApp().getPublicHome();
         if (h != null) MateuUI.openView(JavafxPort.getApp().getPublicHome());
 
+    }
+
+    private void buildMenu(MenuBar bar, AbstractModule mod) {
+        for (MenuEntry e : mod.getMenu()) {
+            buildMenu(bar, e);
+        }
+    }
+
+    private void buildMenu(MenuBar bar, MenuEntry e) {
+        if (e instanceof AbstractMenu) {
+            Menu s = new Menu(e.getName());
+            for (MenuEntry ee : ((AbstractMenu)e).getEntries()) {
+                buildMenu(s, ee);
+            }
+            if (s.getItems().size() > 0) bar.getMenus().add(s);
+        } else {
+            Menu i;
+            bar.getMenus().add(i = new Menu(e.getName()));
+            i.setOnShown(new EventHandler<Event>() {
+                @Override
+                public void handle(Event event) {
+                    if (e instanceof AbstractAction) {
+                        ((AbstractAction)e).run();
+                    }
+                }
+            });
+            i.setOnShowing(new EventHandler<Event>() {
+                @Override
+                public void handle(Event event) {
+                    if (e instanceof AbstractAction) {
+                        ((AbstractAction)e).run();
+                    }
+                }
+            });
+        }
     }
 
     private void buildMenu(Menu m, AbstractModule mod) {

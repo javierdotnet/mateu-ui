@@ -15,7 +15,7 @@ public class SearchFieldView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this).add(new SearchField("f", "XXXX", new CRUDView()));
+    public void build() {
+        add(new SearchField("f", "XXXX", new CRUDView()));
     }
 }

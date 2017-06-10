@@ -16,7 +16,7 @@ public class AboutView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this).setLastFieldMaximized(true).add(new Label("Sobre nosotros").setAlignment(Alignment.CENTER));
+    public void build() {
+        add(new Label("Sobre nosotros").setAlignment(Alignment.CENTER));
     }
 }

@@ -1,6 +1,8 @@
 package io.mateu.ui.core.client.views;
 
 import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.components.Component;
+import io.mateu.ui.core.client.data.ChangeListener;
 import io.mateu.ui.core.shared.Data;
 
 import java.util.ArrayList;
@@ -18,11 +20,27 @@ public abstract class AbstractView {
 
     public abstract String getTitle();
 
-    public abstract AbstractForm createForm();
+    public abstract void build();
+
+    public AbstractForm createForm() {
+        return new ViewForm(this);
+    }
 
     public AbstractForm getForm() {
-        if (form == null) form = createForm();
+        if (form == null) {
+            form = createForm();
+            build();
+        }
         return form;
+    }
+
+    public Data getData() {
+        return getForm().getData();
+    }
+
+    public AbstractView add(Component component) {
+        getForm().add(component);
+        return this;
     }
 
     public void close() {
@@ -31,6 +49,11 @@ public abstract class AbstractView {
 
     public void addListener(ViewListener listener) {
         listeners.add(listener);
+    }
+
+    public AbstractView addPropertyListener(String propertyName, ChangeListener listener) {
+        getForm().addPropertyListener(propertyName, listener);
+        return this;
     }
 
     public List<AbstractAction> createActions() {

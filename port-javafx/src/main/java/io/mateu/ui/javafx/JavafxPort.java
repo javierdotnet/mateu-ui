@@ -1,5 +1,6 @@
 package io.mateu.ui.javafx;
 
+import io.mateu.ui.App;
 import io.mateu.ui.core.client.app.AbstractApplication;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.BaseServiceAsync;
@@ -19,9 +20,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import io.mateu.ui.core.client.app.ClientSideHelper;
@@ -30,12 +29,10 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
-import org.controlsfx.control.action.Action;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -48,7 +45,7 @@ import static javafx.scene.control.ButtonType.OK;
  * Created by miguel on 9/8/16.
  */
 public class JavafxPort extends Application {
-    private static AbstractApplication app;
+    private static App app;
     public static Stage mainStage;
     private static JavafxPort _this;
 
@@ -56,12 +53,12 @@ public class JavafxPort extends Application {
         return _this;
     }
 
-    public JavafxPort(AbstractApplication app) {
+    public JavafxPort(App app) {
         app.setPort(AbstractApplication.PORT_JAVAFX);
         this.app = app;
     }
 
-    public static AbstractApplication getApp() {
+    public static App getApp() {
         return app;
     }
 
@@ -324,7 +321,7 @@ public class JavafxPort extends Application {
 
             @Override
             public AbstractApplication getApp() {
-                return app;
+                return (AbstractApplication) app;
             }
 
             @Override

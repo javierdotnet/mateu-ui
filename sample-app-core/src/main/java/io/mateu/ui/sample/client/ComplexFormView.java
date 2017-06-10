@@ -44,11 +44,10 @@ public class ComplexFormView extends AbstractView {
         return new Data("f1", "AAA", "f2", "BBB");
     }
 
+
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .setLastFieldMaximized(true)
-                .add(new TextField("f1", "Name"))
+    public void build() {
+        add(new TextField("f1", "Name"))
                 .add(new TextField("f2", "Adress"))
                 .add(new TextField("f3", "Country"))
                 .add(new TextField("f1", "Name repeated"))
@@ -67,6 +66,6 @@ public class ComplexFormView extends AbstractView {
                         , new TextColumn("col2", "Col2", 100, true)
                         , new TextColumn("col2", "Col2", 100, true)
                 }))
-                ;
+        ;
     }
 }

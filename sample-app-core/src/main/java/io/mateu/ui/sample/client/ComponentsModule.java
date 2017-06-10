@@ -159,9 +159,8 @@ public class ComponentsModule extends AbstractModule {
                             }
 
                             @Override
-                            public AbstractForm createForm() {
-                                return new ViewForm(this)
-                                        .add(new TextField("_id", "_id"))
+                            public void build() {
+                                        add(new TextField("_id", "_id"))
                                         .add(new TextField("field1", "Label for textfield"))
                                         .add(new TextField("field2", "Label for textfield").setUnmodifiable(true))
                                         ;
@@ -178,8 +177,8 @@ public class ComponentsModule extends AbstractModule {
                             }
 
                             @Override
-                            public AbstractForm createForm() {
-                                return new ViewForm(this).add(new TextField("f1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                            public void build() {
+                                add(new TextField("f1", "Field 1").setHelp("This is the first field bla bla, bla"));
                             }
                         }).addPage(new BaseWizardPageView() {
                             @Override
@@ -188,8 +187,8 @@ public class ComponentsModule extends AbstractModule {
                             }
 
                             @Override
-                            public AbstractForm createForm() {
-                                return new ViewForm(this).add(new TextField("f2", "Field 2").setRequired(true));
+                            public void build() {
+                                add(new TextField("f2", "Field 2").setRequired(true));
                             }
                         }).addPage(new BaseWizardPageView() {
                             @Override
@@ -198,8 +197,8 @@ public class ComponentsModule extends AbstractModule {
                             }
 
                             @Override
-                            public AbstractForm createForm() {
-                                return new ViewForm(this).add(new TextField("f3", "Field 3"));
+                            public void build() {
+                                add(new TextField("f3", "Field 3"));
                             }
                         }));
                     }

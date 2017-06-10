@@ -26,9 +26,8 @@ public class ComboBoxFieldView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new SqlComboBoxField("field1", "field1", "select id, firstname || ' ' || lastname from customer order by 2"))
+    public void build() {
+        add(new SqlComboBoxField("field1", "field1", "select id, firstname || ' ' || lastname from customer order by 2"))
                 ;
     }
 }

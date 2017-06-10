@@ -35,9 +35,8 @@ public class CRUDCrimesView extends AbstractCRUDView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new TextField("fn", "Address").setRequired(true))
+    public void build() {
+        add(new TextField("fn", "Address").setRequired(true))
                 .add(new TextField("ln", "Crime description"))
                 ;
     }
@@ -57,9 +56,8 @@ public class CRUDCrimesView extends AbstractCRUDView {
             }
 
             @Override
-            public AbstractForm createForm() {
-                return new ViewForm(this)
-                        .add(new TextField("col2", "Address").setRequired(true))
+            public void build() {
+                add(new TextField("col2", "Address").setRequired(true))
                         .add(new TextField("col3", "Crime description"))
                         ;
             }

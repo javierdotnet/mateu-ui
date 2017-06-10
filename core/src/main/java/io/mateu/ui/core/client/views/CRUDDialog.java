@@ -60,4 +60,9 @@ public abstract class CRUDDialog extends AbstractDialog implements ListView {
     public AbstractCRUDView getCrud() {
         return crud;
     }
+
+    @Override
+    public void build() {
+        crud.build();
+    }
 }

@@ -18,9 +18,7 @@
         <module>port-android</module>
         <module>port-javafx</module>
         <module>port-vaadin</module>
-        <module>codegeneration-vaadin</module>
         <module>port-vaadin-dummy</module>
-        <module>sample-app</module>
         <module>sample-app-core</module>
     </modules>
 

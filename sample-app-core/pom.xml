@@ -9,10 +9,21 @@
 
     <groupId>io.mateu.ui</groupId>
     <artifactId>sample-app-core</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
+
+
+    <name>sample-app-core</name>
+    <url>http://maven.apache.org</url>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -21,17 +32,64 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>io.mateu</groupId>
+                <artifactId>mateu-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </plugin>
+
+
+
+
+
+
+
+
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+
+                    <overlays>
+                        <overlay></overlay>
+                        <overlay>
+                            <groupId>io.mateu.ui</groupId>
+                            <artifactId>port-vaadin</artifactId>
+                            <!--
+                            <classifier>war</classifier>
+                            -->
+                            <!--
+                            <excludes>
+                                <exclude>WEB-INF/classes/images/sampleimage-dependency.jpg</exclude>
+                            </excludes>
+                            -->
+                        </overlay>
+                    </overlays>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.2.3.v20140905</version>
+            </plugin>
+
         </plugins>
+
     </build>
 
-    <name>sample-app-core</name>
-    <url>http://maven.apache.org</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
+
+        <dependency>
+            <groupId>io.mateu.ui</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -39,44 +97,61 @@
             <scope>test</scope>
         </dependency>
 
+
+
+
+
         <dependency>
             <groupId>io.mateu.ui</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>port-javafx</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.mateu.ui</groupId>
+            <artifactId>port-vaadin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>war</type>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
+
+
+
 
     <profiles>
         <profile>
-            <id>javafx</id>
-            <activation>
-                <property>
-                    <name>javafx</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>io.mateu.ui</groupId>
-                    <artifactId>port-javafx</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-        <id>web</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>io.mateu.ui</groupId>
-                    <artifactId>codegeneration-vaadin</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
+            <id>run-locally</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>io.mateu.ui.javafx.Main</mainClass>
+                                    <!--
+                                    <arguments>
+                                        <argument>arg0</argument>
+                                        <argument>arg1</argument>
+                                    </arguments>
+                                    -->
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
+
 </project>

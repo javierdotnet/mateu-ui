@@ -39,9 +39,8 @@ public class CRUDView extends AbstractCRUDView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new TextField("fn", "First name").setRequired(true))
+    public void build() {
+        add(new TextField("fn", "First name").setRequired(true))
                 .add(new TextField("ln", "Last name"))
                 .add(new TextField("s", "Street"));
     }
@@ -61,12 +60,11 @@ public class CRUDView extends AbstractCRUDView {
             }
 
             @Override
-            public AbstractForm createForm() {
-                return new ViewForm(this)
-                        .add(new TextField("firstname", "First name").setRequired(true))
+            public void build() {
+                add(new TextField("firstname", "First name").setRequired(true))
                         .add(new TextField("lastname", "Last name"))
                         .add(new TextField("street", "Street"))
-                        ;
+                ;
             }
         };
     }

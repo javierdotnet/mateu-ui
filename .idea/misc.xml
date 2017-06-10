@@ -6,6 +6,7 @@
     <file type="web" url="file://$PROJECT_DIR$/port-openui" />
     <file type="web" url="file://$PROJECT_DIR$/port-vaadin" />
     <file type="web" url="file://$PROJECT_DIR$/sample-app" />
+    <file type="web" url="file://$PROJECT_DIR$/sample-app-core" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
@@ -14,11 +15,12 @@
         <option value="$PROJECT_DIR$/core/pom.xml" />
         <option value="$PROJECT_DIR$/port-openui/pom.xml" />
         <option value="$PROJECT_DIR$/code-generation/pom.xml" />
-        <option value="$PROJECT_DIR$/parent/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/codegeneration-vaadin/pom.xml" />
+        <option value="$PROJECT_DIR$/sample-app/pom.xml" />
         <option value="$PROJECT_DIR$/sample-runner-javafx/pom.xml" />
       </set>
     </option>

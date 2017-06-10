@@ -162,8 +162,8 @@ public class GridNode extends VBox {
                             }
 
                             @Override
-                            public AbstractForm createForm() {
-                                return field.getDataForm();
+                            public void build() {
+
                             }
                         });
                     }
@@ -363,6 +363,11 @@ public class GridNode extends VBox {
                             @Override
                             public AbstractForm createForm() {
                                 return g.getDataForm();
+                            }
+
+                            @Override
+                            public void build() {
+
                             }
                         });
                     }

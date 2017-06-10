@@ -26,9 +26,8 @@ public class FileFieldView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new FileField("field1", "field1"))
+    public void build() {
+        add(new FileField("field1", "field1"))
                 ;
     }
 }

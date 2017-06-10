@@ -155,8 +155,8 @@ public class WizardDialog extends Dialog {
                 }
 
                 @Override
-                public AbstractForm createForm() {
-                    return new ViewForm(this).setLastFieldMaximized(true).add(new DataViewerField("data"));
+                public void build() {
+                    add(new DataViewerField("data"));
                 }
             });
         });

@@ -23,8 +23,8 @@ public class ListView extends AbstractListView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this).add(new TextField("q", "Filter"));
+    public void build() {
+        add(new TextField("q", "Filter"));
     }
 
 

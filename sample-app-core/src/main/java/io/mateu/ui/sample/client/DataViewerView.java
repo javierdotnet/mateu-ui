@@ -36,8 +36,8 @@ public class DataViewerView extends AbstractView {
                     }
 
                     @Override
-                    public AbstractForm createForm() {
-                        return new ViewForm(this).add(new TextField("f1", "Name"));
+                    public void build() {
+                        add(new TextField("f1", "Name"));
                     }
                 });
             }
@@ -58,15 +58,16 @@ public class DataViewerView extends AbstractView {
                     }
 
                     @Override
+                    public void build() {
+                        add(new DataViewerField("_metadata"));
+                    }
+
+                    @Override
                     public Data initializeData() {
 
                         return new Data("_metadata", new Data(DataViewerView.this.getForm().getData()));
                     }
 
-                    @Override
-                    public AbstractForm createForm() {
-                        return new ViewForm(this).setLastFieldMaximized(true).add(new DataViewerField("_metadata"));
-                    }
                 });
             }
         });
@@ -77,6 +78,11 @@ public class DataViewerView extends AbstractView {
     @Override
     public String getTitle() {
         return "Data viewer";
+    }
+
+    @Override
+    public void build() {
+        add(new DataViewerField("data"));
     }
 
     @Override
@@ -102,10 +108,5 @@ public class DataViewerView extends AbstractView {
         data.set("data", d);
 
         return data;
-    }
-
-    @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this).setLastFieldMaximized(true).add(new DataViewerField("data"));
     }
 }

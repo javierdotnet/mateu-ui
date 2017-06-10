@@ -50,10 +50,9 @@ public class ListSelectionFieldView extends AbstractView {
     }
 
     @Override
-    public AbstractForm createForm() {
-        return new ViewForm(this)
-                .add(new ListSelectionField("field1", "Label1", "1", "11", "2", "22", "3", "33"))
+    public void build() {
+        add(new ListSelectionField("field1", "Label1", "1", "11", "2", "22", "3", "33"))
                 .add(new SqlListSelectionField("field2", "Label2", "select id, firstname || ' ' || lastname from customer order by 2"))
-                ;
+        ;
     }
 }

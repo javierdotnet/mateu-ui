@@ -60,7 +60,7 @@
           <groupId>io.mateu.ui</groupId>
           <artifactId>code-generation</artifactId>
           <version>1.0-SNAPSHOT</version>
-          <optional>true</optional>
+          <!--<optional>true</optional>-->
           <scope>compile</scope>
       </dependency>
 

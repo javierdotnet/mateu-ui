@@ -22,41 +22,5 @@ It aims to reach several goals:
 
 I hope you like it ;)
 
-Building blocks
----
 
-For every user interface framework you have the building blocks (aka components).
-
-These are ours:
-
-- app
- - AbstractApplication
- - AbstractArea
- - AbstractModule
- - MenuEntry
- - AbstractMenu
- - AbstractAction
-- views
- - AbstractView
- - AbstractSearcher
- - AbstractEditor
-- components
-
-UML diagrams
----
-
-
-App class diagram:
-
-![alt text](http://yuml.me/3fb671cf.svg, "app class diagram")
-
-
-Views class diagram:
-
-![alt text](http://yuml.me/43de1929.svg, "views class diagram")
-
-
-Components class diagram:
-
-![alt text](http://yuml.me/a48f9dec.svg, "components class diagram")
 

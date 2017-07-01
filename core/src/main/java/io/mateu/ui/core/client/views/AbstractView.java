@@ -4,6 +4,7 @@ import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.data.ChangeListener;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.UserData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,10 @@ public abstract class AbstractView {
     public abstract String getTitle();
 
     public abstract void build();
+
+    public AbstractView onOpen(UserData user) {
+        return this;
+    }
 
     public AbstractForm createForm() {
         return new ViewForm(this);

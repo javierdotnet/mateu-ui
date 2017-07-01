@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by miguel on 23/4/17.
  */
-public class BaseWizard extends AbstractWizard {
+public abstract class BaseWizard extends AbstractWizard {
 
     private Data data = new Data();
     private List<BaseWizardPageView> pages = new ArrayList<>();
@@ -22,6 +22,13 @@ public class BaseWizard extends AbstractWizard {
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public void build() {
+        for (AbstractWizardPageView page : getPages()) {
+            page.build();
+        }
     }
 
     @Override
@@ -64,10 +71,6 @@ public class BaseWizard extends AbstractWizard {
         return currentPage;
     }
 
-    private void close() {
-    }
-
-
     public List<BaseWizardPageView> getPages() {
         return pages;
     }
@@ -89,5 +92,7 @@ public class BaseWizard extends AbstractWizard {
         getPages().add(page);
         return this;
     }
+
+    public abstract void onOk() throws Exception;
 
 }

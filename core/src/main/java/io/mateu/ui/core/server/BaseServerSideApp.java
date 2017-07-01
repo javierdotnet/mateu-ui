@@ -208,9 +208,14 @@ public abstract class BaseServerSideApp implements ServerSideApp {
             extension = fileName.substring(fileName.lastIndexOf("."));
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
         }
-        File temp = File.createTempFile(fileName, extension);
+        File temp = (System.getProperty("tmpdir") == null)?File.createTempFile(fileName, extension):new File(new File(System.getProperty("tmpdir")), fileName + extension);
+
         Utils.write(temp, bytes);
-        return new FileLocator(id, temp.getName(), temp.getAbsolutePath(), temp.getAbsolutePath());
+
+        String baseUrl = System.getProperty("tmpurl");
+        String url = (baseUrl == null)?temp.toURI().toURL().toString():new URL(baseUrl + "/" + temp.getName()).toString();
+
+        return new FileLocator(id, temp.getName(), url, temp.getAbsolutePath());
     }
 
     @Override

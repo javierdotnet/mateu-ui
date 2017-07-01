@@ -5,7 +5,7 @@ import io.mateu.ui.core.shared.Data;
 /**
  * Created by miguel on 22/4/17.
  */
-public abstract class AbstractWizard {
+public abstract class AbstractWizard extends AbstractView {
 
     public enum Actions {
         GONEXT, GOBACK, END

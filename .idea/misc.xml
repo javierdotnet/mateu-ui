@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/sample-app/overlays" />
     <file type="gwt" url="file://$PROJECT_DIR$/port-vaadin" />
     <file type="web" url="file://$PROJECT_DIR$/port-openui" />
+    <file type="web" url="file://$PROJECT_DIR$/port-polymer" />
     <file type="web" url="file://$PROJECT_DIR$/port-vaadin" />
     <file type="web" url="file://$PROJECT_DIR$/sample-app" />
     <file type="web" url="file://$PROJECT_DIR$/sample-app-core" />
@@ -13,13 +14,14 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/core/pom.xml" />
-        <option value="$PROJECT_DIR$/port-openui/pom.xml" />
         <option value="$PROJECT_DIR$/code-generation/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/codegeneration-vaadin/pom.xml" />
+        <option value="$PROJECT_DIR$/port-android/pom.xml" />
+        <option value="$PROJECT_DIR$/port-vaadin-dummy/pom.xml" />
         <option value="$PROJECT_DIR$/sample-app/pom.xml" />
         <option value="$PROJECT_DIR$/sample-runner-javafx/pom.xml" />
       </set>

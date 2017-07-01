@@ -98,7 +98,7 @@
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.04" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom2:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:21.0" level="project" />
-    <orderEntry type="module" module-name="port-vaadin-dummy" />
+    <orderEntry type="library" name="Maven: io.mateu.ui:port-vaadin-dummy:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: io.mateu.ui:codegeneration-vaadin:1.0-SNAPSHOT" level="project" />
   </component>
 </module>

@@ -26,6 +26,11 @@ public abstract class AbstractListView extends AbstractView implements ListView 
         return null;
     }
 
+    public boolean isSearchOnOpen() {
+        return true;
+    }
+
+
     @Override
     public List<AbstractColumn> getColumns() {
         if (columns == null) {

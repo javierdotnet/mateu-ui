@@ -170,32 +170,24 @@ public class ComponentsModule extends AbstractModule {
                 }, (MenuEntry) new AbstractAction("Wizard") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().open(new BaseWizard("My first wizard").addPage(new BaseWizardPageView() {
+                        MateuUI.getClientSideHelper().open(new BaseWizard("My first wizard") {
                             @Override
-                            public String getTitle() {
-                                return "First page";
+                            public void onOk() throws Exception {
+                                MateuUI.alert("ok!!");
                             }
+                        }.addPage(new BaseWizardPageView("First page") {
 
                             @Override
                             public void build() {
                                 add(new TextField("f1", "Field 1").setHelp("This is the first field bla bla, bla"));
                             }
-                        }).addPage(new BaseWizardPageView() {
-                            @Override
-                            public String getTitle() {
-                                return "Second page";
-                            }
+                        }).addPage(new BaseWizardPageView("Second page") {
 
                             @Override
                             public void build() {
                                 add(new TextField("f2", "Field 2").setRequired(true));
                             }
-                        }).addPage(new BaseWizardPageView() {
-                            @Override
-                            public String getTitle() {
-                                return "Third page";
-                            }
-
+                        }).addPage(new BaseWizardPageView("Third page") {
                             @Override
                             public void build() {
                                 add(new TextField("f3", "Field 3"));

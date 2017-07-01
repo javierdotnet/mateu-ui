@@ -6,6 +6,16 @@ package io.mateu.ui.core.client.views;
 public abstract class BaseWizardPageView extends AbstractWizardPageView {
 
     private BaseWizard wizard;
+    private String title;
+
+    public BaseWizardPageView(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
 
     @Override
     public boolean isFirstPage() {

@@ -40,6 +40,10 @@ public abstract class AbstractApplication implements App {
 
     }
 
+    public boolean isSignUpSupported() {
+        return false;
+    }
+
     public abstract List<AbstractArea> getAreas();
 
     public void setUserData(UserData userData) {
@@ -67,5 +71,21 @@ public abstract class AbstractApplication implements App {
 
     public void setPort(String port) {
         this.port = port;
+    }
+
+    public List<String> getSupportedLanguages() {
+        return null;
+    }
+
+    public String getOriginLanguage() {
+        return null;
+    }
+
+    public String translate(String text, String toLanguage) {
+        return null;
+    }
+
+    public void askForTranslation(String text, String fromLanguage, String toLanguage) {
+
     }
 }

@@ -462,7 +462,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 });
             }
-            {
+            if (false) {
                 MenuBar.MenuItem item = menubar.addItem("Data", new MenuBar.Command() {
                     @Override
                     public void menuSelected(MenuBar.MenuItem menuItem) {

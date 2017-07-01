@@ -1,6 +1,7 @@
 package io.mateu.ui.javafx;
 
 import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.AbstractApplication;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.DataViewerField;
 import io.mateu.ui.core.client.views.*;
@@ -70,8 +71,8 @@ public class WizardDialog extends Dialog {
             bs.add(bt = new ButtonType(a.getName(), ButtonBar.ButtonData.OTHER));
             bts.put(bt, a);
         }
-        ButtonType btData;
-        if (true) {
+        ButtonType btData = null;
+        if (AbstractApplication.PORT_JAVAFX.equals(MateuUI.getApp().getPort())) {
             bs.add(btData = new ButtonType("Data", ButtonBar.ButtonData.OTHER));
 
             bs.add(ButtonType.CANCEL);
@@ -135,7 +136,7 @@ public class WizardDialog extends Dialog {
         });
 
 
-        ((Button) getDialogPane().lookupButton(btData)).addEventFilter(ActionEvent.ACTION, ae -> {
+        if (btData != null) ((Button) getDialogPane().lookupButton(btData)).addEventFilter(ActionEvent.ACTION, ae -> {
             MateuUI.openView(new AbstractDialog() {
                 @Override
                 public void onOk(Data data) {

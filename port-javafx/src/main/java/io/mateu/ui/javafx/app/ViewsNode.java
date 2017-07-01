@@ -68,7 +68,7 @@ public class ViewsNode extends BorderPane {
 
                     }
                 });
-            } else if (view instanceof AbstractListView) {
+            } else if (view instanceof AbstractListView && ((AbstractListView) view).isSearchOnOpen()) {
                 ((AbstractListView)view).search();
             }
             t.setOnClosed(new EventHandler<Event>() {

@@ -17,7 +17,7 @@ public class EditorViewControllerRegistry {
 
 
     public static void build() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Reflections reflections = new Reflections(Class.forName(Utils.read(EditorViewControllerRegistry.class.getResourceAsStream("/META-INF/services/io.mateu.ui.serversideapp"))).getPackage().getName());
+        Reflections reflections = new Reflections(Class.forName(Utils.read(EditorViewControllerRegistry.class.getResourceAsStream("/META-INF/services/io.mateu.ui.ServerSideApp"))).getPackage().getName());
 
         Set<Class<? extends ServerSideEditorViewController>> controllers =
                 reflections.getSubTypesOf(ServerSideEditorViewController.class);

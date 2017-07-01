@@ -45,6 +45,10 @@ public interface ServerSideApp {
 
     void updateProfile(String login, String name, String email, FileLocator foto)throws Throwable;
 
+    UserData signUp(String login, String name, String email, String password) throws Throwable;
+
+    String recoverPassword(String loginOrPassword) throws Throwable;
+
     URL dump(Data parameters) throws Throwable;
 
     String getXslfoForListing()throws Throwable;

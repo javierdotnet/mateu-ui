@@ -59,4 +59,13 @@ public class UserData extends Data {
     public void setPhoto(String photo) {
         set("photo", photo);
     }
+
+    public String getPreferredLanguage() {
+        return get("preferredLanguage");
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        set("preferredLanguage", preferredLanguage);
+    }
+
 }

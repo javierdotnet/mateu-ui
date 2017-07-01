@@ -25,7 +25,7 @@ public class ServerSideHelper {
 
     public static ServerSideApp getServerSideApp() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         if (serverSideApp == null) {
-            serverSideApp = (ServerSideApp) Class.forName(Utils.read(EditorViewControllerRegistry.class.getResourceAsStream("/META-INF/services/io.mateu.ui.serversideapp"))).newInstance();
+            serverSideApp = (ServerSideApp) Class.forName(Utils.read(EditorViewControllerRegistry.class.getResourceAsStream("/META-INF/services/io.mateu.ui.core.server.ServerSideApp"))).newInstance();
         }
         return serverSideApp;
     }

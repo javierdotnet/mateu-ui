@@ -18,12 +18,15 @@ import java.util.List;
 public class CRUDCrimesView extends AbstractCRUDView {
     @Override
     public String getSql() {
-        String sql = "select id,codetime,address, beat , crimedescr from crimes where id = id ";
-        if (!getForm().getData().isEmpty("fn")) {
-            sql += " and lower(address) like '%" + getForm().getData().getString("fn").toLowerCase().replaceAll("'", "''") + "%'";
+        String sql = "select id,codetime,address, beat , crimedescr from crimes " +
+                " where id = id ";
+        if (!getData().isEmpty("fn")) {
+            sql += " and lower(address) like '%" + getForm().getData()
+                    .getString("fn").toLowerCase().replaceAll("'", "''") + "%'";
         }
-        if (!getForm().getData().isEmpty("ln")) {
-            sql += " and lower(crimedescr) like '%" + getForm().getData().getString("ln").toLowerCase().replaceAll("'", "''") + "%'";
+        if (!getData().isEmpty("ln")) {
+            sql += " and lower(crimedescr) like '%" + getForm().getData()
+                    .getString("ln").toLowerCase().replaceAll("'", "''") + "%'";
         }
         sql += " order by id";
         return sql;
@@ -76,6 +79,7 @@ public class CRUDCrimesView extends AbstractCRUDView {
 
     @Override
     public void delete(List<Data> selection, AsyncCallback<Void> callback) {
-        MateuUI.getBaseService().execute("delete from crime where id in (" + MateuUI.extractIds(selection) + ")", callback);
+        MateuUI.getBaseService().execute("delete from crime " +
+                " where id in (" + MateuUI.extractIds(selection) + ")", callback);
     }
 }

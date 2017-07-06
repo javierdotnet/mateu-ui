@@ -28,6 +28,10 @@ public class FileLocator extends Data {
         setTmpPath(tmpPath);
     }
 
+    public FileLocator(String json) {
+        super(json);
+    }
+
     public String getUrl() {
         return get("_url");
     }

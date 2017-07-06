@@ -18,6 +18,8 @@
         <module>port-vaadin</module>
         <module>sample-app-core</module>
         <module>port-polymer</module>
+        <module>port-html5</module>
+        <module>sampleapp</module>
     </modules>
 
 

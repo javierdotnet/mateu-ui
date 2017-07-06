@@ -1,5 +1,6 @@
 package io.mateu.ui.core.client.views;
 
+import com.google.common.base.Strings;
 import io.mateu.ui.core.shared.AsyncCallback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.shared.Data;
@@ -18,6 +19,8 @@ public abstract class BaseEditorView extends AbstractEditorView {
 
     @Override
     public void load(Object id, AsyncCallback<Data> callback) {
-        MateuUI.getBaseService().get(getServerSideControllerKey(), id, callback);
+        if (id instanceof Long) MateuUI.getBaseService().get(getServerSideControllerKey(), (long) id, callback);
+        else if (id instanceof Integer) MateuUI.getBaseService().get(getServerSideControllerKey(), (int) id, callback);
+        else if (id instanceof String) MateuUI.getBaseService().get(getServerSideControllerKey(), (String) id, callback);
     }
 }

@@ -21,10 +21,12 @@ public interface BaseService {
 
     public Data set(String serverSideControllerKey, Data data) throws Throwable;
 
-    public Data get(String serverSideControllerKey, Object id) throws Throwable;
+    public Data get(String serverSideControllerKey, long id) throws Throwable;
 
+    public Data get(String serverSideControllerKey, int id) throws Throwable;
 
-    public FileLocator upload(String fileName, byte[] bytes, boolean temporary) throws Throwable;
+    public Data get(String serverSideControllerKey, String id) throws Throwable;
+
 
     public UserData authenticate(String login, String password) throws Throwable;
 

@@ -7,9 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="core" />
+        <module name="port-html5" />
         <module name="port-polymer" />
         <module name="port-vaadin" />
         <module name="sample-app-core" />
+        <module name="sampleapp" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -19,14 +21,17 @@
       <module name="mateu-ui" target="1.5" />
       <module name="parent" target="1.8" />
       <module name="port-android" target="1.5" />
+      <module name="port-html5" target="1.8" />
       <module name="port-javafx" target="1.8" />
       <module name="port-openui" target="1.5" />
       <module name="port-polymer" target="1.8" />
       <module name="port-vaadin" target="1.8" />
       <module name="port-vaadin-dummy" target="1.8" />
+      <module name="rest" target="1.5" />
       <module name="sample-app" target="1.8" />
       <module name="sample-app-core" target="1.8" />
       <module name="sample-runner-javafx" target="1.5" />
+      <module name="sampleapp" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

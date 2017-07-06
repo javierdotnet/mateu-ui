@@ -68,14 +68,21 @@ public class BaseServiceImpl implements BaseService {
     }
 
     @Override
-    public Data get(String serverSideControllerKey, Object id) throws Throwable {
+    public Data get(String serverSideControllerKey, long id) throws Throwable {
         System.out.println("get(" + serverSideControllerKey + "," + id + ")");
         return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
     }
 
     @Override
-    public FileLocator upload(String fileName, byte[] bytes, boolean temporary)throws Throwable {
-        return ServerSideHelper.getServerSideApp().upload(fileName, bytes, temporary);
+    public Data get(String serverSideControllerKey, int id) throws Throwable {
+        System.out.println("get(" + serverSideControllerKey + "," + id + ")");
+        return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
+    }
+
+    @Override
+    public Data get(String serverSideControllerKey, String id) throws Throwable {
+        System.out.println("get(" + serverSideControllerKey + "," + id + ")");
+        return EditorViewControllerRegistry.getController(serverSideControllerKey).get(id);
     }
 
     @Override

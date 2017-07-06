@@ -1,8 +1,13 @@
 package io.mateu.ui.core.shared;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import io.mateu.ui.core.client.data.DataContainer;
 
-import java.io.Serializable;
+import java.io.*;
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -15,6 +20,13 @@ public class Data implements Serializable, DataContainer {
     Map<String, Object> data = new HashMap<>();
 
     public Data() {
+    }
+
+    public Data(String json) {
+
+        Object o = new Jsonizer().parseJson(json);
+
+        if (o instanceof Data) data = ((Data)o).getProperties();
     }
 
     public Data(Data other) {
@@ -214,25 +226,7 @@ public class Data implements Serializable, DataContainer {
 
     @Override
     public String toString() {
-        String s = "";
-        //s = super.toString();
-        for (String k : data.keySet()) {
-            if (data.get(k) instanceof Data) {
-                s += "" + k + ":[\n" + ((Data) data.get(k)).toString() + "]";
-            } else if (data.get(k) instanceof Data) {
-                Data d = (Data) data.get(k);
-                s += "" + k + ":(";
-                String ss = "";
-                for (String n : d.getPropertyNames()) {
-                    if (!"".equals(ss)) ss += ",";
-                    ss += "" + n + ":" + d.get(n);
-                }
-                s += ss + ")";
-            } else s += "" + k + ":" + data.get(k);
-            s += "\n";
-        }
-        return s;
-
+        return new Jsonizer().toJson(this);
     }
 
     public void setAll(Data data) {
@@ -241,5 +235,29 @@ public class Data implements Serializable, DataContainer {
                 set(k, data.get(k));
             }
         }
+    }
+
+
+    public static void main(String... args) {
+        Data d = new Data(
+
+                "entero", 5, "doble", 3.2, "null", null, "cadena", "qhdoiq diqw \"dwq ede", "array", new int[] {3, 4, 10}
+        , "lista", Lists.newArrayList(3.2, 5.1), "data", new Data("nombre", "Mateu", "apellido", "Pérez")
+                , "booleano", true
+
+                , "listadedata", Lists.newArrayList(
+                new Data("nombre", "Mateu", "apellido", "Pérez", "edad", 9)
+                , new Data("nombre", "Miguel", "apellido", "Pérez", "edad", 48)
+        )
+        );
+
+        System.out.println(d.toString());
+
+
+        System.out.println("============================");
+
+        Data d2 = new Data(d.toString());
+
+        System.out.println(d2.toString());
     }
 }

@@ -125,7 +125,7 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
     }
 
     @Override
-    public void get(String serverSideControllerKey, Object id, AsyncCallback<Data> callback) {
+    public void get(String serverSideControllerKey, long id, AsyncCallback<Data> callback) {
 
 
                 try {
@@ -146,6 +146,58 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
 
                 }
+
+
+    }
+
+    @Override
+    public void get(String serverSideControllerKey, int id, AsyncCallback<Data> callback) {
+
+
+        try {
+
+            Data r = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).get(serverSideControllerKey, id);
+
+
+            callback.onSuccess(r);
+
+
+
+        } catch (Throwable e) {
+
+            e.printStackTrace();
+
+
+            callback.onFailure(e);
+
+
+        }
+
+
+    }
+
+    @Override
+    public void get(String serverSideControllerKey, String id, AsyncCallback<Data> callback) {
+
+
+        try {
+
+            Data r = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).get(serverSideControllerKey, id);
+
+
+            callback.onSuccess(r);
+
+
+
+        } catch (Throwable e) {
+
+            e.printStackTrace();
+
+
+            callback.onFailure(e);
+
+
+        }
 
 
     }
@@ -267,27 +319,4 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
 
     }
 
-    @Override
-    public void upload(String fileName, byte[] bytes, boolean temporary, AsyncCallback<FileLocator> callback) {
-
-
-                try {
-
-                    FileLocator result = ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).upload(fileName, bytes, temporary);
-
-
-                            callback.onSuccess(result);
-
-
-
-                } catch (Throwable e) {
-
-                    e.printStackTrace();
-
-                            callback.onFailure(e);
-
-                }
-
-
-    }
 }

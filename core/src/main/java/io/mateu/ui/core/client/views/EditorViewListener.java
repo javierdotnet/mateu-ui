@@ -11,7 +11,9 @@ public interface EditorViewListener {
 
     public void onSave();
 
-    public void onSuccess(Data result);
+    public void onSuccessLoad(Data result);
+
+    public void onSuccessSave(Data result);
 
     public void onFailure(Throwable caught);
 

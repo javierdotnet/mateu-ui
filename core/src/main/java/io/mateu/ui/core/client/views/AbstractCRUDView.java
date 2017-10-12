@@ -104,7 +104,12 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
             }
 
             @Override
-            public void onSuccess(Data result) {
+            public void onSuccessLoad(Data result) {
+
+            }
+
+            @Override
+            public void onSuccessSave(Data result) {
                 try {
                     search();
                 } catch (Exception e) {

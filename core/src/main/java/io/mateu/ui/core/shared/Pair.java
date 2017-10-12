@@ -20,6 +20,10 @@ public class Pair extends Data {
         }
     }
 
+    public Pair(String json) {
+        super(json);
+    }
+
     public Object getValue() {
         return get("value");
     }

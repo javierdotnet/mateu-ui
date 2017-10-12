@@ -8,6 +8,7 @@ import io.mateu.ui.core.client.components.Tab;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.views.ListView;
+import io.mateu.ui.core.server.ServerSideHelper;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Pair;
@@ -175,7 +176,7 @@ public class ViewNode extends StackPane {
         MateuUI.runInUIThread(new Runnable() {
             @Override
             public void run() {
-                maskerPane.setVisible(true);
+                if (maskerPane != null) maskerPane.setVisible(true);
                 //getChildren().add(progressIndicator = new ProgressIndicator());
             }
         });
@@ -185,7 +186,7 @@ public class ViewNode extends StackPane {
         MateuUI.runInUIThread(new Runnable() {
             @Override
             public void run() {
-                maskerPane.setVisible(false);
+                if (maskerPane != null) maskerPane.setVisible(false);
                 //getChildren().remove(progressIndicator);
             }
         });
@@ -397,7 +398,12 @@ public class ViewNode extends StackPane {
                 }
 
                 @Override
-                public void onSuccess(Data result) {
+                public void onSuccessLoad(Data result) {
+                    endWaiting();
+                }
+
+                @Override
+                public void onSuccessSave(Data result) {
                     endWaiting();
                 }
 
@@ -1034,15 +1040,18 @@ public class ViewNode extends StackPane {
                         FileChooser fc = new FileChooser();
                         File f = fc.showOpenDialog(s);
                         if (f != null) try {
-                            MateuUI.getBaseService().upload(f.getName(), JFXHelper.read(new FileInputStream(f)), ((FileField)c).isTemporary(), new io.mateu.ui.core.client.app.Callback<FileLocator>() {
-                                @Override
-                                public void onSuccess(FileLocator result) {
-                                    dataStore.getFileLocatorProperty(((AbstractField)c).getId()).setValue(result);
-                                }
-                            });
+                            dataStore.getFileLocatorProperty(((AbstractField)c).getId()).setValue(ServerSideHelper.getServerSideApp().upload(f.getName(), JFXHelper.read(new FileInputStream(f)), ((FileField)c).isTemporary()));
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                             MateuUI.alert("" + e.getClass().getName() + ":" + e.getMessage());
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
                         }
                     }
                 });
@@ -1131,27 +1140,31 @@ public class ViewNode extends StackPane {
                 Pane h;
                 n = h = new HBox(6);
 
-                Label l;
-                h.getChildren().add(l = new Label());
+                javafx.scene.control.ListView l;
+                h.getChildren().add(l = new javafx.scene.control.ListView());
+
+                l.setPrefSize(200, 250);
+                l.setEditable(false);
+
                 Button b;
                 h.getChildren().add(b = new Button("+"));
 
                 Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
 
+                ObservableList<String> xdata;
+                l.setItems(xdata = FXCollections.observableArrayList());
+
                 ChangeListener<PairList> cl;
                 prop.addListener(cl = new ChangeListener<PairList>() {
                     @Override
                     public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
-                        StringBuffer s = new StringBuffer();
-                        boolean empty = true;
+                        xdata.clear();
                         if (newValue != null) {
                             for (Pair p : newValue.getValues()) {
-                                if (empty) empty = false;
-                                else s.append(", ");
-                                s.append(p.getText());
+                                if (p != null && p.getText() != null) xdata.add(p.getText());
                             }
                         }
-                        l.setText((empty)?"empty (no item selected)":s.toString());
+
                     }
                 });
                 cl.changed(null, null, null);
@@ -1659,30 +1672,35 @@ public class ViewNode extends StackPane {
                 Pane h;
                 n = h = new HBox(6);
 
-                Label l;
-                h.getChildren().add(l = new Label());
+                javafx.scene.control.ListView l;
+                h.getChildren().add(l = new javafx.scene.control.ListView());
+
+                l.setPrefSize(200, 250);
+                l.setEditable(false);
+
                 Button b;
                 h.getChildren().add(b = new Button("+"));
 
                 Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
 
+                ObservableList<String> xdata;
+                l.setItems(xdata = FXCollections.observableArrayList());
+
                 ChangeListener<PairList> cl;
                 prop.addListener(cl = new ChangeListener<PairList>() {
                     @Override
                     public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
-                        StringBuffer s = new StringBuffer();
-                        boolean empty = true;
+                        xdata.clear();
                         if (newValue != null) {
                             for (Pair p : newValue.getValues()) {
-                                if (empty) empty = false;
-                                else s.append(", ");
-                                s.append(p.getText());
+                                if (p != null && p.getText() != null) xdata.add(p.getText());
                             }
                         }
-                        l.setText((empty)?"empty (no item selected)":s.toString());
+
                     }
                 });
                 cl.changed(null, null, null);
+
 
                 b.setOnAction(new EventHandler<ActionEvent>() {
                     @Override

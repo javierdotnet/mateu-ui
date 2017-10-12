@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.ActionOnRow;
 import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.components.fields.GridField;
 import io.mateu.ui.core.client.components.fields.grids.columns.*;
 import io.mateu.ui.core.client.views.*;
@@ -150,6 +151,12 @@ public class GridNode extends VBox {
                     if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
                     else {
                         MateuUI.openView(new AbstractDialog() {
+
+                            @Override
+                            public AbstractForm createForm() {
+                                return f;
+                            }
+
                             @Override
                             public void onOk(Data data) {
                                 DataStore ds = new DataStore(data);
@@ -163,7 +170,6 @@ public class GridNode extends VBox {
 
                             @Override
                             public void build() {
-
                             }
                         });
                     }

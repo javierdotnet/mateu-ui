@@ -55,6 +55,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         super(new HashMap<String, Object>());
         setData(data);
         set("_selected", false);
+        if (!props.containsKey("__id")) set("__id", UUID.randomUUID());
     }
 
 
@@ -171,6 +172,20 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         return s;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        boolean eq = false;
+        Object k = get("__id");
+        if (k != null) eq = obj instanceof DataStore && k.equals(((DataStore)obj).get("__id"));
+        else eq = super.equals(obj);
+        return eq;
+    }
+
+    @Override
+    public int hashCode() {
+        return get("__id").hashCode();
+    }
+
     public Property<String> getStringProperty(String id) {
         Property p = props.get(id);
         if (p != null && !(p instanceof SimpleStringProperty)) {
@@ -201,7 +216,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     public Property<Double> getDoubleProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleDoubleProperty());
+            props.put(id, p = new SimpleObjectProperty<Double>());
             p.addListener(listenerx);
         }
         return p;
@@ -210,7 +225,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     public Property<Integer> getIntegerProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleIntegerProperty());
+            props.put(id, p = new SimpleObjectProperty<Integer>());
             p.addListener(listenerx);
         }
         return p;
@@ -219,7 +234,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     public Property<Long> getLongProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleLongProperty());
+            props.put(id, p = new SimpleObjectProperty<Long>());
             p.addListener(listenerx);
         }
         return p;
@@ -228,7 +243,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     public Property<Number> getNumberProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleIntegerProperty());
+            props.put(id, p = new SimpleObjectProperty<Number>());
             p.addListener(listenerx);
         }
         return p;

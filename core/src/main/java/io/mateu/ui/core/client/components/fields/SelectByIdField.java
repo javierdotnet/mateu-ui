@@ -54,7 +54,12 @@ public abstract class SelectByIdField extends TextField {
             }
 
             @Override
-            public void onSuccess(Data result) {
+            public void onSuccessLoad(Data result) {
+
+            }
+
+            @Override
+            public void onSuccessSave(Data result) {
                 System.out.println("******ONSUCESS*****");
                 getForm().set(getId(), getPair(result));
                 MateuUI.runInUIThread(new Runnable() {
@@ -87,7 +92,12 @@ public abstract class SelectByIdField extends TextField {
             }
 
             @Override
-            public void onSuccess(Data result) {
+            public void onSuccessLoad(Data result) {
+
+            }
+
+            @Override
+            public void onSuccessSave(Data result) {
                 System.out.println("******ONSUCESS*****");
                 getForm().set(getId(), getPair(result));
                 editor.close();

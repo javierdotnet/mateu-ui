@@ -1,6 +1,7 @@
 package io.mateu.ui.vaadin;
 
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.StyleGenerator;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
 import io.mateu.ui.core.shared.Data;
@@ -13,15 +14,16 @@ import java.util.Map;
 /**
  * Created by miguel on 11/4/17.
  */
-public class CellStyleGenerator implements Grid.CellStyleGenerator {
+public class CellStyleGenerator implements StyleGenerator<Object> {
 
-    private final Map<String, io.mateu.ui.core.shared.CellStyleGenerator> generators = new HashMap<>();
+    private final Map<Integer, io.mateu.ui.core.shared.CellStyleGenerator> generators = new HashMap<>();
 
     public CellStyleGenerator(List<AbstractColumn> columns) {
+        int pos = 0;
         for (AbstractColumn c : columns) {
-            if (c.getStyleGenerator() != null) generators.put(c.getId(), c.getStyleGenerator());
+            if (c.getStyleGenerator() != null) generators.put(pos, c.getStyleGenerator());
             else if (c instanceof DataColumn) {
-                generators.put(c.getId(), new io.mateu.ui.core.shared.CellStyleGenerator() {
+                generators.put(pos, new io.mateu.ui.core.shared.CellStyleGenerator() {
                     @Override
                     public String getStyle(Object value) {
                         if (value instanceof DataStore) {
@@ -33,16 +35,21 @@ public class CellStyleGenerator implements Grid.CellStyleGenerator {
                     }
                 });
             }
+            pos++;
         }
-    }
-
-    @Override
-    public String getStyle(Grid.CellReference cellReference) {
-        if (generators.containsKey(cellReference.getPropertyId())) {
-            return generators.get(cellReference.getPropertyId()).getStyle(cellReference.getValue());
-        }
-        return null;
     }
 
     public boolean hasGenerators() { return generators.size() > 0; }
+
+    @Override
+    public String apply(Object o) {
+
+        /*
+        if (generators.containsKey(cellReference.getColumnIndex())) {
+            return generators.get(cellReference.getColumnIndex()).getStyle(cellReference.getValue());
+        }
+        */
+        return null;
+
+    }
 }

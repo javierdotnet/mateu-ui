@@ -24,6 +24,11 @@ public class SampleApp extends AbstractApplication {
                     public List<AbstractModule> getModules() {
                         return Lists.newArrayList(new AbstractModule() {
                             @Override
+                            public String getName() {
+                                return "Módulo 1";
+                            }
+
+                            @Override
                             public List<MenuEntry> getMenu() {
                                 return Lists.newArrayList(
                                         (MenuEntry) new AbstractAction("Test 1") {
@@ -49,6 +54,11 @@ public class SampleApp extends AbstractApplication {
             @Override
             public List<AbstractModule> getModules() {
                 return Lists.newArrayList(new AbstractModule() {
+                    @Override
+                    public String getName() {
+                        return "Módulo 2";
+                    }
+
                     @Override
                     public List<MenuEntry> getMenu() {
                         return Lists.newArrayList(

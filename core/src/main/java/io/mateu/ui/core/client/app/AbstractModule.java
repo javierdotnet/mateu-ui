@@ -7,6 +7,8 @@ import java.util.List;
  */
 public abstract class AbstractModule {
 
+    public abstract String getName();
+
     public abstract List<MenuEntry> getMenu();
 
 }

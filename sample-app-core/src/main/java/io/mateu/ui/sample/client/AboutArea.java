@@ -16,6 +16,6 @@ public class AboutArea extends AbstractArea {
     }
 
     public List<AbstractModule> getModules() {
-        return Arrays.asList((AbstractModule) new AboutModule());
+        return Arrays.asList((AbstractModule) new AboutModule(), (AbstractModule) new AboutModule());
     }
 }

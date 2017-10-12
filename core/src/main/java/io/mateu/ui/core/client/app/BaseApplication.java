@@ -21,6 +21,12 @@ public abstract class BaseApplication extends AbstractApplication {
             @Override
             public List<AbstractModule> getModules() {
                 return Lists.newArrayList(new AbstractModule() {
+
+                    @Override
+                    public String getName() {
+                        return "Module 1";
+                    }
+
                     @Override
                     public List<MenuEntry> getMenu() {
                         return BaseApplication.this.getMenu();

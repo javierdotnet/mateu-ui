@@ -36,6 +36,7 @@ public class AllFieldsView extends AbstractView {
         add(new CheckBoxField("f3", "CheckBox"));
         add(new CheckBoxListField("f4", "CheckBoxList", "1", "V1", "2", "V2"));
         add(new ComboBoxField("f5", "ComboBox", "1", "V1", "2", "V2"));
+        add(new DateTimeField("f31", "DateTime"));
         add(new DateField("f6", "Date"));
         add(new FileField("f7", "File"));
         add(new GridField("f8", "Grid"));

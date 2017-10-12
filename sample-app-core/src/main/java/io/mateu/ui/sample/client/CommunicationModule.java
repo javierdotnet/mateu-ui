@@ -7,6 +7,7 @@ import io.mateu.ui.core.shared.BaseService;
 import io.mateu.ui.sample.shared.TestService;
 import io.mateu.ui.sample.client.TestServiceAsync;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,8 +15,24 @@ import java.util.List;
  * Created by miguel on 27/12/16.
  */
 public class CommunicationModule extends AbstractModule {
+
+//    public void x(LocalDate d) {
+//        System.out.println(d);
+//    }
+
+    @Override
+    public String getName() {
+        return "Communication";
+    }
+
     @Override
     public List<MenuEntry> getMenu() {
+
+
+        //TestDate.x();
+
+        //x(LocalDate.now());
+
         return Arrays.asList((MenuEntry) new AbstractAction("echo") {
             @Override
             public void run() {
@@ -44,6 +61,11 @@ public class CommunicationModule extends AbstractModule {
                         MateuUI.alert("resultado: " + result);
                     }
                 });
+            }
+        }, (MenuEntry) new AbstractAction("test dates") {
+            @Override
+            public void run() {
+                //MateuUI.alert("resultado: " + LocalDate.now());
             }
         });
     }

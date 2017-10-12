@@ -5,6 +5,10 @@ package io.mateu.ui.core.shared;
  */
 public class WizardPageData extends Data {
 
+    public WizardPageData(String json) {
+        super(json);
+    }
+
     public void setAction(Object action) {
         set("_action", action);
     }

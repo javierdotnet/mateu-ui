@@ -8,6 +8,11 @@ import java.util.List;
  */
 public class UserData extends Data {
 
+
+    public UserData(String json) {
+        super(json);
+    }
+
     public UserData() {
         setPermissions(new ArrayList<>());
     }

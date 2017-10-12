@@ -1,7 +1,6 @@
 package io.mateu.ui.sample.client;
 
-import io.mateu.ui.core.client.components.fields.FileField;
-import io.mateu.ui.core.client.components.fields.SqlComboBoxField;
+import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.client.views.ViewForm;
@@ -27,7 +26,9 @@ public class ComboBoxFieldView extends AbstractView {
 
     @Override
     public void build() {
-        add(new SqlComboBoxField("field1", "field1", "select id, firstname || ' ' || lastname from customer order by 2"))
-                ;
+        add(new AutocompleteField("field1", "field1", "a", "b", "c", "d", "e", "f", "g", "h"));
+        add(new ComboBoxField("field1", "field1", "a", "b", "c", "d"));
+        add(new SqlComboBoxField("field2", "field1", "select id, firstname || ' ' || lastname from customer order by 2"));
+        add(new SqlAutocompleteField("field3", "field1", "select id, firstname || ' ' || lastname from customer order by 2"));
     }
 }

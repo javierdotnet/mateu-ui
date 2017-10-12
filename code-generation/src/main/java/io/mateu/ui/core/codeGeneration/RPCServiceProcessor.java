@@ -95,7 +95,9 @@ public class RPCServiceProcessor extends AbstractProcessor {
             pw.println("import javax.ws.rs.GET;\n" +
                     "import javax.ws.rs.POST;\n" +
                     "import javax.ws.rs.Path;\n" +
-                    "import javax.ws.rs.FormParam;");
+                    "import javax.ws.rs.FormParam;" +
+                    "import javax.ws.rs.Produces;" +
+                    "import javax.ws.rs.core.MediaType;");
             pw.println("");
             pw.println("");
             pw.println("");
@@ -128,7 +130,7 @@ public class RPCServiceProcessor extends AbstractProcessor {
                 }
                 usedPaths.add(path);
 
-                pw.println("\t@POST @Path(\"/" + path + "\")");
+                pw.println("\t@POST @Path(\"/" + path + "\") @Produces(MediaType.APPLICATION_JSON)");
 
                 String rt = m.getReturnType().toString();
 

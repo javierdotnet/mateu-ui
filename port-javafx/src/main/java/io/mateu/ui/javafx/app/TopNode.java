@@ -453,9 +453,11 @@ public class TopNode extends ToolBar {
     }
 
     private void buildMenu(MenuBar bar, AbstractModule mod) {
+        Menu s = new Menu(mod.getName());
         for (MenuEntry e : mod.getMenu()) {
-            buildMenu(bar, e);
+            buildMenu(s, e);
         }
+        if (s.getItems().size() > 0) bar.getMenus().add(s);
     }
 
     private void buildMenu(MenuBar bar, MenuEntry e) {
@@ -488,9 +490,13 @@ public class TopNode extends ToolBar {
     }
 
     private void buildMenu(Menu m, AbstractModule mod) {
+
+        Menu s = new Menu(mod.getName());
         for (MenuEntry e : mod.getMenu()) {
-            buildMenu(m, e);
+            buildMenu(s, e);
         }
+        if (s.getItems().size() > 0) m.getItems().add(s);
+
     }
 
     private void buildMenu(Menu m, MenuEntry e) {

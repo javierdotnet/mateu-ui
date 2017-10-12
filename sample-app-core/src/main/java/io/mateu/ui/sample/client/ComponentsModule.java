@@ -13,37 +13,17 @@ import java.util.List;
  * Created by miguel on 9/8/16.
  */
 public class ComponentsModule extends AbstractModule {
+    @Override
+    public String getName() {
+        return "Components";
+    }
+
     public List<MenuEntry> getMenu() {
-        return Arrays.asList((MenuEntry) new AbstractMenu("App") {
-            @Override
-            public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction("AbstractApplication") {
-                    @Override
-                    public void run() {
-
-                    }
-                }, (MenuEntry) new AbstractAction("AbstractArea") {
-                    @Override
-                    public void run() {
-
-                    }
-                }, (MenuEntry) new AbstractAction("AbstractModule") {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-            }
-        }, (MenuEntry) new AbstractMenu("Views") {
+        return Arrays.asList((MenuEntry) new AbstractMenu("Views") {
 
             @Override
             public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction("AbstractView") {
-                     @Override
-                    public void run() {
-
-                    }
-                }, (MenuEntry) new AbstractAction("EditorView") {
+                return Arrays.asList((MenuEntry) new AbstractAction("EditorView") {
                     @Override
                     public void run() {
                         MateuUI.openView(new EditorView());
@@ -72,11 +52,6 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         MateuUI.openView(new CRUDView2());
-                    }
-                }, (MenuEntry) new AbstractAction("AbstractForm") {
-                    @Override
-                    public void run() {
-
                     }
                 });
             }

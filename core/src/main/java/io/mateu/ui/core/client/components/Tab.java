@@ -1,5 +1,6 @@
 package io.mateu.ui.core.client.components;
 
+import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.FieldContainer;
 
 /**
@@ -9,7 +10,8 @@ public class Tab extends FieldContainer {
 
     private String caption;
 
-    public Tab(String caption) {
+    public Tab(AbstractForm form, String caption) {
+        super(form);
         this.caption = caption;
     }
 

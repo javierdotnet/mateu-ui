@@ -2,16 +2,20 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="core" />
         <module name="port-html5" />
+        <module name="port-html5-aux" />
+        <module name="port-html5-core" />
         <module name="port-polymer" />
         <module name="port-vaadin" />
         <module name="sample-app-core" />
         <module name="sampleapp" />
+        <module name="teavm-plugin" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -22,6 +26,8 @@
       <module name="parent" target="1.8" />
       <module name="port-android" target="1.5" />
       <module name="port-html5" target="1.8" />
+      <module name="port-html5-aux" target="1.5" />
+      <module name="port-html5-core" target="1.8" />
       <module name="port-javafx" target="1.8" />
       <module name="port-openui" target="1.5" />
       <module name="port-polymer" target="1.8" />
@@ -32,6 +38,7 @@
       <module name="sample-app-core" target="1.8" />
       <module name="sample-runner-javafx" target="1.5" />
       <module name="sampleapp" target="1.8" />
+      <module name="teavm-plugin" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

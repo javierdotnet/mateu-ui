@@ -1,6 +1,8 @@
 package io.mateu.ui.core.client.views;
 
 import io.mateu.ui.core.client.components.Component;
+import io.mateu.ui.core.client.components.Tab;
+import io.mateu.ui.core.client.components.Tabs;
 import io.mateu.ui.core.client.components.fields.AbstractField;
 import io.mateu.ui.core.client.components.fields.PKField;
 import io.mateu.ui.core.client.data.ChangeListener;
@@ -23,6 +25,15 @@ public abstract class AbstractForm extends FieldContainer {
     private FormHelper helper;
 
     private List<DataSetterListener> dataSetterListeners = new ArrayList<>();
+
+    public AbstractForm() {
+        super(null);
+    }
+
+    @Override
+    public AbstractForm getForm() {
+        return this;
+    }
 
     public void set(String k, Object v) {
         for (DataSetterListener l : dataSetterListeners) {
@@ -133,14 +144,24 @@ public abstract class AbstractForm extends FieldContainer {
     public List<String> validate() {
         List<String> errors = new ArrayList<>();
 
-        getComponentsSequence().forEach((c) -> {
-            if (c instanceof AbstractField) {
+        validate(getComponentsSequence(), errors);
+
+        return errors;
+    }
+
+    private void validate(List<Component> componentsSequence, List<String> errors) {
+        componentsSequence.forEach((c) -> {
+            if (c instanceof Tabs) {
+                for (Tab t : ((Tabs) c).getTabs()) {
+                    validate(t.getComponentsSequence(), errors);
+                }
+            } else if (c instanceof FieldContainer) {
+                validate(((FieldContainer) c).getComponentsSequence(), errors);
+            } else if (c instanceof AbstractField) {
                 AbstractField f = (AbstractField) c;
                 if (f.isRequired() && getData().isEmpty(f.getId())) errors.add("Field " + f.getLabel().getText() + " is required.");
             }
         });
-
-        return errors;
     }
 
     public String getColumnWidths() {

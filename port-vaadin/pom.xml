@@ -138,7 +138,9 @@
 							<goal>update-widgetset</goal>
 							<goal>compile</goal>
 							<!-- Comment out compile-theme goal to use on-the-fly theme compilation -->
+							<!--
 							<goal>compile-theme</goal>
+							-->
 						</goals>
 					</execution>
 				</executions>
@@ -153,7 +155,9 @@
 						<fileset>
 							<directory>src/main/webapp/VAADIN/themes</directory>
 							<includes>
+								<!--
 								<include>**/styles.css</include>
+								-->
 								<include>**/styles.scss.cache</include>
 							</includes>
 						</fileset>

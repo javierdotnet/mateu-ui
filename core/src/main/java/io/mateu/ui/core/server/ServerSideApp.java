@@ -41,6 +41,8 @@ public interface ServerSideApp {
 
     UserData authenticate(String login, String password)throws Throwable;
 
+    void forgotPassword(String login)throws Throwable;
+
     void changePassword(String login, String oldPassword, String newPassword)throws Throwable;
 
     void updateProfile(String login, String name, String email, FileLocator foto)throws Throwable;

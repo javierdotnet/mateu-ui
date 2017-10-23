@@ -64,6 +64,12 @@
         }
 
         @Override
+        public void forgotPassword(String login) throws Throwable {
+            if (login == null || "".equals(login.trim())) throw new Exception("Login can not be empty");
+            else if (!"ok".equalsIgnoreCase(login)) throw new Exception("No user with login " + login);
+        }
+
+        @Override
         public void changePassword(String login, String oldPassword, String newPassword) throws Exception {
             if (!login.equals(oldPassword)) throw new Exception("Present password is wrong");
         }

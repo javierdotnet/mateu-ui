@@ -1,6 +1,7 @@
 package io.mateu.ui.core.client.views;
 
 import io.mateu.ui.core.client.components.*;
+import io.mateu.ui.core.client.components.fields.AbstractField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
  * Created by miguel on 8/8/16.
  */
 public class FieldContainer implements Component {
+
+    private final AbstractForm form;
 
     private boolean lastFieldMaximized;
 
@@ -28,12 +31,20 @@ public class FieldContainer implements Component {
         return componentsSequence;
     }
 
+    public FieldContainer(AbstractForm form) {
+        this.form = form;
+    }
+
     public void setComponentsSequence(List<Component> componentsSequence) {
         this.componentsSequence = componentsSequence;
+        for (Component component : componentsSequence) {
+            if (component instanceof AbstractField) ((AbstractField) component).setForm(getForm());
+        }
     }
 
     public FieldContainer add(Component component) {
         componentsSequence.add(component);
+        if (component instanceof AbstractField) ((AbstractField) component).setForm(getForm());
         return this;
     }
 
@@ -71,4 +82,7 @@ public class FieldContainer implements Component {
         return this;
     }
 
+    public AbstractForm getForm() {
+        return form;
+    }
 }

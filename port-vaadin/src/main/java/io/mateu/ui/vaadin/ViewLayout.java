@@ -15,6 +15,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.shared.ui.datefield.DateTimeResolution;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -288,7 +289,7 @@ public class ViewLayout extends VerticalLayout implements View {
         buildToolBar();
 
         if (view instanceof AbstractListView) {
-            add(this, new GridField("_data", ((AbstractListView) view).getColumns(), true).setExpandable(false), false);
+            add(this, new GridField("_data", ((AbstractListView) view).getColumns(), true).setExpandable(false).setFullWidth(true), false);
         } else {
             buildBody(this, view.getForm());
         }
@@ -403,10 +404,14 @@ public class ViewLayout extends VerticalLayout implements View {
         */
 
         for (io.mateu.ui.core.client.components.Component c : fields.getComponentsSequence()) {
-            if (c instanceof GridField) {
+            if (c instanceof GridField && ((GridField) c).isFullWidth()) {
+                if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
+                add(layout, (AbstractField) c);
+            } else if (c instanceof Tabs && ((Tabs) c).isFullWidth()) {
+                if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);
             } else {
-                if (row == null || (c instanceof AbstractField && ((AbstractField)c).isBeginingOfLine()) || c instanceof Tabs) {
+                if (row == null || (c instanceof AbstractField && ((AbstractField)c).isBeginingOfLine())) {
                     row = new HorizontalLayout();
                     row.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
                     row.setSpacing(true);
@@ -431,24 +436,6 @@ public class ViewLayout extends VerticalLayout implements View {
                 } else if (c instanceof AbstractField) {
 
                     add(row, (AbstractField) c);
-
-                } else if (c instanceof Tabs) {
-
-                    Tabs tabs = (Tabs) c;
-
-                    TabSheet tabsheet = new TabSheet();
-                    row.addComponent(tabsheet);
-
-                    for (Tab t : tabs.getTabs()) {
-
-                        VerticalLayout vl = new VerticalLayout();
-
-                        tabsheet.addTab(vl, t.getCaption());
-
-                        buildBody(vl, t);
-
-                    }
-
 
                 }
             }
@@ -581,6 +568,8 @@ public class ViewLayout extends VerticalLayout implements View {
 
             Grid<DataStore> table = new Grid<>((g.getLabel() != null) ? g.getLabel().getText() : null);
 
+            Component loqueanadimos = table;
+
             //todo: utilizar para los listados!!!!
             //table.setDataProvider( fetchItems, sizeCallBack);
 
@@ -592,14 +581,15 @@ public class ViewLayout extends VerticalLayout implements View {
             int pos = 0;
             for (AbstractColumn col : g.getColumns()) {
                 if (col instanceof DataColumn) {
-                    table.addColumn((d) -> ((DataStore)d.getProperty(col.getId()).getValue()).get("_text")).setId("__col_" + pos++).setCaption(col.getLabel());
+                    table.addColumn((d) -> ((DataStore) d.getProperty(col.getId()).getValue()).get("_text")).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else if (col instanceof LinkColumn) {
                     table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else {
                     table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
                 }
             }
-            if (g.isExpandable()) table.addColumn((d) -> "Edit").setId("_edit"); //todo: esto deber presentarse como un enlace / botón
+            if (g.isExpandable())
+                table.addColumn((d) -> "Edit").setId("_edit"); //todo: esto deber presentarse como un enlace / botón
             table.addColumn((d) -> d.getProperty("_dummycol").getValue()).setId("_dummycol"); // esta columna solo es para que quede bien y ocupe toda la pantalla
 
 
@@ -608,9 +598,17 @@ public class ViewLayout extends VerticalLayout implements View {
             //todo: arreglar lo de los style generators
             CellStyleGenerator csg = new CellStyleGenerator(g.getColumns());
 
-            if (csg.hasGenerators()) table.setStyleGenerator((item) -> { return ""; });
+            if (csg.hasGenerators()) table.setStyleGenerator((item) -> {
+                return "";
+            });
 
-            table.setWidth("100%");
+            if (g.isFullWidth()) {
+                table.setWidth("100%");
+            } else {
+                //table.setHeightMode(HeightMode.UNDEFINED);
+                table.setWidthUndefined();
+                table.setHeightByRows(5);
+            }
 
             table.addSelectionListener(new SelectionListener<DataStore>() {
                 @Override
@@ -637,9 +635,9 @@ public class ViewLayout extends VerticalLayout implements View {
                     colx = table.getColumn("__col_" + pos).setCaption(col.getLabel()).setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
                         @Override
                         public void click(ClickableRenderer.RendererClickEvent e) {
-                            Data v = ((DataStore)e.getItem()).get(col.getId());
+                            Data v = ((DataStore) e.getItem()).get(col.getId());
                             List<DataStore> l = (List<DataStore>) p.getValue();
-                            ((DataColumn)col).run(v);
+                            ((DataColumn) col).run(v);
                         }
 
 
@@ -649,7 +647,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     colx = table.getColumn("__col_" + pos).setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
                         @Override
                         public void click(ClickableRenderer.RendererClickEvent e) {
-                            ((LinkColumn)col).run(((DataStore)e.getItem()).getData());
+                            ((LinkColumn) col).run(((DataStore) e.getItem()).getData());
                         }
                     }));
                 } else {
@@ -677,44 +675,44 @@ public class ViewLayout extends VerticalLayout implements View {
             if (g.isExpandable()) {
                 Grid.Column colx;
 
-                    colx = table.getColumn("_edit").setCaption("Edit").setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
-                        @Override
-                        public void click(ClickableRenderer.RendererClickEvent e) {
-                            AbstractForm f = g.getDataForm();
+                colx = table.getColumn("_edit").setCaption("Edit").setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
+                    @Override
+                    public void click(ClickableRenderer.RendererClickEvent e) {
+                        AbstractForm f = g.getDataForm();
 
-                            if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
-                            else {
-                                MateuUI.openView(new AbstractDialog() {
+                        if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
+                        else {
+                            MateuUI.openView(new AbstractDialog() {
 
-                                    @Override
-                                    public Data initializeData() {
-                                        return ((DataStore)e.getItem()).getData();
-                                    }
+                                @Override
+                                public Data initializeData() {
+                                    return ((DataStore) e.getItem()).getData();
+                                }
 
-                                    @Override
-                                    public void onOk(Data data) {
-                                        ((DataStore)e.getItem()).setData(data);
-                                        ldp.refreshAll();
-                                    }
+                                @Override
+                                public void onOk(Data data) {
+                                    ((DataStore) e.getItem()).setData(data);
+                                    ldp.refreshAll();
+                                }
 
-                                    @Override
-                                    public String getTitle() {
-                                        return "Edit record";
-                                    }
+                                @Override
+                                public String getTitle() {
+                                    return "Edit record";
+                                }
 
-                                    @Override
-                                    public AbstractForm createForm() {
-                                        return g.getDataForm();
-                                    }
+                                @Override
+                                public AbstractForm createForm() {
+                                    return g.getDataForm();
+                                }
 
-                                    @Override
-                                    public void build() {
+                                @Override
+                                public void build() {
 
-                                    }
-                                });
-                            }
+                                }
+                            });
                         }
-                    }));
+                    }
+                }));
                 colx.setWidth(60);
             }
             table.getColumn("_dummycol").setWidthUndefined().setCaption("");
@@ -743,10 +741,13 @@ public class ViewLayout extends VerticalLayout implements View {
 
             //table.setPageLength(10);
 
-            cs.add(table);
-
-
             if (g.isExpandable()) {
+
+                VerticalLayout vl;
+                loqueanadimos = vl = new VerticalLayout();
+                if (g.isFullWidth()) vl.setWidth("100%");
+                vl.addComponent(table);
+
                 HorizontalLayout h = new HorizontalLayout();
                 Button badd;
                 h.addComponent(badd = new Button("Add"));
@@ -793,7 +794,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 });
 
-                cs.add(h);
+                vl.addComponent(h);
             }
 
             if (g.isPaginated()) {
@@ -908,6 +909,25 @@ public class ViewLayout extends VerticalLayout implements View {
                 cs.add(og);
                 */
             }
+
+            cs.add(loqueanadimos);
+
+        } else if (field instanceof Tabs) {
+            Tabs tabs = (Tabs) field;
+
+            TabSheet tabsheet = new TabSheet();
+
+            for (Tab t : tabs.getTabs()) {
+
+                VerticalLayout vl = new VerticalLayout();
+
+                TabSheet.Tab tx = tabsheet.addTab(vl, t.getCaption());
+
+                buildBody(vl, t);
+
+            }
+
+            cs.add(tabsheet);
 
         } else if (field instanceof AutocompleteField) {
 

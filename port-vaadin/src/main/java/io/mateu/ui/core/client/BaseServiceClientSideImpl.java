@@ -203,6 +203,27 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
     }
 
     @Override
+    public void forgotPassword(String login, AsyncCallback<Void> callback) {
+
+        try {
+
+            ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).forgotPassword(login);
+
+            callback.onSuccess(null);
+
+
+
+        } catch (Throwable e) {
+
+            e.printStackTrace();
+
+            callback.onFailure(e);
+
+        }
+
+    }
+
+    @Override
     public void authenticate(String login, String password, AsyncCallback<UserData> callback) {
 
 

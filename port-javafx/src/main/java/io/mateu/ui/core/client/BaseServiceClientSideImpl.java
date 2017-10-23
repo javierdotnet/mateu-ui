@@ -334,6 +334,45 @@ public class BaseServiceClientSideImpl implements BaseServiceAsync {
         });
     }
 
+    @Override
+    public void forgotPassword(String login, AsyncCallback<Void> callback) {
+        MateuUI.run(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    ((BaseService)Class.forName("io.mateu.ui.core.server.BaseServiceImpl").newInstance()).forgotPassword(login);
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onSuccess(null);
+
+                        }
+                    });
+
+
+                } catch (Throwable e) {
+
+                    e.printStackTrace();
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            callback.onFailure(e);
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+    }
 
 
     @Override

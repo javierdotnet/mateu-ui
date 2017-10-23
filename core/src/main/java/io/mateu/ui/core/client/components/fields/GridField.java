@@ -21,6 +21,8 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     private boolean expandable = true;
 
+    private boolean fullWidth = false;
+
     private boolean paginated = false;
 
     private List<AbstractColumn> columns = new ArrayList<AbstractColumn>();
@@ -31,7 +33,7 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     private Runnable after;
 
-    private int height = 200;
+    private int height = -1;
 
     public GridField(String id)
     {
@@ -211,6 +213,15 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     public GridField setHeight(int height) {
         this.height = height;
+        return this;
+    }
+
+    public boolean isFullWidth() {
+        return fullWidth || getColumns().size() > 4;
+    }
+
+    public GridField setFullWidth(boolean fullWidth) {
+        this.fullWidth = fullWidth;
         return this;
     }
 }

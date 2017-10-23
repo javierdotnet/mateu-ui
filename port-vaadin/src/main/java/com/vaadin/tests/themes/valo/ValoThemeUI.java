@@ -656,6 +656,27 @@ public class ValoThemeUI extends UI {
                         Label footerText = new Label("");
                         footerText.setSizeUndefined();
 
+                        Button forgot = new Button("Forgot password", new ClickListener() {
+                            @Override
+                            public void buttonClick(ClickEvent clickEvent) {
+                                e.setValue("Asking for email...");
+                                MateuUI.getBaseService().forgotPassword(l.getValue(), new AsyncCallback<Void>() {
+
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        e.setValue("Email sent. Please check your inbox");
+                                    }
+                                });
+                            }
+                        });
+                        //forgot.addStyleName(ValoTheme.BUTTON_);
+
+
                         Button ok = new Button("Login", new ClickListener() {
                             @Override
                             public void buttonClick(ClickEvent clickEvent) {
@@ -683,7 +704,7 @@ public class ValoThemeUI extends UI {
 
                         Button cancel = new Button("Cancel");
 
-                        footer.addComponents(footerText, ok); //, cancel);
+                        footer.addComponents(footerText, forgot, ok); //, cancel);
                         footer.setExpandRatio(footerText, 1);
 
                         v.addComponent(footer);

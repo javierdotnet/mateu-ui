@@ -28,6 +28,8 @@ public interface BaseService {
     public Data get(String serverSideControllerKey, String id) throws Throwable;
 
 
+    public void forgotPassword(String login) throws Throwable;
+
     public UserData authenticate(String login, String password) throws Throwable;
 
     public void changePassword(String login, String oldPassword, String newPassword) throws Throwable;

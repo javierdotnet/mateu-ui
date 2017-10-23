@@ -22,6 +22,7 @@
       <set>
         <option value="$PROJECT_DIR$/codegeneration-vaadin/pom.xml" />
         <option value="$PROJECT_DIR$/port-android/pom.xml" />
+        <option value="$PROJECT_DIR$/port-html5-core/pom.xml" />
         <option value="$PROJECT_DIR$/port-vaadin-dummy/pom.xml" />
         <option value="$PROJECT_DIR$/rest/pom.xml" />
         <option value="$PROJECT_DIR$/sample-app/pom.xml" />

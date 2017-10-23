@@ -86,6 +86,11 @@ public class BaseServiceImpl implements BaseService {
     }
 
     @Override
+    public void forgotPassword(String login) throws Throwable {
+        ServerSideHelper.getServerSideApp().forgotPassword(login);
+    }
+
+    @Override
     public UserData authenticate(String login, String password)throws Throwable {
         return ServerSideHelper.getServerSideApp().authenticate(login, password);
     }

@@ -4,11 +4,13 @@
     <file url="file://$PROJECT_DIR$/code-generation" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/port-html5" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/port-html5-aux" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/port-html5-core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/port-javafx" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/port-polymer" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/port-vaadin" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/rest" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sample-app-core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sampleapp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/teavm-plugin" charset="UTF-8" />
   </component>
 </project>

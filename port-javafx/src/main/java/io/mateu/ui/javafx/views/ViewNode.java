@@ -615,7 +615,7 @@ public class ViewNode extends StackPane {
 
         if (view instanceof ListView && !inToolBar) {
             ListView lv = (ListView) view;
-            lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false), true, false, false);
+            lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false).setFullWidth(true), true, false, false);
         }
 
 
@@ -668,7 +668,8 @@ public class ViewNode extends StackPane {
                 ScrollPane sp = new ScrollPane(componentsCotainer = new VBox());
                 componentsCotainer.setPadding(new Insets(10, 20, 10, 20));
 
-                tc.setContent(sp);
+                //tc.setContent(sp);
+                tc.setContent(componentsCotainer);
 
                 build(validationSupport, sp, componentsCotainer, t, 0, false);
 

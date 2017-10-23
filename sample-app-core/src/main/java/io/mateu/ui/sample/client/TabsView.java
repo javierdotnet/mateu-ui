@@ -19,8 +19,13 @@ public class TabsView extends AbstractView {
     @Override
     public void build() {
         add(new TextField("tf1", "TF1"))
-                .add(new Tabs()
-                        .add(new Tab("tab 1").add(new TextField("tf2", "TF2")))
+                .add(new Tabs("tabs")
+                        .add(new Tab("tab 1").add(new TextField("tf2", "TF2"))
+                                .add(new TextField("tf2a", "TF2"))
+                                .add(new TextField("tf2b", "TF2"))
+                                .add(new TextField("tf2c", "TF2"))
+                                .add(new TextField("tf2d", "TF2"))
+                                .add(new TextField("tf2e", "TF2")))
                         .add(new Tab("tab 2").add(new TextField("tf3", "TF3")))
                         .add(new Tab("tab 3").add(new TextField("tf2", "TF2")))
                 );

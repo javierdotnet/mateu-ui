@@ -334,7 +334,8 @@ public class TopNode extends ToolBar {
 
 // Set the button types.
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType forgotPasswordButtonType = new ButtonType("Forgot password", ButtonBar.ButtonData.OTHER);
+        dialog.getDialogPane().getButtonTypes().addAll(forgotPasswordButtonType, loginButtonType, ButtonType.CANCEL);
 
 // Create the username and password labels and fields.
         GridPane grid = new GridPane();
@@ -357,12 +358,17 @@ public class TopNode extends ToolBar {
         errorLabel.setPrefWidth(300);
 
 // Enable/Disable login button depending on whether a username was entered.
+        Node forgotPasswordButton = dialog.getDialogPane().lookupButton(forgotPasswordButtonType);
+        forgotPasswordButton.setDisable(true);
+
+        // Enable/Disable login button depending on whether a username was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
 
 // Do some validation (using the Java 8 lambda syntax).
         username.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
+            forgotPasswordButton.setDisable(newValue.trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
@@ -377,6 +383,30 @@ public class TopNode extends ToolBar {
                 return new Pair<>(username.getText(), password.getText());
             }
             return null;
+        });
+
+        forgotPasswordButton.addEventFilter(ActionEvent.ACTION, ae -> {
+            ae.consume(); //not valid
+            forgotPasswordButton.setDisable(true);
+            ((Button)forgotPasswordButton).setText("Checking...");
+
+            MateuUI.getBaseService().forgotPassword(username.getText(), new Callback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    errorLabel.setText("You will receive an email to recover your password");
+                    forgotPasswordButton.setDisable(false);
+                    ((Button)forgotPasswordButton).setText("Forgot password");
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    caught.printStackTrace();
+                    errorLabel.setText("" + caught.getClass().getName() + ": " + caught.getMessage());
+                    forgotPasswordButton.setDisable(false);
+                    ((Button)forgotPasswordButton).setText("Forgot password");
+                }
+            });
+
         });
 
         loginButton.addEventFilter(ActionEvent.ACTION, ae -> {

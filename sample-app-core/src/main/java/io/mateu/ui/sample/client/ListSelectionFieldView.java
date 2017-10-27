@@ -3,6 +3,7 @@ package io.mateu.ui.sample.client;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.components.fields.ListSelectionField;
 import io.mateu.ui.core.client.components.fields.SqlListSelectionField;
+import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.client.views.ViewForm;
@@ -51,6 +52,7 @@ public class ListSelectionFieldView extends AbstractView {
 
     @Override
     public void build() {
+        add(new TextField("xx", "XX")).
         add(new ListSelectionField("field1", "Label1", "1", "11", "2", "22", "3", "33"))
                 .add(new SqlListSelectionField("field2", "Label2", "select id, firstname || ' ' || lastname from customer order by 2"))
         ;

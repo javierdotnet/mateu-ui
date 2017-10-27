@@ -2,6 +2,7 @@ package io.mateu.ui.javafx;
 
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractApplication;
+import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.DataViewerField;
 import io.mateu.ui.core.client.views.*;
@@ -10,6 +11,7 @@ import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -38,7 +40,28 @@ public class WizardDialog extends Dialog {
         setResizable(true);
 
         dataStore = new DataStore(wizard.initializeData());
+        wizard.getForm().addDataSetterListener(new DataSetterListener() {
+            @Override
+            public void setted(Data newData) {
+                dataStore.setData(newData);
+            }
 
+            @Override
+            public void setted(String k, Object v) {
+                dataStore.set(k, v);
+            }
+
+            @Override
+            public void idsResetted() {
+                dataStore.resetIds();
+            }
+        });
+        wizard.addListener(new ViewListener() {
+            @Override
+            public void onClose() {
+                close();
+            }
+        });
         //alert.setHeaderText("Look, an Error Dialog");
 
         getDialogPane().setContent(p = new StackPane());
@@ -46,7 +69,12 @@ public class WizardDialog extends Dialog {
         p.setPrefHeight(400);
 
         try {
-            update(wizard.execute(null, null));
+            wizard.execute(null, null, new Callback<AbstractWizardPageView>() {
+                @Override
+                public void onSuccess(AbstractWizardPageView result) {
+                    update(result);
+                }
+            });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -58,10 +86,12 @@ public class WizardDialog extends Dialog {
 
     public void update(AbstractWizardPageView view) {
 
-        view.setInitialData(dataStore.getData());
+        view.setInitialData(dataStore.getData()); //todo: seguro????
 
         p.getChildren().clear();
         p.getChildren().add(currentViewNode = new ViewNode(view));
+
+        //setHeaderText((view.getTitle() != null)?view.getTitle():"");
 
         getDialogPane().getButtonTypes().clear();
         bts.clear();
@@ -95,7 +125,12 @@ public class WizardDialog extends Dialog {
             ae.consume(); //not valid
             try {
                 dataStore.setData(currentViewNode.getDataStore().getData());
-                update(wizard.execute(AbstractWizard.Actions.GOBACK, currentViewNode.getDataStore().getData()));
+                wizard.execute(AbstractWizard.Actions.GOBACK, currentViewNode.getDataStore().getData(), new Callback<AbstractWizardPageView>() {
+                    @Override
+                    public void onSuccess(AbstractWizardPageView result) {
+                        update(result);
+                    }
+                });
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -111,10 +146,14 @@ public class WizardDialog extends Dialog {
                 if (MateuUI.getApp().getUserData() != null) d.set("_user", MateuUI.getApp().getUserData().getLogin());
                 try {
                     dataStore.setData(d);
-                    update(wizard.execute(AbstractWizard.Actions.END, currentViewNode.getDataStore().getData()));
-                    close();
+
+                    wizard.onOk(currentViewNode.getDataStore().getData());
+
+                    if (view.getWizard().closeOnOk()) wizard.close();
+
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
+                    MateuUI.alert("" + throwable.getClass().getName() + ":" + throwable.getMessage());
                 }
             }
         });
@@ -128,7 +167,12 @@ public class WizardDialog extends Dialog {
                 if (MateuUI.getApp().getUserData() != null) d.set("_user", MateuUI.getApp().getUserData().getLogin());
                 try {
                     dataStore.setData(d);
-                    update(wizard.execute(AbstractWizard.Actions.GONEXT, currentViewNode.getDataStore().getData()));
+                    wizard.execute(AbstractWizard.Actions.GONEXT, currentViewNode.getDataStore().getData(), new Callback<AbstractWizardPageView>() {
+                        @Override
+                        public void onSuccess(AbstractWizardPageView result) {
+                            update(result);
+                        }
+                    });
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -137,6 +181,7 @@ public class WizardDialog extends Dialog {
 
 
         if (btData != null) ((Button) getDialogPane().lookupButton(btData)).addEventFilter(ActionEvent.ACTION, ae -> {
+            ae.consume(); //not valid
             MateuUI.openView(new AbstractDialog() {
                 @Override
                 public void onOk(Data data) {
@@ -161,6 +206,14 @@ public class WizardDialog extends Dialog {
                 }
             });
         });
+
+        if (currentViewNode.getFirstField() != null) MateuUI.runInUIThread(new Runnable() {
+            @Override
+            public void run() {
+                currentViewNode.getFirstField().requestFocus();
+            }
+        });
+
 
 
     }

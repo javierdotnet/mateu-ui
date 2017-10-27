@@ -25,6 +25,10 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     private boolean paginated = false;
 
+    private boolean usedToSelect = false;
+
+    private boolean usedToSelectMultipleValues = false;
+
     private List<AbstractColumn> columns = new ArrayList<AbstractColumn>();
 
     private List<AbstractAction> actions = new ArrayList<AbstractAction>();
@@ -199,12 +203,17 @@ public class GridField extends AbstractField implements GriRowFormatter {
     }
 
     public AbstractForm getDataForm() {
-        return getDataForm(null);
+        return getDataForm(new Data());
     }
 
 
     public AbstractForm getDataForm(Data initialData) {
-        return null;
+        AbstractForm f = new AbstractForm() {
+        };
+        for (AbstractColumn c : getColumns()) {
+            f.add(new TextField(c.getId(), c.getLabel()));
+        }
+        return f;
     }
 
     public int getHeight() {
@@ -222,6 +231,24 @@ public class GridField extends AbstractField implements GriRowFormatter {
 
     public GridField setFullWidth(boolean fullWidth) {
         this.fullWidth = fullWidth;
+        return this;
+    }
+
+    public boolean isUsedToSelect() {
+        return usedToSelect;
+    }
+
+    public GridField setUsedToSelect(boolean usedToSelect) {
+        this.usedToSelect = usedToSelect;
+        return this;
+    }
+
+    public boolean isUsedToSelectMultipleValues() {
+        return usedToSelectMultipleValues;
+    }
+
+    public GridField setUsedToSelectMultipleValues(boolean usedToSelectMultipleValues) {
+        this.usedToSelectMultipleValues = usedToSelectMultipleValues;
         return this;
     }
 }

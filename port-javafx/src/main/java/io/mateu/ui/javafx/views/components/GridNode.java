@@ -187,6 +187,7 @@ public class GridNode extends VBox {
             });
         }
 
+
         for (AbstractAction a : actions) {
             Button b;
             toolBar.getItems().add(b = new Button(a.getName()));
@@ -205,26 +206,54 @@ public class GridNode extends VBox {
     private TableView<DataStore> buildTable(GridField c) {
         TableView<DataStore> t = new TableView<>();
 
+
+
         t.getColumns().addAll(buildColumns(t, c));
 
-        Property<ObservableList<DataStore>> i = viewNode.getDataStore().getObservableListProperty(c.getId());//dataStore.getFilteredObservableListProperty3(id, campo.getFiltros());
+        String pname = c.getId();
+
+        if (c.isUsedToSelect()) {
+            pname += "_data";
+        }
+
+        Property<ObservableList<DataStore>> i = viewNode.getDataStore().getObservableListProperty(pname);//dataStore.getFilteredObservableListProperty3(id, campo.getFiltros());
         t.itemsProperty().bindBidirectional(i);
 
-        t.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        if (!c.isUsedToSelect() || c.isUsedToSelectMultipleValues()) t.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        else t.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         t.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<DataStore>() {
             @Override
-            public void onChanged(Change<? extends DataStore> c) {
-                for (DataStore d : t.getItems()) d.set("_selected", false);
-                for (DataStore d : t.getSelectionModel().getSelectedItems()) d.set("_selected", true);
-                System.out.println("***** " + t.getSelectionModel().getSelectedItems().size() + " items selected!!! *******");
+            public void onChanged(Change<? extends DataStore> cambios) {
+                if (c.isUsedToSelect()) {
+                    if (c.isUsedToSelectMultipleValues()) {
+                        viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItems());
+                    } else {
+                        viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItem());
+                    }
+                } else {
+                    for (DataStore d : t.getItems()) d.set("_selected", false);
+                    for (DataStore d : t.getSelectionModel().getSelectedItems()) d.set("_selected", true);
+                }
             }
         });
         t.setEditable(false);
 
-        t.setPrefHeight(400);
-        t.setPrefWidth(900);
+        if (field.isFullWidth() || field.getColumns().size() > 4) {
+            t.setPrefHeight(400);
+            t.setPrefWidth(900);
+        } else {
+            t.setPrefHeight(150);
+            t.setPrefWidth(getWidth(field.getColumns()));
+        }
 
         return t;
+    }
+
+    private double getWidth(List<AbstractColumn> columns) {
+        double w = 0;
+        for (AbstractColumn c : columns) w += c.getWidth();
+        if (field.isExpandable()) w += 62;
+        return w;
     }
 
     private List<TableColumn<DataStore, ?>> buildColumns(TableView<DataStore> t, GridField g) {
@@ -363,7 +392,7 @@ public class GridNode extends VBox {
 
                             @Override
                             public String getTitle() {
-                                return "Add new record";
+                                return "Edit record";
                             }
 
                             @Override

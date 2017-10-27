@@ -4,6 +4,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.views.AbstractDialog;
 import io.mateu.ui.core.client.views.AbstractWizard;
 import io.mateu.ui.core.client.views.AbstractWizardPageView;
@@ -38,7 +39,12 @@ public class WizardWindow extends Window {
         setHeight("600px");
 
         try {
-            update(wizard.execute(null, null));
+            wizard.execute(null, null, new Callback<AbstractWizardPageView>() {
+                @Override
+                public void onSuccess(AbstractWizardPageView result) {
+                    update(result);
+                }
+            });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -67,7 +73,12 @@ public class WizardWindow extends Window {
             cs.add(new Button("Previous", e -> {
                 dataStore.setData(view.getForm().getData());
                 try {
-                    update(wizard.execute(AbstractWizard.Actions.GOBACK, dataStore.getData()));
+                    wizard.execute(AbstractWizard.Actions.GOBACK, dataStore.getData(), new Callback<AbstractWizardPageView>() {
+                        @Override
+                        public void onSuccess(AbstractWizardPageView result) {
+                            update(result);
+                        }
+                    });
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -78,7 +89,12 @@ public class WizardWindow extends Window {
             cs.add(b = new Button("Next", e -> {
                 dataStore.setData(view.getForm().getData());
                 try {
-                    update(wizard.execute(AbstractWizard.Actions.GONEXT, dataStore.getData()));
+                    wizard.execute(AbstractWizard.Actions.GONEXT, dataStore.getData(), new Callback<AbstractWizardPageView>() {
+                        @Override
+                        public void onSuccess(AbstractWizardPageView result) {
+                            update(result);
+                        }
+                    });
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -87,7 +103,12 @@ public class WizardWindow extends Window {
             cs.add(b = new Button("Done", e -> {
                 dataStore.setData(view.getForm().getData());
                 try {
-                    update(wizard.execute(AbstractWizard.Actions.END, dataStore.getData()));
+                    wizard.execute(AbstractWizard.Actions.END, dataStore.getData(), new Callback<AbstractWizardPageView>() {
+                        @Override
+                        public void onSuccess(AbstractWizardPageView result) {
+                            update(result);
+                        }
+                    });
                     close();
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();

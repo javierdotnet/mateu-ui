@@ -147,8 +147,9 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().open(new BaseWizard("My first wizard") {
                             @Override
-                            public void onOk() throws Exception {
-                                MateuUI.alert("ok!!");
+                            public void onOk(Data data) throws Throwable {
+                                System.out.println("data=" + data);
+                                //throw new Exception("error xxx");
                             }
                         }.addPage(new BaseWizardPageView("First page") {
 

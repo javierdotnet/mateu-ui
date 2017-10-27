@@ -3,12 +3,14 @@ package io.mateu.ui.sample.client;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
+import io.mateu.ui.core.client.components.fields.grids.columns.TextColumn;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.client.views.ViewForm;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -32,14 +34,15 @@ public class AllFieldsView extends AbstractView {
     @Override
     public void build() {
         add(new AutocompleteField("f1", "Autocomplete", "1", "aaaaaa", "2", "asxdd", "3", "bededeud", "4", "bbbb").setRequired(true));
-        add(new CalendarField("f2", "Calendar"));
+        add(new CalendarField("f2", "Calendar").setBeginingOfLine(true));
+        add(new WeekDaysField("fwd", "Week days"));
         add(new CheckBoxField("f3", "CheckBox"));
         add(new CheckBoxListField("f4", "CheckBoxList", "1", "V1", "2", "V2"));
         add(new ComboBoxField("f5", "ComboBox", "1", "V1", "2", "V2"));
         add(new DateTimeField("f31", "DateTime"));
         add(new DateField("f6", "Date"));
         add(new FileField("f7", "File"));
-        add(new GridField("f8", "Grid"));
+        add(new GridField("f8", "Grid", Arrays.asList(new TextColumn("colx", "X", 150, false))));
         add(new HtmlField("f24", "Html"));
         add(new LinkField("f9", "Link") {
             @Override

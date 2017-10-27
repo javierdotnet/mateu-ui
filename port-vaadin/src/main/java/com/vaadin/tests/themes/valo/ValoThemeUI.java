@@ -15,6 +15,7 @@
  */
 package com.vaadin.tests.themes.valo;
 
+import com.google.common.io.Files;
 import com.vaadin.annotations.*;
 import com.vaadin.data.HasValue;
 import com.vaadin.event.Action;
@@ -37,6 +38,7 @@ import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.*;
+import io.mateu.ui.core.server.Utils;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.vaadin.HomeView;
 import io.mateu.ui.vaadin.ViewLayout;
@@ -400,8 +402,13 @@ public class ValoThemeUI extends UI {
             footerText.setSizeUndefined();
 
             Button ok = new Button("Ok", e -> {
-                subWindow.close();
-                ((AbstractDialog)view).onOk(v.getView().getForm().getData());
+                List<String> errors = v.getView().getForm().validate();
+                if (errors.size() > 0) {
+                    MateuUI.notifyErrors(errors);
+                } else {
+                    subWindow.close();
+                    ((AbstractDialog)view).onOk(v.getView().getForm().getData());
+                }
             });
             ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
             ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
@@ -1069,6 +1076,33 @@ public class ValoThemeUI extends UI {
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 // Show the uploaded file in the image viewer
                 //image.setSource(new FileResource(file));
+                System.out.println("uploadSucceeded(" + file.getAbsolutePath() + ")");
+
+            }
+
+            public FileLocator getFileLocator() throws IOException {
+
+                String extension = ".tmp";
+                String fileName = file.getName();
+
+                if (file.getName() == null || "".equals(file.getName().trim())) fileName = "" + getId();
+                if (fileName.lastIndexOf(".") < fileName.length() - 1) {
+                    extension = fileName.substring(fileName.lastIndexOf("."));
+                    fileName = fileName.substring(0, fileName.lastIndexOf(".")).replaceAll(" ", "_");
+                }
+
+                java.io.File temp = (System.getProperty("tmpdir") == null)? java.io.File.createTempFile(fileName, extension):new java.io.File(new java.io.File(System.getProperty("tmpdir")), fileName + extension);
+
+                System.out.println("java.io.tmpdir=" + System.getProperty("java.io.tmpdir"));
+                System.out.println("Temp file : " + temp.getAbsolutePath());
+
+                if (System.getProperty("tmpdir") == null || !temp.exists()) {
+                    System.out.println("writing temp file to " + temp.getAbsolutePath());
+                    Files.copy(file, temp);
+                } else {
+                    System.out.println("temp file already exists");
+                }
+
 
                 String baseUrl = System.getProperty("tmpurl");
                 URL url = null;
@@ -1079,14 +1113,7 @@ public class ValoThemeUI extends UI {
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-
-
-                System.out.println("uploadSucceeded(" + file.getAbsolutePath() + ")");
-
-            }
-
-            public FileLocator getFileLocator() {
-                return new FileLocator(new FileLocator(0, file.getName(), file.toURI().toString(), file.getAbsolutePath()));
+                return new FileLocator(0, file.getName(), url.toString(), file.getAbsolutePath());
             }
         };
         MyUploader receiver = new MyUploader();
@@ -1116,23 +1143,31 @@ public class ValoThemeUI extends UI {
             @Override
             public void buttonClick(ClickEvent clickEvent) {
                 e.setValue("Changing photo...");
-                FileLocator loc = receiver.getFileLocator();
-                MateuUI.getBaseService().updateFoto(getApp().getUserData().getLogin(), loc, new AsyncCallback<Void>() {
+                try {
+                    FileLocator loc = receiver.getFileLocator();
 
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
-                    }
+                    MateuUI.getBaseService().updateFoto(getApp().getUserData().getLogin(), loc, new AsyncCallback<Void>() {
 
-                    @Override
-                    public void onSuccess(Void result) {
-                        e.setValue("OK!");
-                        getApp().getUserData().setPhoto(loc.getUrl());
-                        foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):new ClassResource("profile-pic-300px.jpg");
-                        subWindow.close();
-                        refreshMenu();
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
+                        }
+
+                        @Override
+                        public void onSuccess(Void result) {
+                            e.setValue("OK!");
+                            getApp().getUserData().setPhoto(loc.getUrl());
+                            foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):new ClassResource("profile-pic-300px.jpg");
+                            subWindow.close();
+                            refreshMenu();
+                        }
+                    });
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                    MateuUI.alert("" + e1.getClass().getName() + ":" + e1.getMessage());
+                }
+
             }
         });
         ok.addStyleName(ValoTheme.BUTTON_PRIMARY);

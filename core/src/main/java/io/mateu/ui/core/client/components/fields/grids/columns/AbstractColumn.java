@@ -9,7 +9,7 @@ public class AbstractColumn<T extends AbstractColumn<T>> {
 
     private String id;
     private String label;
-    private int width = 100;
+    private int width = 200;
     private boolean editable;
     private ColumnAlignment alignment = ColumnAlignment.LEFT;
     private CellStyleGenerator styleGenerator;

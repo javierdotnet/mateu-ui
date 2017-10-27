@@ -1,5 +1,6 @@
 package io.mateu.ui.core.client.views;
 
+import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.shared.Data;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.List;
  */
 public abstract class BaseWizard extends AbstractWizard {
 
-    private Data data = new Data();
     private List<BaseWizardPageView> pages = new ArrayList<>();
     private BaseWizardPageView currentPage;
     private final String title;
@@ -31,15 +31,15 @@ public abstract class BaseWizard extends AbstractWizard {
         }
     }
 
-    @Override
-    public Data getData() {
-        return data;
-    }
 
     @Override
-    public AbstractWizardPageView execute(Object action, Data data) throws Throwable {
+    public void execute(Object action, Data data, Callback<AbstractWizardPageView> callback) throws Throwable {
+        setAll(data);
+        navigate(action, data, callback);
+    }
+
+    public void navigate(Object action, Data data, Callback<AbstractWizardPageView> callback) throws Throwable {
         if (getPages().size() == 0) throw new Throwable("This wizard has no pages");
-        this.data.setAll(data);
         if (currentPage == null) currentPage = getPages().get(0);
         else {
             int pos = getPages().indexOf(currentPage);
@@ -68,7 +68,7 @@ public abstract class BaseWizard extends AbstractWizard {
                 }
             } else throw new Throwable("Unknown action");
         }
-        return currentPage;
+        callback.onSuccess(currentPage);
     }
 
     public List<BaseWizardPageView> getPages() {
@@ -92,7 +92,5 @@ public abstract class BaseWizard extends AbstractWizard {
         getPages().add(page);
         return this;
     }
-
-    public abstract void onOk() throws Exception;
 
 }

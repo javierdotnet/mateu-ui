@@ -11,6 +11,7 @@ public class PKField extends TextField {
 
     public PKField(String id, String label) {
         super(id, label);
+        setRequired(true);
     }
 
 }

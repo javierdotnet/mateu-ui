@@ -41,6 +41,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -602,7 +603,7 @@ public class ViewNode extends StackPane {
             Node n = null;
             if (!(c instanceof AbstractField) || posField >= fromField) {
 
-                    if (posField == 0 || (c instanceof  AbstractField && ((AbstractField)c).isBeginingOfLine())) {
+                    if (posField == 0 || (c instanceof  AbstractField && (((AbstractField)c).isBeginingOfLine()))) {
                         FlowPane fp;
                         panels.add(fp = new FlowPane(20, 10));
                     }
@@ -801,7 +802,8 @@ public class ViewNode extends StackPane {
                 DatePicker tf;
                 n = control = tf = new DatePicker();
                 tf.valueProperty().bindBidirectional(dataStore.getLocalDateProperty(((AbstractField) c).getId()));
-            } else if (c instanceof DateTimeField) {
+                n = empaquetar(tf, 260);
+            } else if (c instanceof DateTimeField || c instanceof GMTDateField) {
                 TextField tf;
                 n = control = tf = new TextField();
                 tf.getStyleClass().add("l");
@@ -814,13 +816,70 @@ public class ViewNode extends StackPane {
             } else if (c instanceof CheckBoxField) {
                 CheckBox tf;
                 n = control = tf = new CheckBox();
+                n = empaquetar(tf, 65);
                 String text = ((CheckBoxField) c).getText();
                 if (text != null) tf.setText(text);
                 tf.selectedProperty().bindBidirectional(dataStore.getBooleanProperty(((AbstractField) c).getId()));
+            } else if (c instanceof WeekDaysField) {
+
+                Pane h;
+                n = h = new HBox(3);
+
+                n = empaquetar(n, 260);
+
+                String[] labels = {"M", "T", "W", "T", "F", "S", "S"};
+
+                Property<Object> sprop = dataStore.getProperty(((AbstractField) c).getId());
+
+                for (int i = 0 ; i < 7; i++) {
+                    Property<Boolean> prop = dataStore.getBooleanProperty(((AbstractField) c).getId() + "_" + i);
+
+                    CheckBox tf;
+                        h.getChildren().add(tf = new CheckBox());
+                        tf.setText(labels[i]);
+
+                        tf.setSelected(prop.getValue() != null && prop.getValue());
+
+                        tf.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                                prop.setValue(newValue);
+                            }
+                        });
+
+                    prop.addListener(new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                            tf.setSelected(newValue != null && newValue);
+                            boolean[] v = new boolean[labels.length];
+                            for (int i = 0; i < v.length; i++) {
+                                Boolean o = dataStore.getBooleanProperty(((AbstractField) c).getId() + "_" + i).getValue();
+                                v[i] = (o != null)? o :false;
+                            }
+                            sprop.setValue(v);
+                        }
+                    });
+
+                }
+                sprop.addListener(new ChangeListener<Object>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                        boolean[] v = new boolean[labels.length];
+                        if (newValue != null) {
+                            v = (boolean[]) newValue;
+                        }
+                        for (int i = 0; i < v.length; i++) {
+                            dataStore.getBooleanProperty(((AbstractField) c).getId() + "_" + i).setValue(v[i]);
+                        }
+                    }
+                });
+
             } else if (c instanceof CheckBoxListField) {
 
                 Pane h;
                 n = h = new HBox(6);
+
+                n = empaquetar(n, 260);
 
                 final Map<Pair, CheckBox> tfs = new HashMap<>();
 
@@ -978,6 +1037,7 @@ public class ViewNode extends StackPane {
                 });
 
                 n = tf;
+                n = empaquetar(n, 260);
 
             } else if (c instanceof FileField) {
                 //////////////////////
@@ -1057,9 +1117,12 @@ public class ViewNode extends StackPane {
                     }
                 });
 
+                n = empaquetar(n, 260);
 
             } else if (c instanceof GridField) {
-                n = new GridNode(this, (GridField) c);
+                GridNode gn;
+                n = gn = new GridNode(this, (GridField) c);
+                control = gn.getTableView();
             } else if (c instanceof HtmlField) {
                 WebView tf = new WebView();
                 dataStore.getStringProperty(((AbstractField) c).getId()).addListener(new ChangeListener<String>() {
@@ -1116,6 +1179,7 @@ public class ViewNode extends StackPane {
                         }
                     });
                  n = tf;
+                n = empaquetar(n, 260);
 
             } else if (c instanceof LinkField) {
                 Hyperlink tf;
@@ -1134,12 +1198,16 @@ public class ViewNode extends StackPane {
                 } else {
                     tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 }
+                n = empaquetar(n, 260);
+
             } else if (c instanceof ListSelectionField) {
 
                 ListSelectionField lsf = (ListSelectionField) c;
 
                 Pane h;
                 n = h = new HBox(6);
+
+                n = empaquetar(n, 260);
 
                 javafx.scene.control.ListView l;
                 h.getChildren().add(l = new javafx.scene.control.ListView());
@@ -1218,6 +1286,7 @@ public class ViewNode extends StackPane {
                         }
                     };
                 };
+                n = empaquetar(n, 260);
                 tf.setAlignment(Pos.BASELINE_RIGHT);
 
                 tf.textProperty().bindBidirectional(dataStore.getLongProperty(((LongField) c).getId()), new StringConverter<Long>() {
@@ -1246,6 +1315,8 @@ public class ViewNode extends StackPane {
 
                 Pane h;
                 n = h = new HBox(6);
+
+                n = empaquetar(n, 260);
 
                 final Map<Pair, RadioButton> tfs = new HashMap<>();
 
@@ -1353,11 +1424,14 @@ public class ViewNode extends StackPane {
                 bdel.setVisible(prop.getValue() != null);
 
                 n = h;
+
+                n = empaquetar(n, 260);
+
             } else if (c instanceof SelectByIdField) {
 
                 SelectByIdField sf = (SelectByIdField) c;
 
-                HBox h = new HBox();
+                HBox h = new HBox(2);
                 TextField tf;
                 h.getChildren().add(tf = new TextField());
                 Button bn;
@@ -1366,6 +1440,7 @@ public class ViewNode extends StackPane {
                 h.getChildren().add(be = new Button("Edit"));
                 Label l;
                 h.getChildren().add(l = new Label());
+                l.setPadding(new Insets(6, 0, 0, 0));
 
                 bn.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -1449,8 +1524,11 @@ public class ViewNode extends StackPane {
                 n = iv;
             } else if (c instanceof ShowTextField) {
                 javafx.scene.control.Label tf = new javafx.scene.control.Label();
+                tf.setWrapText(true);
+                tf.setMaxWidth(260);
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 n = tf;
+                n = empaquetar(n, 260);
             } else if (c instanceof SqlAutocompleteField) {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
@@ -1572,6 +1650,8 @@ public class ViewNode extends StackPane {
                 Pane h;
                 n = h = new VBox(6);
 
+                n = empaquetar(n, 260);
+
                 Property<PairList> prop = dataStore.getPairListProperty(((AbstractField) c).getId());
 
                 final Map<Pair, CheckBox> tfs = new HashMap<>();
@@ -1673,6 +1753,8 @@ public class ViewNode extends StackPane {
                 Pane h;
                 n = h = new HBox(6);
 
+                n = empaquetar(n, 260);
+
                 javafx.scene.control.ListView l;
                 h.getChildren().add(l = new javafx.scene.control.ListView());
 
@@ -1756,6 +1838,8 @@ public class ViewNode extends StackPane {
 
                 Pane h;
                 n = h = new VBox(6);
+
+                n = empaquetar(n, 260);
 
                 final Map<Pair, RadioButton> tfs = new HashMap<>();
 
@@ -1900,22 +1984,33 @@ public class ViewNode extends StackPane {
                 ((GridNode)n).getTableView().setMinWidth(200);
                 //((GridNode)n).getTableView().setPrefHeight(5000);
 
-                Node finalN = n;
-                scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-                        //fixMins(componentsCotainer, finalN);
-                        //System.out.println("bounds changed to " + newValue.toString());
-                        //fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
-                        ((GridNode)finalN).getTableView().setPrefWidth(newValue.getWidth() - 40);
-                    }
-                });
+                if (c instanceof GridField && ((GridField) c).isFullWidth()) {
+                    Node finalN = n;
+                    scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                            //fixMins(componentsCotainer, finalN);
+                            //System.out.println("bounds changed to " + newValue.toString());
+                            //fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
+                            ((GridNode)finalN).getTableView().setPrefWidth(newValue.getWidth() - 40);
+                        }
+                    });
+                }
+
             }
 
 
         }
 
         return n;
+    }
+
+    private Node empaquetar(Node n, int width) {
+        Pane h = new Pane(n);
+        //h.setStyle("-fx-background-color: red;");
+        h.setPrefWidth(width);
+        h.setMaxWidth(width);
+        return h;
     }
 
     private void setDisable(Node n, boolean disabled) {

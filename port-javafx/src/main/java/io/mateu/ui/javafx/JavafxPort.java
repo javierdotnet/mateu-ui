@@ -12,11 +12,13 @@ import io.mateu.ui.javafx.views.ViewNode;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -110,6 +112,7 @@ public class JavafxPort extends Application {
                             Dialog d = new Dialog();
                             d.setTitle(view.getTitle());
                             d.setResizable(true);
+
                             //alert.setHeaderText("Look, an Error Dialog");
 
                             if (view instanceof CRUDDialog) {
@@ -193,10 +196,25 @@ public class JavafxPort extends Application {
                             ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
                             d.getDialogPane().getButtonTypes().addAll(loginButtonType, CANCEL);
 
+                            final Button btOk = (Button) d.getDialogPane().lookupButton(loginButtonType);
+                            btOk.addEventFilter(
+                                    ActionEvent.ACTION,
+                                    event -> {
+                                        // Check whether some conditions are fulfilled
+                                        List<String> errors = view.getForm().validate();
+                                        if (errors.size() > 0) {
+                                            // The conditions are not fulfilled so we consume the event
+                                            // to prevent the dialog to close
+                                            event.consume();
+                                            MateuUI.notifyErrors(errors);
+                                        }
+                                    }
+                            );
+
                             Optional<ButtonType> result = d.showAndWait();
                             if (result.get() == loginButtonType) { //ButtonType.OK){
                                 // ... user chose OK
-                                ((AbstractDialog)view).onOk(view.getForm().getData());
+                                 ((AbstractDialog)view).onOk(view.getForm().getData());
                             } else {
                                 // ... user chose CANCEL or closed the dialog
                             }

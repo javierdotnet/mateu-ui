@@ -189,12 +189,7 @@ public abstract class AbstractEditorView extends AbstractView {
             @Override
             public void onSuccess(Data result) {
                 for (EditorViewListener l : getEditorViewListeners()) l.onSuccessSave(result);
-                MateuUI.runInUIThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getForm().setData(initializeData());
-                    }
-                });
+                getForm().setData(initializeData());
                 MateuUI.notifyDone("Saved!");
             }
         });

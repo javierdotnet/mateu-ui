@@ -39,12 +39,12 @@ public abstract class AbstractView {
         return form;
     }
 
-    public Data getData() {
-        return getForm().getData();
-    }
 
     public AbstractView add(Component component) {
-        getForm().add(component);
+        if (form == null) {
+            form = createForm();
+        }
+        form.add(component);
         return this;
     }
 
@@ -85,5 +85,26 @@ public abstract class AbstractView {
 
     public Data initializeData() {
         return new Data();
+    }
+
+
+    public void set(String k, Object v) {
+        getForm().set(k, v);
+    }
+
+    public Data getData() {
+        return getForm().getData();
+    }
+
+    public void setData(Data data, boolean only_) {
+        getForm().setData(data, only_);
+    }
+
+    public void setData(Data data) {
+        getForm().setData(data);
+    }
+
+    public void setAll(Data data) {
+        getForm().setAll(data);
     }
 }

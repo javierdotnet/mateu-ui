@@ -41,6 +41,12 @@ public abstract class AbstractForm extends FieldContainer {
         }
     }
 
+    public void setAll(Data data) {
+        if (data != null) for (DataSetterListener l : dataSetterListeners) {
+            for (String k : data.getPropertyNames()) l.setted(k, data.get(k));
+        }
+    }
+
     public void addDataSetterListener(DataSetterListener listener) {
         dataSetterListeners.add(listener);
     }

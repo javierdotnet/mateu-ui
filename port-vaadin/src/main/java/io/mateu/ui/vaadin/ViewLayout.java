@@ -460,7 +460,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
 
             }
-            if (false) {
+            if (true) {
                 MenuBar.MenuItem item = menubar.addItem("Data", new MenuBar.Command() {
                     @Override
                     public void menuSelected(MenuBar.MenuItem menuItem) {
@@ -998,7 +998,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             cs.add(cb);
 
-        } else if (field instanceof DateTimeField) {
+        } else if (field instanceof DateTimeField || field instanceof GMTDateField) {
 
             com.vaadin.ui.DateTimeField cb;
             cb = new com.vaadin.ui.DateTimeField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
@@ -1042,7 +1042,7 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    cb.setValue((Boolean) newValue);
+                    cb.setValue((newValue != null)?(Boolean) newValue:false);
                 }
             });
             cb.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
@@ -1098,6 +1098,72 @@ public class ViewLayout extends VerticalLayout implements View {
             });
 
             cs.add(og);
+
+        } else if (field instanceof WeekDaysField) {
+
+            WeekDaysField rf = (WeekDaysField) field;
+
+            String[] labels = {"M", "T", "W", "T", "F", "S", "S"};
+
+            CheckBoxGroup og;
+            og = new CheckBoxGroup((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            if (firstField == null) firstField = og;
+
+            //todo: acabar!!!!
+
+            List<Pair> valores = new ArrayList<>();
+
+            for (int i = 0; i < labels.length; i++) {
+                valores.add(new Pair("" + i, labels[i]));
+            }
+
+            ListDataProvider<Pair> ldp;
+            og.setDataProvider(ldp = new ListDataProvider<>(valores));
+
+            if (v != null) {
+                boolean[] b = (boolean[]) v;
+                for (int i = 0; i < b.length; i++) if (b[i]) og.select(valores.get(i));
+            }
+
+            Property<Object> sp = dataStore.getProperty(field.getId());
+            Property<PairList> p = dataStore.getPairListProperty(field.getId() + "_lista");
+            p.addListener(new ChangeListener<PairList>() {
+                @Override
+                public void changed(ObservableValue<? extends PairList> observable, PairList oldValue, PairList newValue) {
+                    og.deselectAll();
+                    if (newValue != null) og.select(newValue.getValues());
+                    boolean b[] = new boolean[labels.length];
+                    for (int i = 0; i < valores.size(); i++) {
+                        b[i] = newValue.getValues().contains(valores.get(i));
+                    }
+                    sp.setValue(b);
+                }
+            });
+            og.addValueChangeListener(new HasValue.ValueChangeListener<Set>() {
+                @Override
+                public void valueChange(HasValue.ValueChangeEvent<Set> valueChangeEvent) {
+                    p.getValue().getValues().clear();
+                    p.getValue().getValues().addAll(valueChangeEvent.getValue());
+                    boolean b[] = new boolean[labels.length];
+                    for (int i = 0; i < valores.size(); i++) {
+                        b[i] = valueChangeEvent.getValue().contains(valores.get(i));
+                    }
+                    sp.setValue(b);
+                }
+            });
+            sp.addListener(new ChangeListener<Object>() {
+                @Override
+                public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+                    boolean b[] = new boolean[labels.length];
+                    if (newValue != null) b = (boolean[]) newValue;
+                    p.getValue().getValues().clear();
+                    for (int i = 0; i < b.length; i++) p.getValue().getValues().add(valores.get(i));
+                }
+            });
+
+            cs.add(og);
+
+
 
         } else if (field instanceof ComboBoxField) {
 
@@ -1817,7 +1883,8 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    tf.setValue((newValue != null)?"" + newValue:null);
+                    if (newValue != null) tf.setValue("" + newValue);
+                    else tf.clear();
                 }
             });
             tf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
@@ -1860,7 +1927,8 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    tf.setValue((newValue != null)?"" + newValue:null);
+                    if (newValue != null) tf.setValue("" + newValue);
+                    else tf.clear();
                 }
             });
             tf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
@@ -1887,6 +1955,7 @@ public class ViewLayout extends VerticalLayout implements View {
             });
 
             if (field.isRequired() && finalC1 instanceof com.vaadin.ui.AbstractField) ((com.vaadin.ui.AbstractField)finalC1).setRequiredIndicatorVisible(true);
+            if (field.isRequired() && finalC1 instanceof ComboBox) ((com.vaadin.ui.ComboBox)finalC1).setRequiredIndicatorVisible(true);
 
             if (!Strings.isNullOrEmpty(field.getHelp())) {
                 if (finalC1 instanceof com.vaadin.ui.AbstractField) {

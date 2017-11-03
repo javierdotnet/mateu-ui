@@ -23,4 +23,9 @@ It aims to reach several goals:
 I hope you like it ;)
 
 
+## Thanks to
+
+Install4j for providing licenses of their great tool
+
+<img class="image-margin" width="150" height="42" src="/images/product_banners/install4j_large.png">
 

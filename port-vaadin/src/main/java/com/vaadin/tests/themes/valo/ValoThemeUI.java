@@ -18,8 +18,6 @@ package com.vaadin.tests.themes.valo;
 import com.google.common.io.Files;
 import com.vaadin.annotations.*;
 import com.vaadin.data.HasValue;
-import com.vaadin.event.Action;
-import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -38,7 +36,6 @@ import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.*;
-import io.mateu.ui.core.server.Utils;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.vaadin.HomeView;
 import io.mateu.ui.vaadin.ViewLayout;
@@ -70,12 +67,24 @@ public class ValoThemeUI extends UI {
     private Resource foto;
     private HorizontalLayout divSelectorArea;
 
-    @WebServlet(value = "/*", asyncSupported = true)
+    @WebServlet(value = "/*", asyncSupported = true, loadOnStartup = 1000)
+    //@WebServlet(urlPatterns = {"/admin/*", "/VAADIN/*"}, asyncSupported = true, loadOnStartup = 1000)
     @VaadinServletConfiguration(productionMode = false, ui = ValoThemeUI.class)
     public static class Servlet extends VaadinServlet {
 
         @Override
         protected void servletInitialized() throws ServletException {
+
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+            System.out.println("***********************************************");
+
             super.servletInitialized();
             getService().addSessionInitListener(
                     new ValoThemeSessionInitListener());
@@ -253,6 +262,25 @@ public class ValoThemeUI extends UI {
                 }
             });
 
+
+            if (false && System.getProperty("appname", "Mateu ERP").toLowerCase().contains("quoon")) getService().addSessionInitListener((SessionInitListener) event -> event.getSession().addBootstrapListener(new BootstrapListener() {
+
+                @Override
+                public void modifyBootstrapFragment(
+                        BootstrapFragmentResponse response) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void modifyBootstrapPage(BootstrapPageResponse response) {
+                    response.getDocument().head().
+                            getElementsByAttributeValue("rel", "shortcut icon").attr("href", "/com/vaadin/tests/themes/tests-valo-reindeer/Q-sola-favicon.png");
+                    response.getDocument().head()
+                            .getElementsByAttributeValue("rel", "icon")
+                            .attr("href", "/com/vaadin/tests/themes/tests-valo-reindeer/Q-sola-favicon.png");
+                }}
+            ));
         }
     }
 
@@ -361,6 +389,11 @@ public class ValoThemeUI extends UI {
             }
         });
 
+        boolean hayPartePublica = false;
+        for (AbstractArea a : getApp().getAreas()) {
+            hayPartePublica |= a.isPublicAccess();
+        }
+        if (!hayPartePublica) openLoginDialog();
     }
 
     private void setApp(AbstractApplication app) {
@@ -593,7 +626,7 @@ public class ValoThemeUI extends UI {
         showMenu.setIcon(FontAwesome.LIST);
         menu.addComponent(showMenu);
 
-        Label title = new Label("<h3>Welcome to <strong>" + getApp().getName() + "</strong></h3>",
+        Label title = new Label("<h3><strong>" + getApp().getName() + "</strong></h3>",
                 ContentMode.HTML);
         title.setSizeUndefined();
         top.addComponent(title);
@@ -601,6 +634,7 @@ public class ValoThemeUI extends UI {
 
         settings = new MenuBar();
         settings.addStyleName("user-menu");
+        settings.addStyleName("mi-user-menu");
         menu.addComponent(settings);
 
         menuItemsLayout.setPrimaryStyleName("valo-menuitems");
@@ -631,103 +665,7 @@ public class ValoThemeUI extends UI {
                     public void menuSelected(MenuItem menuItem) {
 
 
-
-
-                        // Create a sub-window and set the content
-                        Window subWindow = new Window("Login");
-
-                        subWindow.setWidth("375px");
-
-                        FormLayout f = new FormLayout();
-                        f.setMargin(true);
-
-                        TextField l;
-                        f.addComponent(l = new TextField("Username"));
-                        PasswordField p;
-                        f.addComponent(p = new PasswordField("Password"));
-                        Label e;
-                        f.addComponent(e = new Label());
-
-                        VerticalLayout v = new VerticalLayout();
-                        v.addComponent(f);
-
-
-
-
-
-                        HorizontalLayout footer = new HorizontalLayout();
-                        footer.setWidth("100%");
-                        footer.setSpacing(true);
-                        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-
-                        Label footerText = new Label("");
-                        footerText.setSizeUndefined();
-
-                        Button forgot = new Button("Forgot password", new ClickListener() {
-                            @Override
-                            public void buttonClick(ClickEvent clickEvent) {
-                                e.setValue("Asking for email...");
-                                MateuUI.getBaseService().forgotPassword(l.getValue(), new AsyncCallback<Void>() {
-
-                                    @Override
-                                    public void onFailure(Throwable caught) {
-                                        e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
-                                    }
-
-                                    @Override
-                                    public void onSuccess(Void result) {
-                                        e.setValue("Email sent. Please check your inbox");
-                                    }
-                                });
-                            }
-                        });
-                        //forgot.addStyleName(ValoTheme.BUTTON_);
-
-
-                        Button ok = new Button("Login", new ClickListener() {
-                            @Override
-                            public void buttonClick(ClickEvent clickEvent) {
-                                e.setValue("Authenticating...");
-                                MateuUI.getBaseService().authenticate(l.getValue(), p.getValue(), new AsyncCallback<UserData>() {
-
-                                    @Override
-                                    public void onFailure(Throwable caught) {
-                                        e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
-                                    }
-
-                                    @Override
-                                    public void onSuccess(UserData result) {
-                                        e.setValue("OK!");
-                                        getApp().setUserData(result);
-                                        VaadinSession.getCurrent().setAttribute("usuario", "admin");
-                                        subWindow.close();
-                                        refreshMenu();
-                                    }
-                                });
-                            }
-                        });
-                        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-                        ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-
-                        Button cancel = new Button("Cancel");
-
-                        footer.addComponents(footerText, forgot, ok); //, cancel);
-                        footer.setExpandRatio(footerText, 1);
-
-                        v.addComponent(footer);
-
-
-                        subWindow.setContent(v);
-
-                        // Center it in the browser window
-                        subWindow.center();
-
-                        subWindow.setModal(true);
-
-                        // Open it in the UI
-                        UI.getCurrent().addWindow(subWindow);
-
-                        l.focus();
+                        openLoginDialog();
 
                     }
                 });
@@ -765,6 +703,7 @@ public class ValoThemeUI extends UI {
             MenuItem settingsItem = settings.addItem((getApp().getUserData().getName() != null)?getApp().getUserData().getName():getApp().getUserData().getLogin(),
                     foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):new ClassResource("profile-pic-300px.jpg"),
                     null);
+
             settingsItem.addItem("Edit Profile", new MenuBar.Command() {
                 @Override
                 public void menuSelected(MenuItem menuItem) {
@@ -850,6 +789,106 @@ public class ValoThemeUI extends UI {
             }
         }
 
+    }
+
+    private void openLoginDialog() {
+
+
+        // Create a sub-window and set the content
+        Window subWindow = new Window("Login");
+
+        subWindow.setWidth("375px");
+
+        FormLayout f = new FormLayout();
+        f.setMargin(true);
+
+        TextField l;
+        f.addComponent(l = new TextField("Username"));
+        PasswordField p;
+        f.addComponent(p = new PasswordField("Password"));
+        Label e;
+        f.addComponent(e = new Label());
+
+        VerticalLayout v = new VerticalLayout();
+        v.addComponent(f);
+
+
+
+
+
+        HorizontalLayout footer = new HorizontalLayout();
+        footer.setWidth("100%");
+        footer.setSpacing(true);
+        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+
+        Label footerText = new Label("");
+        footerText.setSizeUndefined();
+
+        Button forgot = new Button("Forgot password", new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent clickEvent) {
+                e.setValue("Asking for email...");
+                MateuUI.getBaseService().forgotPassword(l.getValue(), new AsyncCallback<Void>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
+                        e.setValue("Email sent. Please check your inbox");
+                    }
+                });
+            }
+        });
+        //forgot.addStyleName(ValoTheme.BUTTON_);
+
+
+        Button ok = new Button("Login", new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent clickEvent) {
+                e.setValue("Authenticating...");
+                MateuUI.getBaseService().authenticate(l.getValue(), p.getValue(), new AsyncCallback<UserData>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        e.setValue("" + caught.getClass().getName() + ": " + caught.getMessage());
+                    }
+
+                    @Override
+                    public void onSuccess(UserData result) {
+                        e.setValue("OK!");
+                        getApp().setUserData(result);
+                        VaadinSession.getCurrent().setAttribute("usuario", "admin");
+                        subWindow.close();
+                        refreshMenu();
+                    }
+                });
+            }
+        });
+        ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+
+        Button cancel = new Button("Cancel");
+
+        footer.addComponents(footerText, forgot, ok); //, cancel);
+        footer.setExpandRatio(footerText, 1);
+
+        v.addComponent(footer);
+
+
+        subWindow.setContent(v);
+
+        // Center it in the browser window
+        subWindow.center();
+
+        subWindow.setModal(true);
+
+        // Open it in the UI
+        UI.getCurrent().addWindow(subWindow);
+
+        l.focus();
     }
 
     private void clearViews() {
@@ -1281,10 +1320,10 @@ public class ValoThemeUI extends UI {
 
             HorizontalLayout div = new HorizontalLayout();
             div.setSpacing(false);
-            div.addStyleName("divsubmenu");
+            //div.addStyleName("divsubmenu");
             Label l = new Label();
-            l.setIcon(testIcon.get());
-            l.addStyleName("iconosubmenu");
+            //l.setIcon(testIcon.get());  // sin iconos en el menú
+            //l.addStyleName("iconosubmenu");
             div.addComponent(l);
             div.addComponent(b);
 
@@ -1306,7 +1345,7 @@ public class ValoThemeUI extends UI {
             );
             b.setCaptionAsHtml(true);
             b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-            b.setIcon(testIcon.get());
+            //b.setIcon(testIcon.get());  // sin iconos en el menú
             menuItemsLayout.addComponent(b);
         }
 

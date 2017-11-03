@@ -2,7 +2,6 @@ package io.mateu.ui.vaadin;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
-import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.selection.SelectionEvent;
@@ -27,8 +26,6 @@ import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.app.AbstractAction;
-import io.mateu.ui.core.client.app.AbstractArea;
-import io.mateu.ui.core.client.app.ActionOnRow;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
@@ -88,22 +85,40 @@ public class ViewLayout extends VerticalLayout implements View {
             }
         });
         this.dataStore = new ViewNodeDataStore(this);
-        view.getForm().getData();
+        init();
+    }
+
+    public ViewLayout(DataStore dataStore, AbstractView view) {
+        this.view = view;
+        view.getForm().setHelper(new FormHelper() {
+            @Override
+            public Data getData() {
+                return getDataStore().getData();
+            }
+        });
+        this.dataStore = dataStore;
+        init();
+    }
+
+    public void init() {
+
+
+        view.getData();
         view.getForm().addDataSetterListener(new DataSetterListener() {
             @Override
             public void setted(Data newData) {
-                dataStore.setData(newData);
+                ViewLayout.this.dataStore.setData(newData);
                 String t = view.getTitle();
                 if (view instanceof AbstractEditorView) {
-                    Object id = dataStore.get("_id");
+                    Object id = ViewLayout.this.dataStore.get("_id");
                     if (id == null) t = "New " + t;
                     else {
-                        String text = dataStore.get("_tostring");
+                        String text = ViewLayout.this.dataStore.get("_tostring");
                         if (text == null) text = "" + id;
                         t += " " + text;
                     }
                 }
-                dataStore.set("_title", t);
+                ViewLayout.this.dataStore.set("_title", t);
 
                 if (firstField != null && firstField instanceof com.vaadin.ui.AbstractField) {
                     MateuUI.runInUIThread(new Runnable() {
@@ -117,15 +132,15 @@ public class ViewLayout extends VerticalLayout implements View {
 
             @Override
             public void setted(String k, Object v) {
-                dataStore.set(k, v);
+                ViewLayout.this.dataStore.set(k, v);
             }
 
             @Override
             public void idsResetted() {
-                dataStore.resetIds();
+                ViewLayout.this.dataStore.resetIds();
             }
         });
-        dataStore.set("_title", view.getTitle());
+        this.dataStore.set("_title", view.getTitle());
 
         setMargin(true);
         addStyleName("content-common");
@@ -135,15 +150,15 @@ public class ViewLayout extends VerticalLayout implements View {
 
             String t = view.getTitle();
             if (view instanceof AbstractEditorView) {
-                Object id = dataStore.get("_id");
+                Object id = this.dataStore.get("_id");
                 if (id == null) t = "New " + t;
                 else {
-                    String text = dataStore.get("_tostring");
+                    String text = this.dataStore.get("_tostring");
                     if (text == null) text = "" + id;
                     t += " " + text;
                 }
 
-                dataStore.getProperty("_id").addListener(new ChangeListener<Object>() {
+                this.dataStore.getProperty("_id").addListener(new ChangeListener<Object>() {
                     @Override
                     public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
                         MateuUI.runInUIThread(new Runnable() {
@@ -152,11 +167,11 @@ public class ViewLayout extends VerticalLayout implements View {
                                 String t = view.getTitle();
                                 if (newValue == null) t = "New " + t;
                                 else {
-                                    String text = dataStore.get("_tostring");
+                                    String text = ViewLayout.this.dataStore.get("_tostring");
                                     if (text == null) text = "" + newValue;
                                     t += " " + text;
                                 }
-                                dataStore.getProperty("_title").setValue(t);
+                                ViewLayout.this.dataStore.getProperty("_title").setValue(t);
                             }
                         });
                     }
@@ -166,7 +181,7 @@ public class ViewLayout extends VerticalLayout implements View {
             Label h1 = new Label(t);
             h1.addStyleName(ValoTheme.LABEL_H1);
 
-            Property p = dataStore.getProperty("_title");
+            Property p = this.dataStore.getProperty("_title");
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -182,7 +197,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 hl.addComponent(badges);
 
                 ChangeListener<ObservableList<DataStore>> bl;
-                Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_badges");
+                Property<ObservableList<DataStore>> pb = this.dataStore.getObservableListProperty("_badges");
                 pb.addListener(bl = new ChangeListener<ObservableList<DataStore>>() {
                     @Override
                     public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
@@ -224,7 +239,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 HorizontalLayout links = new HorizontalLayout();
 
                 ChangeListener<ObservableList<DataStore>> bl;
-                Property<ObservableList<DataStore>> pb = dataStore.getObservableListProperty("_links");
+                Property<ObservableList<DataStore>> pb = this.dataStore.getObservableListProperty("_links");
                 pb.addListener(bl = new ChangeListener<ObservableList<DataStore>>() {
                     @Override
                     public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
@@ -268,7 +283,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             Label subtitleLabel;
             addComponent(subtitleLabel = new Label());
-            dataStore.getProperty("_subtitle").addListener(new ChangeListener() {
+            this.dataStore.getProperty("_subtitle").addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                     subtitleLabel.setValue((newValue != null)?"" + newValue:null);
@@ -404,7 +419,7 @@ public class ViewLayout extends VerticalLayout implements View {
         */
 
         for (io.mateu.ui.core.client.components.Component c : fields.getComponentsSequence()) {
-            if (c instanceof GridField && ((GridField) c).isFullWidth()) {
+            if (c instanceof GridField && (((GridField) c).isFullWidth() || ((GridField) c).getColumns().size() > 4)) {
                 if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);
             } else if (c instanceof Tabs && ((Tabs) c).isFullWidth()) {
@@ -464,7 +479,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 MenuBar.MenuItem item = menubar.addItem("Data", new MenuBar.Command() {
                     @Override
                     public void menuSelected(MenuBar.MenuItem menuItem) {
-                        System.out.println(view.getForm().getData());
+                        System.out.println(view.getData());
                     }
                 });
             }
@@ -551,22 +566,36 @@ public class ViewLayout extends VerticalLayout implements View {
         }
     }
 
+    private double getWidth(GridField field, List<AbstractColumn> columns) {
+        double w = 0;
+        for (AbstractColumn c : columns) w += c.getWidth();
+        if (field.isExpandable()) w += 62;
+        return w;
+    }
+
     private List<Component> getVaadinComponent(AbstractField field, boolean inToolbar) {
 
         List<Component> cs = new ArrayList<>();
 
-        Data data = view.getForm().getData();
+        Data data = dataStore.getData();
 
         Object v = data.get(field.getId());
 
 
         if (field instanceof GridField) {
 
-            Property<ObservableList<DataStore>> p = dataStore.getObservableListProperty(field.getId());
-
             GridField g = (GridField) field;
 
             Grid<DataStore> table = new Grid<>((g.getLabel() != null) ? g.getLabel().getText() : null);
+
+            String pname = g.getId();
+
+            if (g.isUsedToSelect()) {
+                pname += "_data";
+            }
+
+            Property<ObservableList<DataStore>> p = dataStore.getObservableListProperty(pname);
+
 
             Component loqueanadimos = table;
 
@@ -577,9 +606,13 @@ public class ViewLayout extends VerticalLayout implements View {
             table.setDataProvider(ldp = new ListDataProvider<DataStore>(new ArrayList<>()));
             ldp.getItems().addAll(p.getValue());
 
+            //System.out.println("*********************** g.getColumns().size()=" + g.getColumns().size());
+
+
             table.addColumn((d) -> d.getBooleanProperty("_selected").getValue()).setId("_selected");
             int pos = 0;
             for (AbstractColumn col : g.getColumns()) {
+                //System.out.println("*********************** col.geLabel()=" + col.getLabel());
                 if (col instanceof DataColumn) {
                     table.addColumn((d) -> ((DataStore) d.getProperty(col.getId()).getValue()).get("_text")).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else if (col instanceof LinkColumn) {
@@ -593,7 +626,8 @@ public class ViewLayout extends VerticalLayout implements View {
             table.addColumn((d) -> d.getProperty("_dummycol").getValue()).setId("_dummycol"); // esta columna solo es para que quede bien y ocupe toda la pantalla
 
 
-            table.setSelectionMode(Grid.SelectionMode.MULTI);
+            if (!g.isUsedToSelect() || g.isUsedToSelectMultipleValues()) table.setSelectionMode(Grid.SelectionMode.MULTI);
+            else table.setSelectionMode(Grid.SelectionMode.SINGLE);
 
             //todo: arreglar lo de los style generators
             CellStyleGenerator csg = new CellStyleGenerator(g.getColumns());
@@ -602,23 +636,37 @@ public class ViewLayout extends VerticalLayout implements View {
                 return "";
             });
 
-            if (g.isFullWidth()) {
-                table.setWidth("100%");
+            if (g.isFullWidth() || g.getColumns().size() > 4) {
+                table.setSizeFull();
             } else {
-                //table.setHeightMode(HeightMode.UNDEFINED);
-                table.setWidthUndefined();
+                table.setHeightMode(HeightMode.UNDEFINED);
+                //table.setWidth("" + getWidth(g, g.getColumns()) + "px");
                 table.setHeightByRows(5);
             }
+
+            System.out.println("*********************** table.getWidth()=" + table.getWidth());
 
             table.addSelectionListener(new SelectionListener<DataStore>() {
                 @Override
                 public void selectionChange(SelectionEvent<DataStore> selectionEvent) {
 
+                    if (g.isUsedToSelect()) {
+                        if (g.isUsedToSelectMultipleValues()) {
+                            dataStore.getProperty(g.getId()).setValue(selectionEvent.getAllSelectedItems());
+                        } else {
+                            dataStore.getProperty(g.getId()).setValue(selectionEvent.getFirstSelectedItem());
+                        }
+                    } else {
+                        for (DataStore d : p.getValue()) d.set("_selected", selectionEvent.getAllSelectedItems().contains(d));
+                    }
+
+                    /*
                     for (DataStore o : selectionEvent.getAllSelectedItems()) {
                         o.getBooleanProperty("_selected").setValue(true);
                         //todo: comprobar esto!!!
                         if (p.getValue() != null) p.getValue().get(p.getValue().indexOf(o)).set("_selected", true);
                     }
+                    */
 
                 }
             });
@@ -1630,6 +1678,23 @@ public class ViewLayout extends VerticalLayout implements View {
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                     String s = (newValue != null)?"" + newValue:null;
                     if (s != null) s = s.replaceAll("\n", "<br/>");
+                    tf.setValue(s);
+                }
+            });
+
+            cs.add(tf);
+        } else if (field instanceof HtmlField) {
+            Label tf = new Label();
+            tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            tf.addStyleName("l");
+            tf.setContentMode(ContentMode.HTML);
+            if (v != null) tf.setValue("" + v);
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    String s = (newValue != null)?"" + newValue:null;
                     tf.setValue(s);
                 }
             });

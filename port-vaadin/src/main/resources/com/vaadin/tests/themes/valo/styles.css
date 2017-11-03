@@ -15183,9 +15183,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .tests-valo-reindeer .v-menubar-user-menu  > .v-menubar-menuitem img.v-icon {
-	width: 39px;
-	height: 39px;
-	border-radius: 21px;
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
 	display: block;
 	margin: 0 auto 0.3em;
@@ -15516,4 +15516,9 @@ div.v-layout.v-horizontal.v-widget {
 	display: inline-block;
 	width: 13px;
 	overflow: hidden;
+}
+
+
+.v-slot-escrolado {
+	overflow: scroll;
 }

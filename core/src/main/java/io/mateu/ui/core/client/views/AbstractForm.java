@@ -91,7 +91,7 @@ public abstract class AbstractForm extends FieldContainer {
     }
 
     public Data getData() {
-        if (data == null) setData(initializeData());
+        if (data == null) data = initializeData();
         return (helper != null)?helper.getData():data;
     }
 

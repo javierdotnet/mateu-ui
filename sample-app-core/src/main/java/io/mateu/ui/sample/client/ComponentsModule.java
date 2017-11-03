@@ -1,10 +1,15 @@
 package io.mateu.ui.sample.client;
 
+import com.google.common.collect.Lists;
 import io.mateu.ui.core.client.app.*;
+import io.mateu.ui.core.client.components.fields.GridField;
+import io.mateu.ui.core.client.components.fields.IntegerField;
 import io.mateu.ui.core.client.components.fields.SelectByIdField;
 import io.mateu.ui.core.client.components.fields.TextField;
+import io.mateu.ui.core.client.components.fields.grids.columns.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.core.shared.Pair;
 
 import java.util.Arrays;
 import java.util.List;
@@ -151,7 +156,59 @@ public class ComponentsModule extends AbstractModule {
                                 System.out.println("data=" + data);
                                 //throw new Exception("error xxx");
                             }
-                        }.addPage(new BaseWizardPageView("First page") {
+                        }.addPage(new BaseWizardPageView("Page 0") {
+
+                            @Override
+                            public void build() {
+                                add(new TextField("fa1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                            }
+                        }).addPage(new BaseWizardPageView("First page") {
+
+                            @Override
+                            public Data initializeData() {
+                                Data data = new Data();
+                                List<Data> l = Lists.newArrayList();
+                                l.add(new Data("a", "hdwhdehw"));
+                                l.add(new Data("a", "uhwihduehd"));
+                                l.add(new Data("a", "qwt6qwtw"));
+                                data.set("g", l);
+                                return data;
+                            }
+
+                            @Override
+                            public void build() {
+                                add(new TextField("f1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                                add(new GridField("g", Arrays.asList(
+                                        new TextColumn("a", "a", 100, true)
+                                        , new IntegerColumn("b", "b", 100, true)
+                                        , new DoubleColumn("c", "c", 100, true)
+                                        , new CheckBoxColumn("d", "d", 100, true)
+                                        , new ComboBoxColumn("cb", "cb", 100, Arrays.asList(
+                                                new Pair(1, "1")
+                                                , new Pair(2, "2")
+                                                , new Pair(3, "3")
+                                                , new Pair(4, "4")
+                                        ))
+                                        , new SqlComboBoxColumn("scb", "scb", 100, "select id, name from currency order by 2")
+                                        , new LinkColumn("e", "e", 100) {
+                                            @Override
+                                            public void run(Data data) {
+                                                MateuUI.alert("Hello!");
+                                            }
+                                        }
+                                        , new TextColumn("z", "a", 100, true)
+                                )) {
+                                    @Override
+                                    public AbstractForm getDataForm(Data initialData) {
+                                        AbstractForm f = new AbstractForm() {
+                                        };
+                                        f.add(new TextField("a", "A"));
+                                        f.add(new IntegerField("b", "B"));
+                                        return f;
+                                    }
+                                });
+                            }
+                        }).addPage(new BaseWizardPageView("First page") {
 
                             @Override
                             public void build() {
@@ -169,6 +226,142 @@ public class ComponentsModule extends AbstractModule {
                                 add(new TextField("f3", "Field 3"));
                             }
                         }));
+                    }
+                }, (MenuEntry) new AbstractAction("Wizard 2") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().open(new BaseWizard("My first wizard") {
+
+                            BaseWizard w = this;
+
+                            @Override
+                            public void onOk(Data data) throws Throwable {
+                                System.out.println("data=" + data);
+                                //throw new Exception("error xxx");
+                            }
+
+                            @Override
+                            public void execute(Object action, Data data, Callback<AbstractWizardPageView> callback) throws Throwable {
+                                if (action == null) {
+                                    set("_gonextaction", "1");
+                                    set("_gobackaction", null);
+                                    callback.onSuccess(new BaseWizardPageView("Page 0") {
+
+                                        @Override
+                                        public AbstractWizard getWizard() {
+                                            return w;
+                                        }
+
+                                        @Override
+                                        public boolean isFirstPage() {
+                                            return true;
+                                        }
+
+                                        @Override
+                                        public boolean isLastPage() {
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public void build() {
+                                            add(new TextField("fa1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                                        }
+                                    });
+                                } else {
+
+                                    if (action instanceof Actions) {
+                                        Actions a = (Actions) action;
+                                        switch (a) {
+                                            case GONEXT:
+                                                set("_gonextaction", "2");
+                                                set("_gobackaction", "1");
+
+                                                Data d = new Data();
+                                                List<Data> l = Lists.newArrayList();
+                                                l.add(new Data("a", "hdwhdehw"));
+                                                l.add(new Data("a", "uhwihduehd"));
+                                                l.add(new Data("a", "qwt6qwtw"));
+                                                d.set("g_data", l);
+                                                setAll(d);
+
+                                                callback.onSuccess(new BaseWizardPageView("First page") {
+
+                                                    @Override
+                                                    public AbstractWizard getWizard() {
+                                                        return w;
+                                                    }
+
+
+                                                    @Override
+                                                    public void build() {
+                                                        add(new TextField("f1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                                                        add(new GridField("g", Arrays.asList(
+                                                                new TextColumn("a", "a", 100, true)
+                                                                , new IntegerColumn("b", "b", 100, true)
+                                                                , new DoubleColumn("c", "c", 100, true)
+                                                                , new CheckBoxColumn("d", "d", 100, true)
+                                                                , new ComboBoxColumn("cb", "cb", 100, Arrays.asList(
+                                                                        new Pair(1, "1")
+                                                                        , new Pair(2, "2")
+                                                                        , new Pair(3, "3")
+                                                                        , new Pair(4, "4")
+                                                                ))
+                                                                , new SqlComboBoxColumn("scb", "scb", 100, "select id, name from currency order by 2")
+                                                                , new LinkColumn("e", "e", 100) {
+                                                                    @Override
+                                                                    public void run(Data data) {
+                                                                        MateuUI.alert("Hello!");
+                                                                    }
+                                                                }
+                                                                , new TextColumn("z", "a", 100, true)
+                                                        )) {
+                                                            @Override
+                                                            public AbstractForm getDataForm(Data initialData) {
+                                                                AbstractForm f = new AbstractForm() {
+                                                                };
+                                                                f.add(new TextField("a", "A"));
+                                                                f.add(new IntegerField("b", "B"));
+                                                                return f;
+                                                            }
+                                                        }.setUsedToSelect(true));
+                                                    }
+                                                });
+                                                break;
+                                            case GOBACK:
+                                                set("_gonextaction", "1");
+                                                set("_gobackaction", null);
+                                                callback.onSuccess(new BaseWizardPageView("Page 0") {
+
+                                                    @Override
+                                                    public AbstractWizard getWizard() {
+                                                        return w;
+                                                    }
+
+                                                    @Override
+                                                    public boolean isFirstPage() {
+                                                        return true;
+                                                    }
+
+                                                    @Override
+                                                    public boolean isLastPage() {
+                                                        return false;
+                                                    }
+
+                                                    @Override
+                                                    public void build() {
+                                                        add(new TextField("fa1", "Field 1").setHelp("This is the first field bla bla, bla"));
+                                                    }
+                                                });
+                                                break;
+                                            case END:
+                                                close();
+                                                break;
+                                        }
+                                    }
+
+                                }
+                            }
+                        });
                     }
                 });
             }

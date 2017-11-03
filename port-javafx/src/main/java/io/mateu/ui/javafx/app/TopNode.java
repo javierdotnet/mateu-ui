@@ -323,7 +323,7 @@ public class TopNode extends ToolBar {
     }
 
 
-    private void askForLogin() {
+    public void askForLogin() {
         // Create the custom dialog.
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Authentication");

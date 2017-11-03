@@ -257,3 +257,35 @@
 }
 
 */
+
+
+
+.table-view .column-header,
+.table-view .column-header .filler,
+.table-view .column-header-background .filler {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: -fx-box-border;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-border-width: 0 1 1 0;
+}
+
+.table-view .column-header .filler,
+.table-view .column-header-background .filler {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: -fx-box-border;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-border-width: 0 0 1 0;
+}
+
+/*
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+*/
+
+/*
+.table-view {
+    -fx-table-header-border-color: red;
+    -fx-table-header-background-color: #f4f4f4;
+}
+*/

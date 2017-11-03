@@ -34,7 +34,6 @@ public abstract class BaseWizard extends AbstractWizard {
 
     @Override
     public void execute(Object action, Data data, Callback<AbstractWizardPageView> callback) throws Throwable {
-        setAll(data);
         navigate(action, data, callback);
     }
 

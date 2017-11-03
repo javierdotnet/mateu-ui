@@ -1,7 +1,7 @@
 package io.mateu.ui.javafx;
 
 import io.mateu.ui.App;
-import io.mateu.ui.core.client.app.AbstractApplication;
+import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.views.*;
@@ -25,8 +25,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import io.mateu.ui.core.client.app.ClientSideHelper;
-import io.mateu.ui.core.client.app.MateuUI;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -188,8 +186,8 @@ public class JavafxPort extends Application {
                             } else {
                                 StackPane p;
                                 d.getDialogPane().setContent(p = new StackPane(new ViewNode(view)));
-                                p.setPrefWidth(600);
-                                p.setPrefHeight(400);
+                                p.setPrefWidth(700);
+                                p.setPrefHeight(600);
                             }
 
 
@@ -478,10 +476,19 @@ public class JavafxPort extends Application {
         //primaryStage.setFullScreen(true);
         primaryStage.setWidth(1024);
         primaryStage.setHeight(800);
-        primaryStage.setScene(new Scene(new AppNode()));
+        AppNode appnode;
+        primaryStage.setScene(new Scene(appnode = new AppNode()));
 
 
         primaryStage.show();
+
+        boolean hayPartePublica = false;
+        for (AbstractArea a : app.getAreas()) {
+            hayPartePublica |= a.isPublicAccess();
+        }
+        if (!hayPartePublica) {
+            appnode.getTopNode().askForLogin();
+        }
 
     }
 

@@ -3,7 +3,6 @@ package io.mateu.ui.vaadin;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import io.mateu.ui.core.client.views.AbstractEditorView;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.client.views.DataSetterListener;

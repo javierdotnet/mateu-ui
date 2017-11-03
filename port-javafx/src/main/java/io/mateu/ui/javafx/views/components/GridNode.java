@@ -24,6 +24,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -56,6 +58,9 @@ public class GridNode extends VBox {
 
     private void createToolBar(List<AbstractAction> actions) {
         ToolBar toolBar = new ToolBar();
+
+        toolBar.setStyle("-fx-background-color: #f4f4f4;");
+        toolBar.setBorder(Border.EMPTY);
 
         if (field.isPaginated()) {
             if (paginationContainer == null) {
@@ -206,7 +211,7 @@ public class GridNode extends VBox {
     private TableView<DataStore> buildTable(GridField c) {
         TableView<DataStore> t = new TableView<>();
 
-
+        //t.setBlendMode(BlendMode.GREEN);
 
         t.getColumns().addAll(buildColumns(t, c));
 

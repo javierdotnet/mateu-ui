@@ -88,6 +88,10 @@ public abstract class AbstractView {
     }
 
 
+    public Object get(String k) {
+        return getForm().getData().get(k);
+    }
+
     public void set(String k, Object v) {
         getForm().set(k, v);
     }

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.Component;
+import io.mateu.ui.core.client.components.Separator;
 import io.mateu.ui.core.client.components.Tab;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.grids.CalendarField;
@@ -36,6 +37,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -99,6 +101,7 @@ public class ViewNode extends StackPane {
 
     public ViewNode(AbstractView view) {
         this();
+
         this.view = view;
         view.getForm().setHelper(new FormHelper() {
             @Override
@@ -107,6 +110,29 @@ public class ViewNode extends StackPane {
             }
         });
         dataStore = new ViewNodeDataStore(this);
+
+        init();
+    }
+
+    public ViewNode(AbstractView view, DataStore dataStore) {
+        this();
+
+        this.dataStore = dataStore;
+
+        this.view = view;
+        view.getForm().setHelper(new FormHelper() {
+            @Override
+            public Data getData() {
+                return getDataStore().getData();
+            }
+        });
+
+        init();
+    }
+
+    private void init() {
+
+
         view.getForm().getData();
         view.getForm().addDataSetterListener(new DataSetterListener() {
             @Override
@@ -199,10 +225,14 @@ public class ViewNode extends StackPane {
         setStyle("-fx-background-color: white;");
 
         bp = new BorderPane();
+        bp.setBorder(Border.EMPTY);
         if (!(view instanceof AbstractWizardPageView)) bp.setTop(createToolBar(view.getActions()));
         ScrollPane sp = new ScrollPane(componentsCotainer = new VBox(10));
+        sp.setBorder(Border.EMPTY);
+        componentsCotainer.setBorder(Border.EMPTY);
         //sp.getStyleClass().add("mateu-view-scroll");
         bp.setCenter(sp);
+        //bp.setBorder(Border.EMPTY);
         //componentsCotainer.getStyleClass().add("mateu-view");
         componentsCotainer.setPadding(new Insets(10, 20, 10, 20));
         if (false) addEventHandler(Event.ANY, e -> {
@@ -373,7 +403,7 @@ public class ViewNode extends StackPane {
         sp.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
             @Override
             public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-                componentsCotainer.setPrefWidth(newValue.getWidth() - 60);
+                componentsCotainer.setPrefWidth(newValue.getWidth());
             }
         });
 
@@ -445,6 +475,13 @@ public class ViewNode extends StackPane {
 
     private Node createToolBar(List<AbstractAction> actions) {
         ToolBar toolBar = new ToolBar();
+
+        //toolBar.setBlendMode(BlendMode.GREEN);
+        //toolBar.setOpaqueInsets(Insets.EMPTY);
+        //toolBar.setBlendMode(BlendMode.SCREEN);
+        //toolBar.setStyle("-fx-background-insets: 0, 0 0 1 0;");
+        //toolBar.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
+        toolBar.setStyle("-fx-background-color: #f4f4f4;");
 
         if (false && view instanceof ListView) {
             ListView lv = (ListView) view;
@@ -603,7 +640,7 @@ public class ViewNode extends StackPane {
             Node n = null;
             if (!(c instanceof AbstractField) || posField >= fromField) {
 
-                    if (posField == 0 || (c instanceof  AbstractField && (((AbstractField)c).isBeginingOfLine()))) {
+                    if (posField == 0 || c instanceof Separator || (c instanceof  AbstractField && (((AbstractField)c).isBeginingOfLine()))) {
                         FlowPane fp;
                         panels.add(fp = new FlowPane(20, 10));
                     }
@@ -640,7 +677,12 @@ public class ViewNode extends StackPane {
         }
 
 
-        if (c instanceof io.mateu.ui.core.client.components.Button) {
+        if (c instanceof Separator) {
+            if (!Strings.isNullOrEmpty(((Separator) c).getText())) donde.getChildren().add(new Label(((Separator) c).getText()));
+            javafx.scene.control.Separator s;
+            donde.getChildren().add(s = new javafx.scene.control.Separator());
+            n = s;
+        } else if (c instanceof io.mateu.ui.core.client.components.Button) {
             io.mateu.ui.core.client.components.Button b = (io.mateu.ui.core.client.components.Button) c;
 
             Button x;
@@ -816,7 +858,7 @@ public class ViewNode extends StackPane {
             } else if (c instanceof CheckBoxField) {
                 CheckBox tf;
                 n = control = tf = new CheckBox();
-                n = empaquetar(tf, 65);
+                n = empaquetar(tf, 260);
                 String text = ((CheckBoxField) c).getText();
                 if (text != null) tf.setText(text);
                 tf.selectedProperty().bindBidirectional(dataStore.getBooleanProperty(((AbstractField) c).getId()));
@@ -1982,9 +2024,8 @@ public class ViewNode extends StackPane {
 
             if (n instanceof GridNode) {
                 ((GridNode)n).getTableView().setMinWidth(200);
-                //((GridNode)n).getTableView().setPrefHeight(5000);
 
-                if (c instanceof GridField && ((GridField) c).isFullWidth()) {
+                if ((c instanceof GridField && ((GridField) c).isFullWidth())) {
                     Node finalN = n;
                     scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
                         @Override
@@ -1997,6 +2038,34 @@ public class ViewNode extends StackPane {
                     });
                 }
 
+            } else if (n instanceof TabPane) {
+                ((TabPane)n).setMinWidth(200);
+
+                if ((c instanceof Tabs && ((Tabs) c).isFullWidth())) {
+                    Node finalN = n;
+                    scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                            //fixMins(componentsCotainer, finalN);
+                            //System.out.println("bounds changed to " + newValue.toString());
+                            //fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
+                            ((TabPane)finalN).setPrefWidth(newValue.getWidth() - 40);
+                        }
+                    });
+                }
+
+            } else if (n instanceof javafx.scene.control.Separator) {
+
+                Node finalN2 = n;
+                scrollPane.viewportBoundsProperty().addListener(new ChangeListener<Bounds>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                        //fixMins(componentsCotainer, finalN);
+                        //System.out.println("bounds changed to " + newValue.toString());
+                        //fixHeight(overallContainer, r, newValue.getWidth(), newValue.getHeight());
+                        ((javafx.scene.control.Separator)finalN2).setPrefWidth(newValue.getWidth() - 40);
+                    }
+                });
             }
 
 

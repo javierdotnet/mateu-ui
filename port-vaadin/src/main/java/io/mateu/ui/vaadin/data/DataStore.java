@@ -12,6 +12,7 @@ import io.mateu.ui.core.shared.PairList;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import java.util.*;
@@ -21,7 +22,7 @@ import java.util.*;
  */
 public class DataStore extends ObservableMapWrapper<String, Object> {
 
-    private Data data;
+    private Data data = new Data();
     Map<String, Property> props = new LinkedHashMap<String, Property>();
 
     private javafx.beans.value.ChangeListener listenerx = new javafx.beans.value.ChangeListener<Object>() {
@@ -29,16 +30,19 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         @Override
         public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
             for (String k : props.keySet()) if (props.get(k).equals(observable)) {
-                //System.out.println("data.set(" + k + ", " + newValue + ")");
-                if (newValue instanceof ArrayList) {
-                    List ll = new ArrayList();
-                    for (Object o : (List) newValue) {
-                        if (o instanceof DataStore) {
-                            data.set(k, ((DataStore)o).getData());
-                        } else data.set(k, o);
-                    }
-                } else if (newValue instanceof DataStore) {
-                    data.set(k, ((DataStore)newValue).getData());
+                //System.out.println("pasando valor con data.set(" + k + ", " + newValue + ")");
+                if (newValue != null) {
+                    if (List.class.isAssignableFrom(newValue.getClass())) {
+                        List ll = new ArrayList();
+                        for (Object o : (List) newValue) {
+                            if (o instanceof DataStore) {
+                                ll.add(((DataStore)o).getData());
+                            } else ll.add(o);
+                        }
+                        data.set(k, ll);
+                    } else if (newValue instanceof DataStore) {
+                        data.set(k, ((DataStore)newValue).getData());
+                    } else data.set(k, newValue); // set value in form's data
                 } else data.set(k, newValue); // set value in form's data
                 hasChanged(k, oldValue, newValue);
                 break;
@@ -60,7 +64,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
 
     public void setData(Data data) {
-        if (this.data == null) this.data = data;
+        if (this.data == null && data != null) this.data = data;
         //clear();
 
         List<String> vistas = new ArrayList<>();
@@ -70,34 +74,40 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             Collections.reverse(ns);
             for (String n : ns)
             {
-                if (data.get(n) instanceof Pair || data.get(n) instanceof FileLocator) {
-                    set(n, data.get(n));
-                } else if (data.get(n) instanceof Data)
-                {
-                    DataStore x = new DataStore(data.get(n));
-                    set(n, x);
-                }
-                else if (data.get(n) instanceof ArrayList || data.get(n) instanceof ObservableList)
-                {
-
-                    ObservableList l = getObservableListProperty(n).getValue();
-                    //if (l instanceof FilteredList) l = ((FilteredList)l).getSource();
-                    List ll = new ArrayList();
-                    for (Object y : (List) data.get(n))
+                Object v = data.get(n);
+                //System.out.println("datastore.setdata(" + n + "," + v + ")");
+                if (v != null) {
+                    if (v instanceof Pair || v instanceof FileLocator) {
+                        set(n, v);
+                    } else if (v instanceof Data)
                     {
-                        if (y instanceof Pair) {
-                            ll.add(new DataStore((Pair)y));
-                        } else if (y instanceof Data) {
-                            DataStore x = new DataStore((Data) y);
-                            ll.add(x);
-                        } else {
-                            ll.add(y);
-                        }
+                        DataStore x = new DataStore((Data) v);
+                        set(n, x);
                     }
-                    l.setAll(ll);
+                    else if (List.class.isAssignableFrom(v.getClass()))
+                    {
+
+                        ObservableList l = getObservableListProperty(n).getValue();
+                        //if (l instanceof FilteredList) l = ((FilteredList)l).getSource();
+                        List ll = new ArrayList();
+                        for (Object y : (List) v)
+                        {
+                            if (y instanceof Pair) {
+                                ll.add(new DataStore((Pair)y));
+                            } else if (y instanceof Data) {
+                                DataStore x = new DataStore((Data) y);
+                                ll.add(x);
+                            } else {
+                                ll.add(y);
+                            }
+                        }
+                        l.setAll(ll);
+                    }
+                    else
+                        set(n, v);
+                } else {
+                    set(n, v);
                 }
-                else
-                    set(n, data.get(n));
                 vistas.add(n);
             }
 
@@ -116,12 +126,44 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     }
 
     public Data getData() {
+        Data data = new Data();
+        fill(data);
         return data;
+    }
+
+    private void fill(Data data) {
+        for (String n : props.keySet()) {
+            Property p = props.get(n);
+            if (p != null) {
+                Object v = p.getValue();
+                if (v != null) {
+                    if (v instanceof ObservableList) {
+                        List z = (List) p.getValue();
+                        List<Object> nl = new ArrayList<>();
+                        for (Object vv : z) {
+                            if (vv instanceof DataStore) {
+                                nl.add(((DataStore) vv).getData());
+                            } else {
+                                nl.add(vv);
+                            }
+                        }
+                        v = nl;
+                    } else if (v instanceof DataStore) {
+                        v = ((DataStore) v).getData();
+                    } else if (v instanceof Optional) {
+                        Object z = ((Optional)v).get();
+                        if (z != null && z instanceof DataStore) v = ((DataStore) z).getData();
+                    }
+                }
+                data.set(n, v);
+            }
+        }
     }
 
 
     public <X> X set(String name, X value) {
-        if (value instanceof List<?>) {
+        //System.out.println("datastore.set(" + name + "," + value + ")");
+        if (value != null && List.class.isAssignableFrom(value.getClass())) {
             Property<ObservableList<DataStore>> p = getObservableListProperty(name);
             p.getValue().clear();
             for (Data x : (List<Data>) value) p.getValue().add(new DataStore(x));
@@ -270,12 +312,35 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
     public Property<ObservableList<DataStore>> getObservableListProperty(
             String id) {
+        //System.out.println("datastore.getObservableListProperty(" + id + ")");
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleObjectProperty(FXCollections.observableArrayList()));
+            //System.out.println("creamos la propiedad");
+            ObservableList<Object> ocl;
+            props.put(id, p = new SimpleObjectProperty(ocl = FXCollections.observableArrayList()));
             p.addListener(listenerx);
+            Property finalP = p;
+            ocl.addListener(new ListChangeListener() {
+                @Override
+                public void onChanged(Change c) {
+                    listenerx.changed(finalP, null, ocl);
+                }
+            });
+        } else {
+            //System.out.println("la propiedad " + id + " ya existe");
         }
-        if (p.getValue() == null) p.setValue(FXCollections.observableArrayList());
+        if (p.getValue() == null) {
+            ObservableList<Object> ocl;
+            p.setValue(ocl = FXCollections.observableArrayList());
+            Property finalP1 = p;
+            ocl.addListener(new ListChangeListener() {
+                @Override
+                public void onChanged(Change c) {
+                    listenerx.changed(finalP1, null, ocl);
+                }
+            });
+        }
+        //System.out.println("p.getValue = " + p.getValue());
         return p;
     }
 
@@ -321,6 +386,12 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
                     }
                 }
             }
+        }
+    }
+
+    public void setAll(Data data) {
+        if (data != null) {
+            for (String k : data.getPropertyNames()) set(k, data.get(k));
         }
     }
 }

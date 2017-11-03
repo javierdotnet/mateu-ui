@@ -65,11 +65,11 @@ public class WizardDialog extends Dialog {
         //alert.setHeaderText("Look, an Error Dialog");
 
         getDialogPane().setContent(p = new StackPane());
-        p.setPrefWidth(600);
-        p.setPrefHeight(400);
+        p.setPrefWidth(900);
+        p.setPrefHeight(500);
 
         try {
-            wizard.execute(null, null, new Callback<AbstractWizardPageView>() {
+            wizard.execute(null, dataStore.getData(), new Callback<AbstractWizardPageView>() {
                 @Override
                 public void onSuccess(AbstractWizardPageView result) {
                     update(result);
@@ -86,10 +86,8 @@ public class WizardDialog extends Dialog {
 
     public void update(AbstractWizardPageView view) {
 
-        view.setInitialData(dataStore.getData()); //todo: seguro????
-
         p.getChildren().clear();
-        p.getChildren().add(currentViewNode = new ViewNode(view));
+        p.getChildren().add(currentViewNode = new ViewNode(view, dataStore));
 
         //setHeaderText((view.getTitle() != null)?view.getTitle():"");
 
@@ -124,8 +122,7 @@ public class WizardDialog extends Dialog {
         if (!view.isFirstPage()) ((Button) getDialogPane().lookupButton(ButtonType.PREVIOUS)).addEventFilter(ActionEvent.ACTION, ae -> {
             ae.consume(); //not valid
             try {
-                dataStore.setData(currentViewNode.getDataStore().getData());
-                wizard.execute(AbstractWizard.Actions.GOBACK, currentViewNode.getDataStore().getData(), new Callback<AbstractWizardPageView>() {
+                wizard.execute(AbstractWizard.Actions.GOBACK, dataStore.getData(), new Callback<AbstractWizardPageView>() {
                     @Override
                     public void onSuccess(AbstractWizardPageView result) {
                         update(result);
@@ -142,12 +139,11 @@ public class WizardDialog extends Dialog {
             if (errors.size() > 0) {
                 MateuUI.notifyErrors(errors);
             } else {
-                Data d = view.getForm().getData();
+                Data d = dataStore.getData();
                 if (MateuUI.getApp().getUserData() != null) d.set("_user", MateuUI.getApp().getUserData().getLogin());
                 try {
-                    dataStore.setData(d);
 
-                    wizard.onOk(currentViewNode.getDataStore().getData());
+                    wizard.onOk(d);
 
                     if (view.getWizard().closeOnOk()) wizard.close();
 
@@ -163,11 +159,10 @@ public class WizardDialog extends Dialog {
             if (errors.size() > 0) {
                 MateuUI.notifyErrors(errors);
             } else {
-                Data d = view.getForm().getData();
+                Data d = dataStore.getData();
                 if (MateuUI.getApp().getUserData() != null) d.set("_user", MateuUI.getApp().getUserData().getLogin());
                 try {
-                    dataStore.setData(d);
-                    wizard.execute(AbstractWizard.Actions.GONEXT, currentViewNode.getDataStore().getData(), new Callback<AbstractWizardPageView>() {
+                    wizard.execute(AbstractWizard.Actions.GONEXT, d, new Callback<AbstractWizardPageView>() {
                         @Override
                         public void onSuccess(AbstractWizardPageView result) {
                             update(result);
@@ -196,7 +191,7 @@ public class WizardDialog extends Dialog {
                 @Override
                 public Data initializeData() {
                     Data d = super.initializeData();
-                    d.set("data", view.getForm().getData());
+                    d.set("data", dataStore.getData());
                     return d;
                 }
 

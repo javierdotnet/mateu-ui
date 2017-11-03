@@ -106,17 +106,8 @@ public class DataStore {
     }
 
     public Data getData() {
-        Data data = null;
-        try {
-            data = (Data) Class.forName(dataClassName).newInstance();
-            fill(data);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Data data = new Data();
+        fill(data);
         return data;
     }
 

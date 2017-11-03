@@ -272,6 +272,7 @@
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	border: none;
+	padding: 0px !important;
 	margin-right: 1px;
 	border-radius: 4px;
 	xxxcolor: #197de1;
@@ -386,4 +387,21 @@
 }
 
 
+.v-slot-escrolado {
+	overflow: scroll;
+}
 
+
+.tests-valo-reindeer .v-menubar-user-menu.v-menubar-mi-user-menu > .v-menubar-menuitem img.v-icon {
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
+}
+
+.tests-valo-reindeer .valo-menu-part {
+	width: 250px;
+}
+
+.tests-valo-reindeer .valo-menu-part[width-range~="0-800px"] {
+	width: 0px;
+}

@@ -1,5 +1,6 @@
 package io.mateu.ui.sample.client;
 
+import com.google.common.collect.Lists;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.fields.GridField;
 import io.mateu.ui.core.client.components.fields.IntegerField;
@@ -12,11 +13,24 @@ import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by miguel on 28/1/17.
  */
 public class GridView extends AbstractView {
+
+    @Override
+    public Data initializeData() {
+        Data data = new Data();
+        List<Data> l = Lists.newArrayList();
+        l.add(new Data("a", "hdwhdehw"));
+        l.add(new Data("a", "uhwihduehd"));
+        l.add(new Data("a", "qwt6qwtw"));
+        data.set("g", l);
+        return data;
+    }
+
     @Override
     public String getTitle() {
         return "Grid";

@@ -25,7 +25,10 @@ I hope you like it ;)
 
 ## Thanks to
 
-Install4j for providing licenses of their great tool. I really appreciate it
+Install4j and JProfiler for providing licenses of their great tools. I really appreciate it
 
 <img class="image-margin" width="150" height="42" src="https://www.ej-technologies.com/images/product_banners/install4j_large.png">
+
+<img class="image-margin" width="150" height="42" src="https://www.ej-technologies.com/images/product_banners/jprofiler_large.png">
+
 

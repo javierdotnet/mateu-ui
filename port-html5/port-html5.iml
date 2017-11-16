@@ -115,6 +115,6 @@
     <orderEntry type="library" name="Maven: de.iterable:teavm-jquery-core:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: de.iterable:teavm-jquery-utils:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: io.mateu.ui:port-html5-core:1.0-SNAPSHOT" level="project" />
-    <orderEntry type="module" module-name="sampleapp" />
+    <orderEntry type="library" name="Maven: io.mateu.ui:sampleapp:1.0-SNAPSHOT" level="project" />
   </component>
 </module>

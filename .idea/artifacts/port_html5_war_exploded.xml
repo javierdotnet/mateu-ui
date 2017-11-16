@@ -90,9 +90,7 @@
           <element id="archive" name="port-html5-core-1.0-SNAPSHOT.jar">
             <element id="module-output" name="port-html5-core" />
           </element>
-          <element id="archive" name="sampleapp-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="sampleapp" />
-          </element>
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/io/mateu/ui/sampleapp/1.0-SNAPSHOT/sampleapp-1.0-20171112.211703-4.jar" output-file-name="sampleapp-1.0-SNAPSHOT.jar" />
         </element>
       </element>
       <element id="directory" name="META-INF">

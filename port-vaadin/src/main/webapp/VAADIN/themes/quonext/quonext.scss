@@ -1,0 +1,228 @@
+@import "../valo/valo.scss";
+
+@import "font-awesome-4.7.0.2/scss/font-awesome.scss";
+
+
+
+/**
+*
+*
+*
+* @group valo-menu
+*/
+/*
+@mixin valo-menu-responsive {
+  .valo-menu-responsive {
+
+    @include width-range($min: 500px) {
+      .valo-menu-toggle .v-button-caption {
+        display: none;
+      }
+
+      .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
+        display: inline-block;
+        width: round($v-unit-size / 2);
+        overflow: hidden;
+      }
+    }
+  }
+}
+*/
+
+@mixin quonext {
+  @include valo;
+
+  /* aquí mis estilos */
+
+  @include font-awesome;
+
+
+
+  .v-app {
+    background: yellow;
+  }
+
+
+
+  #testMenu {
+    min-width: 225px;
+    background-color: #001c32;
+    font-size: 12px;
+  }
+
+  .v-menubar-popup {
+    font-size: 12px;
+  }
+
+  .v-menubar > .v-menubar-menuitem-selected {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    color: white;
+  }
+
+  .v-menubar > .v-menubar-menuitem:hover:before {
+    background: none;
+    border: none;
+  }
+
+  .submenu {
+    fnt-size: 12px;
+  }
+
+  .submenu > .v-menubar-menuitem:hover:first-child:last-child {
+    padding: 0px;
+    background: none;
+    color: white;
+  }
+
+  .v-menubar {
+    border-radius: 0px;
+  }
+
+  .valo-menu .v-menubar:focus:after {
+    border:none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .valo-menu .v-menubar:hover:after {
+    border:none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .valo-menu-item:focus, .valo-menu-item:hover, .valo-menu-item.selected {
+    color: white;
+  }
+
+  .v-menubar-submenu:hover {
+    background: none;
+  }
+
+  .v-menubar-submenu {
+    .v-menubar-menuitem:focus, .v-menubar-menuitem:hover, .v-menubar-menuitem.selected {
+      background: none;
+      color: red;
+    }
+  }
+  .popupContent .v-menubar-menuitem:hover:first-child:last-child {
+    color: red;
+  }
+
+  #testMenu .valo-menu-title {
+    background-color: #001c32;
+    border-bottom: none;
+    background-image: none;
+  }
+
+  .divSelectorArea {
+    padding: 0px;
+    margin-bottom: 20px;
+
+    .v-filterselect {
+      width: 145px;
+    }
+  }
+
+  .valo-menu-subtitle {
+    margin: 7px 0 7px 0px;
+  }
+
+  .valo-menu-item {
+    padding: 0px;
+  }
+
+  .v-menubar-user-menu  > .v-menubar-menuitem img.v-icon {
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 100px;
+  }
+
+  .user-menu .v-menubar-submenu-indicator + .v-menubar-menuitem-caption:after {
+    color: #426da9;
+    font-family: FontAwesome;
+    content: "\f013";
+    /* font-size: 0.7em; */
+    font-size: 1.7em;
+    margin-left: 73px;
+    opacity: 1;
+  }
+
+  .valo-menuitems {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  .submenu > .v-menubar-menuitem:first-child:last-child {
+    padding: 0px;
+  }
+
+
+
+  .v-grid-header .v-grid-cell {
+    background-image: none;
+    background-color: #003366;
+    color: white;
+  }
+
+
+
+  .v-nativebutton {
+    text-align: center;
+    color: blue;
+    background:none!important;
+    border:none;
+    padding:0!important;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+
+  .h1 {
+    font-size: 32px;
+    font-weight: bold;
+
+  }
+
+  .cuerpoview {
+    background-color: #f5f5f5;
+    border-radius: 2px;
+  }
+
+  .v-textfield:focus {
+    border: 1px solid #c9c9c9;
+  }
+
+  .botonera .v-menubar-menuitem {
+    background-color: #3267aa;
+    margin-right: 4px;
+    border-radius: 2px;
+    color: #ffffff;
+    font-weight: 400;
+  }
+
+  .botonera .v-menubar-menuitem:hover {
+    color: #ff6600;
+  }
+
+  .botonera:focus::after {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .contenedorgrid {
+    padding: 0px;
+    margin: 0px;
+  }
+
+
+
+  .selectortema {
+    margint-top: 50px;
+  }
+}
+

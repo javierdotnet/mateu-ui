@@ -39,6 +39,12 @@
           <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-xml:9.4.3.v20170317" />
           <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-servlet:9.4.3.v20170317" />
           <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-security:9.4.3.v20170317" />
+          <element id="library" level="project" name="Maven: org.glassfish.jersey.inject:jersey-hk2:2.26" />
+          <element id="library" level="project" name="Maven: org.glassfish.hk2:hk2-locator:2.5.0-b42" />
+          <element id="library" level="project" name="Maven: org.glassfish.hk2.external:aopalliance-repackaged:2.5.0-b42" />
+          <element id="library" level="project" name="Maven: org.glassfish.hk2:hk2-api:2.5.0-b42" />
+          <element id="library" level="project" name="Maven: javax.inject:javax.inject:1" />
+          <element id="library" level="project" name="Maven: org.glassfish.hk2:hk2-utils:2.5.0-b42" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.4" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.8.4" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.4" />
@@ -79,7 +85,7 @@
           <element id="library" level="project" name="Maven: com.github.virtuald:curvesapi:1.04" />
           <element id="library" level="project" name="Maven: org.jdom:jdom2:2.0.6" />
           <element id="library" level="project" name="Maven: com.google.guava:guava:21.0" />
-          <element id="library" level="project" name="Maven: de.iterable:teavm-jquery-core:0.0.1-SNAPSHOT" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/de/iterable/teavm-jquery-core/0.0.1-SNAPSHOT/teavm-jquery-core-0.0.1-20171107.083203-2.jar" output-file-name="teavm-jquery-core-0.0.1-SNAPSHOT.jar" />
           <element id="library" level="project" name="Maven: de.iterable:teavm-jquery-utils:0.0.1-SNAPSHOT" />
           <element id="archive" name="port-html5-core-1.0-SNAPSHOT.jar">
             <element id="module-output" name="port-html5-core" />

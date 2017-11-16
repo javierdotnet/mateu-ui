@@ -9,6 +9,7 @@
     <file type="web" url="file://$PROJECT_DIR$/port-vaadin" />
     <file type="web" url="file://$PROJECT_DIR$/sample-app" />
     <file type="web" url="file://$PROJECT_DIR$/sample-app-core" />
+    <file type="web" url="file://$PROJECT_DIR$/sampleapp" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">

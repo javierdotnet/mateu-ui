@@ -6,6 +6,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.event.selection.SelectionListener;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
@@ -409,6 +410,11 @@ public class ViewLayout extends VerticalLayout implements View {
 
     private void buildBody(Layout layout, FieldContainer fields) {
 
+        layout.addComponent(layout = new VerticalLayout());
+
+        layout.addStyleName("cuerpoview");
+
+
         HorizontalLayout row = null;
 
         /*
@@ -461,9 +467,22 @@ public class ViewLayout extends VerticalLayout implements View {
 
         if (view.getActions().size() > 0) {
             MenuBar menubar = new MenuBar();
+            menubar.addStyleName("botonera");
             menubar.setWidth("100%");
             for (AbstractAction a : view.getActions()) {
-                MenuBar.MenuItem item = menubar.addItem(a.getName(), new MenuBar.Command() {
+                VaadinIcons icono = VaadinIcons.BOLT;
+                if (a.getName().toLowerCase().contains("save")) icono = VaadinIcons.DOWNLOAD;
+                else if (a.getName().toLowerCase().contains("duplicate")) icono = VaadinIcons.COPY;
+                else if (a.getName().toLowerCase().contains("data")) icono = VaadinIcons.DATABASE;
+                else if (a.getName().toLowerCase().contains("refresh")) icono = VaadinIcons.REFRESH;
+                else if (a.getName().toLowerCase().contains("reset")) icono = VaadinIcons.FILE_O;
+                else if (a.getName().toLowerCase().contains("search")) icono = VaadinIcons.SEARCH;
+                else if (a.getName().toLowerCase().contains("close")) icono = VaadinIcons.CLOSE;
+                else if (a.getName().toLowerCase().contains("new")) icono = VaadinIcons.FILE_ADD;
+                else if (a.getName().toLowerCase().contains("delete")) icono = VaadinIcons.FILE_REMOVE;
+                else if (a.getName().toLowerCase().contains("excel")) icono = VaadinIcons.CHART_GRID;
+                else if (a.getName().toLowerCase().contains("pdf")) icono = VaadinIcons.FILE_TEXT_O;
+                MenuBar.MenuItem item = menubar.addItem(a.getName(), icono, new MenuBar.Command() {
                     @Override
                     public void menuSelected(MenuBar.MenuItem menuItem) {
                         a.run();
@@ -476,7 +495,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             }
             if (true) {
-                MenuBar.MenuItem item = menubar.addItem("Data", new MenuBar.Command() {
+                MenuBar.MenuItem item = menubar.addItem("Data", VaadinIcons.DATABASE, new MenuBar.Command() {
                     @Override
                     public void menuSelected(MenuBar.MenuItem menuItem) {
                         System.out.println(view.getData());
@@ -613,14 +632,16 @@ public class ViewLayout extends VerticalLayout implements View {
             int pos = 0;
             for (AbstractColumn col : g.getColumns()) {
                 //System.out.println("*********************** col.geLabel()=" + col.getLabel());
+                Grid.Column aux;
                 if (col instanceof DataColumn) {
-                    table.addColumn((d) -> ((DataStore) d.getProperty(col.getId()).getValue()).get("_text")).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux = table.addColumn((d) -> ((DataStore) d.getProperty(col.getId()).getValue()).get("_text")).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else if (col instanceof LinkColumn) {
-                    table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux = table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else {
-                    table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux = table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
                 }
             }
+            if (g.getColumns().size() > 3) table.setFrozenColumnCount(3);
             if (g.isExpandable())
                 table.addColumn((d) -> "Edit").setId("_edit"); //todo: esto deber presentarse como un enlace / botón
             table.addColumn((d) -> d.getProperty("_dummycol").getValue()).setId("_dummycol"); // esta columna solo es para que quede bien y ocupe toda la pantalla
@@ -793,6 +814,8 @@ public class ViewLayout extends VerticalLayout implements View {
 
                 VerticalLayout vl;
                 loqueanadimos = vl = new VerticalLayout();
+                vl.setSpacing(false);
+                vl.addStyleName("contenedorgrid");
                 if (g.isFullWidth()) vl.setWidth("100%");
                 vl.addComponent(table);
 

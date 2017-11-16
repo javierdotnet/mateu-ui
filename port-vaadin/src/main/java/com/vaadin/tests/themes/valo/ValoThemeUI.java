@@ -15,6 +15,8 @@
  */
 package com.vaadin.tests.themes.valo;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.vaadin.annotations.*;
 import com.vaadin.data.HasValue;
@@ -52,9 +54,11 @@ import java.util.*;
 import java.util.Map.Entry;
 
 
-@Theme("tests-valo-reindeer")
+//@Theme("tests-valo-reindeer")
+@Theme("quonext")
 //@Title("Mateu.io")
-@StyleSheet("valo-theme-ui.css")
+//@StyleSheet("valo-theme-ui.css")
+@StyleSheet({"css/font-awesome.min.css"})
 //@Push
 @PreserveOnRefresh
 public class ValoThemeUI extends UI {
@@ -65,7 +69,7 @@ public class ValoThemeUI extends UI {
     private ViewDisplay trueViewDisplay;
     private static int fileId = 0;
     private Resource foto;
-    private HorizontalLayout divSelectorArea;
+    private VerticalLayout divSelectorArea;
 
     @WebServlet(value = "/*", asyncSupported = true, loadOnStartup = 1000)
     //@WebServlet(urlPatterns = {"/admin/*", "/VAADIN/*"}, asyncSupported = true, loadOnStartup = 1000)
@@ -312,6 +316,50 @@ public class ValoThemeUI extends UI {
 
             String u = "" + Page.getCurrent().getLocation();
             if (u.contains("#")) u = u.substring(0, u.indexOf("#"));
+
+
+            if (getApp() == null) {
+
+                // creamos una app al vuelo para probar la interfaz
+
+
+                setApp(new AbstractApplication() {
+                    @Override
+                    public String getName() {
+                        return "Test app";
+                    }
+
+                    @Override
+                    public List<AbstractArea> getAreas() {
+                        return Lists.newArrayList(new AbstractArea("Area 1") {
+                            @Override
+                            public List<AbstractModule> getModules() {
+                                return Lists.newArrayList(new AbstractModule() {
+                                    @Override
+                                    public String getName() {
+                                        return "Módulo 1";
+                                    }
+
+                                    @Override
+                                    public List<MenuEntry> getMenu() {
+                                        return Lists.newArrayList(
+                                                new AbstractAction("Opción 1") {
+                                                    @Override
+                                                    public void run() {
+                                                        MateuUI.alert("hola!");
+                                                    }
+                                                }
+                                        );
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+            }
+
+
             getApp().setBaseUrl(u);
         }
 
@@ -641,6 +689,40 @@ public class ValoThemeUI extends UI {
         menu.addComponent(menuItemsLayout);
 
 
+        // cambio temas
+
+        List<Pair> temas = Lists.newArrayList(new Pair("quonext", "Quonext"), new Pair("tests-valo-reindeer", "Valo"));
+
+        ComboBox<Pair> combo = new ComboBox<>();
+        combo.setItems(temas);
+        combo.setEmptySelectionAllowed(false);
+        combo.setTextInputAllowed(false);
+        combo.setScrollToSelectedItem(true);
+        combo.addStyleName("selectortema");
+// Use the name property for item captions
+        combo.setItemCaptionGenerator(Pair::getText);
+
+
+
+        if (!Strings.isNullOrEmpty(getTheme())) {
+            for (Pair p : temas) if (getTheme().equals(p.getValue())) combo.setSelectedItem(p);
+        }
+
+        combo.addValueChangeListener(new HasValue.ValueChangeListener<Pair>() {
+            @Override
+            public void valueChange(HasValue.ValueChangeEvent<Pair> valueChangeEvent) {
+                if (valueChangeEvent.getValue() != null) {
+
+                    setTheme((String) valueChangeEvent.getValue().getValue());
+                }
+            }
+        });
+
+        menu.addComponent(combo);
+
+        // fin cambio temas
+
+
         refreshMenu();
 
         //if (label != null) label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count + "</span>");
@@ -700,7 +782,7 @@ public class ValoThemeUI extends UI {
             System.out.println("***** AUTENTICADO. USUARIO=" + s.getAttribute("usuario"));
 
 
-            MenuItem settingsItem = settings.addItem((getApp().getUserData().getName() != null)?getApp().getUserData().getName():getApp().getUserData().getLogin(),
+            MenuItem settingsItem = settings.addItem("",
                     foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):new ClassResource("profile-pic-300px.jpg"),
                     null);
 
@@ -733,7 +815,8 @@ public class ValoThemeUI extends UI {
             });
 
 
-            divSelectorArea = new HorizontalLayout();
+            divSelectorArea = new VerticalLayout();
+            divSelectorArea.setSpacing(false);
             divSelectorArea.addComponent(new Label("Area:"));
             divSelectorArea.addStyleName("divSelectorArea");
 

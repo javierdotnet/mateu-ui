@@ -144,6 +144,7 @@ public class ViewLayout extends VerticalLayout implements View {
         this.dataStore.set("_title", view.getTitle());
 
         setMargin(true);
+        setSpacing(false);
         addStyleName("content-common");
 
 
@@ -534,9 +535,10 @@ public class ViewLayout extends VerticalLayout implements View {
             bx.setHeight("0px");
             bx.setStyleName("transparent");
             bx.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+            bx.setVisible(false);
             addComponent(bx);
         } else {
-            addComponent(new Label(" "));
+            // no hacer nada
         }
 
         if (view instanceof AbstractListView) {
@@ -821,7 +823,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
                 HorizontalLayout h = new HorizontalLayout();
                 Button badd;
-                h.addComponent(badd = new Button("Add"));
+                h.addComponent(badd = new Button("Add", VaadinIcons.PLUS));
                 badd.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
@@ -857,7 +859,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
 
                 Button bdel;
-                h.addComponent(bdel = new Button("Remove"));
+                h.addComponent(bdel = new Button("Remove", VaadinIcons.MINUS));
                 bdel.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {

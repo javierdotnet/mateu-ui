@@ -1,12 +1,13 @@
 package io.mateu.ui.core.shared;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by miguel on 25/1/17.
  */
-public class UserData extends Data {
+public class UserData extends Data implements Serializable {
 
 
     public UserData(String json) {

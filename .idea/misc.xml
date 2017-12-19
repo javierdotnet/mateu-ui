@@ -28,6 +28,7 @@
         <option value="$PROJECT_DIR$/rest/pom.xml" />
         <option value="$PROJECT_DIR$/sample-app/pom.xml" />
         <option value="$PROJECT_DIR$/sample-runner-javafx/pom.xml" />
+        <option value="$PROJECT_DIR$/sampleapp/pom.xml" />
       </set>
     </option>
   </component>

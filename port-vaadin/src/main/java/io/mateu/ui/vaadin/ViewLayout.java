@@ -1708,6 +1708,25 @@ public class ViewLayout extends VerticalLayout implements View {
             });
 
             cs.add(tf);
+        } else if (field instanceof ShowEntityField) {
+            Label tf = new Label();
+            tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            tf.addStyleName("l");
+            tf.setContentMode(ContentMode.HTML);
+            if (v != null) tf.setValue("" + v);
+
+            Property p = dataStore.getProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    Data d = (newValue != null)? (Data) newValue :null;
+                    String s = (d != null)?d.getString("text"):null;
+                    if (s != null) s = s.replaceAll("\n", "<br/>");
+                    tf.setValue(s);
+                }
+            });
+
+            cs.add(tf);
         } else if (field instanceof HtmlField) {
             Label tf = new Label();
             tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);

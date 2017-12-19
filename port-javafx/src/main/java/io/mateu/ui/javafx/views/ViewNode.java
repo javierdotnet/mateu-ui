@@ -1571,6 +1571,24 @@ public class ViewNode extends StackPane {
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 n = tf;
                 n = empaquetar(n, 260);
+            } else if (c instanceof ShowEntityField) {
+                javafx.scene.control.Label tf = new javafx.scene.control.Label();
+                tf.setWrapText(true);
+                tf.setMaxWidth(260);
+                tf.textProperty().bindBidirectional(dataStore.getDataProperty(((AbstractField) c).getId()), new StringConverter<Data>() {
+                    @Override
+                    public String toString(Data object) {
+                        if (object != null) return object.getString("text");
+                        return null;
+                    }
+
+                    @Override
+                    public Data fromString(String string) {
+                        return null;
+                    }
+                });
+                n = tf;
+                n = empaquetar(n, 260);
             } else if (c instanceof SqlAutocompleteField) {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();

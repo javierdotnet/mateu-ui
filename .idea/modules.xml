@@ -12,7 +12,6 @@
       <module fileurl="file://$PROJECT_DIR$/port-polymer/port-polymer.iml" filepath="$PROJECT_DIR$/port-polymer/port-polymer.iml" />
       <module fileurl="file://$PROJECT_DIR$/port-vaadin/port-vaadin.iml" filepath="$PROJECT_DIR$/port-vaadin/port-vaadin.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-app-core/sample-app-core.iml" filepath="$PROJECT_DIR$/sample-app-core/sample-app-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sampleapp/sampleapp.iml" filepath="$PROJECT_DIR$/sampleapp/sampleapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/teavm-plugin/teavm-plugin.iml" filepath="$PROJECT_DIR$/teavm-plugin/teavm-plugin.iml" />
     </modules>
   </component>

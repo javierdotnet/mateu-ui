@@ -645,7 +645,11 @@ public class ViewLayout extends VerticalLayout implements View {
                 if (col.getStyleGenerator() != null) {
                     aux.setStyleGenerator((value) -> {
 
-                        return col.getStyleGenerator().getStyle(value);
+                        Object vx = null;
+                        if (value instanceof DataStore) vx = ((DataStore) value).get(col.getId());
+                        else if (value instanceof Data) vx = ((Data) value).get(col.getId());
+
+                        return col.getStyleGenerator().getStyle(vx);
 
                     });
                 }

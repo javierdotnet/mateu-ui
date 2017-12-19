@@ -257,5 +257,199 @@
     width: 150px;
     margin-left: 37px;
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .superbadge {
+    background-color: darkgray;
+    color: white;
+    font-size: 16px;
+    margin-left: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    font-weight: bold;
+  }
+
+  .rojo {
+    background-color: red !important;
+  }
+
+  .azul {
+    background-color: blue !important;
+  }
+
+  .verde {
+    background-color: green !important;
+  }
+
+  .verdemarino {
+    background-color: darkseagreen !important;
+  }
+
+  .marron {
+    background-color: brown !important;
+  }
+
+  .amarillo {
+    background-color: yellow !important;
+  }
+
+  .naranja {
+    background-color: orange !important;
+  }
+
+  .transparent {
+    opacity: 0 !important;
+  }
+
+  .s {
+    width: 65px !important;
+  }
+
+  .m {
+    width: 130px !important;
+  }
+
+  .l {
+    width: 260px !important;
+  }
+
+  .xl {
+    width: 520px !important;
+  }
+
+  .xxl {
+    width: 100% !important;
+  }
+
+
+
+  /* cell styles */
+
+  .red {
+    color: red !important;
+  }
+
+  .blue {
+    color: blue !important;
+  }
+
+  .green {
+    color: green !important;
+  }
+
+  .yellow {
+    color: yellow !important;
+  }
+
+  .orange {
+    color: orange !important;
+  }
+
+  .success {
+    background-color: #dff0d8 !important;
+  }
+
+  .info {
+    background-color: #d9edf7 !important;
+  }
+
+  .warning {
+    background-color: #fcf8e3 !important;
+  }
+
+  .danger {
+    background-color: #f2dede !important;
+  }
+
+
+  .cell-valid {
+    border-right: 10px solid darkseagreen !important;
+  }
+
+  .cell-warning {
+    border-right: 10px solid orange !important;
+  }
+
+  .cell-invalid {
+    border-right: 10px solid red !important;
+  }
+
+
+  .pending {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+
+  .pending:before {
+    font-size: initial !important;
+    content: "\f1db" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+  .done {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+  .done:before {
+    font-size: initial !important;
+    content: "\f00c" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+  .cancelled {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+  .cancelled:before {
+    font-size: initial !important;
+    content: "\f00d" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+  .expired {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+  .expired:before {
+    font-size: initial !important;
+    content: "\f017" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+
+
+  .saveandclose {
+    background-color: lightgreen !important;
+  }
+
+  .v-menubar-menuitem-saveandclose {
+    background-color: lightgreen !important;
+  }
+
 }
 

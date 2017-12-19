@@ -5,6 +5,8 @@ package io.mateu.ui.core.shared;
  */
 public interface CellStyleGenerator {
 
-    public String getStyle(Object value);
+    String getStyle(Object value);
+
+    boolean isContentShown();
 
 }

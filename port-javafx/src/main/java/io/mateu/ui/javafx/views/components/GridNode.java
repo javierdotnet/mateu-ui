@@ -285,6 +285,11 @@ public class GridNode extends VBox {
                     public String getStyle(Object value) {
                         return (value != null && value instanceof DataStore)?((DataStore)value).get("_css"):null;
                     }
+
+                    @Override
+                    public boolean isContentShown() {
+                        return true;
+                    }
                 }));
             } else if (c instanceof LinkColumn) {
                 col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
@@ -302,6 +307,11 @@ public class GridNode extends VBox {
                     @Override
                     public String getStyle(Object value) {
                         return (value != null && value instanceof DataStore)?((DataStore)value).get("_css"):null;
+                    }
+
+                    @Override
+                    public boolean isContentShown() {
+                        return true;
                     }
                 }));
             } else {
@@ -416,6 +426,11 @@ public class GridNode extends VBox {
                 @Override
                 public String getStyle(Object value) {
                     return null;
+                }
+
+                @Override
+                public boolean isContentShown() {
+                    return true;
                 }
             }));
 

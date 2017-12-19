@@ -79,6 +79,11 @@ public class CRUDView extends AbstractCRUDView {
                         else if ("bill".equalsIgnoreCase("" + value)) return "cancelled red";
                         return null;
                     }
+
+                    @Override
+                    public boolean isContentShown() {
+                        return true;
+                    }
                 })
         , new OutputColumn("col2", "Last Name", 100)
                 , new OutputColumn("col3", "Street", 200));

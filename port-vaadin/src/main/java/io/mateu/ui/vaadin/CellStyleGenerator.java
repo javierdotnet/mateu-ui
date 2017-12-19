@@ -33,6 +33,11 @@ public class CellStyleGenerator implements StyleGenerator<Object> {
                         }
                         return null;
                     }
+
+                    @Override
+                    public boolean isContentShown() {
+                        return true;
+                    }
                 });
             }
             pos++;

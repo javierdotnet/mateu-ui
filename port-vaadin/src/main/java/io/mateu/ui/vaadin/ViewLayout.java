@@ -636,11 +636,23 @@ public class ViewLayout extends VerticalLayout implements View {
                 //System.out.println("*********************** col.geLabel()=" + col.getLabel());
                 Grid.Column aux;
                 if (col instanceof DataColumn) {
-                    aux = table.addColumn((d) -> ((DataStore) d.getProperty(col.getId()).getValue()).get("_text")).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux = table.addColumn((d) -> (col.getStyleGenerator() == null || col.getStyleGenerator().isContentShown())?((DataStore) d.getProperty(col.getId()).getValue()).get("_text"):null).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else if (col instanceof LinkColumn) {
-                    aux = table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux = table.addColumn((d) -> (col.getStyleGenerator() == null || col.getStyleGenerator().isContentShown())?d.getProperty(col.getId()).getValue():null).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else {
-                    aux = table.addColumn((d) -> d.getProperty(col.getId()).getValue()).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux = table.addColumn((d) -> (col.getStyleGenerator() == null || col.getStyleGenerator().isContentShown())?d.getProperty(col.getId()).getValue():null).setId("__col_" + pos++).setCaption(col.getLabel());
+                }
+                if (col.getStyleGenerator() != null) {
+                    aux.setStyleGenerator((value) -> {
+
+                        if (value instanceof DataStore) {
+                            return ((DataStore) value).get("_css");
+                        } else if (value instanceof Data) {
+                            return ((Data)value).get("_css");
+                        }
+                        return null;
+
+                    });
                 }
             }
             if (g.getColumns().size() > 3) table.setFrozenColumnCount(3);
@@ -651,13 +663,6 @@ public class ViewLayout extends VerticalLayout implements View {
 
             if (!g.isUsedToSelect() || g.isUsedToSelectMultipleValues()) table.setSelectionMode(Grid.SelectionMode.MULTI);
             else table.setSelectionMode(Grid.SelectionMode.SINGLE);
-
-            //todo: arreglar lo de los style generators
-            CellStyleGenerator csg = new CellStyleGenerator(g.getColumns());
-
-            if (csg.hasGenerators()) table.setStyleGenerator((item) -> {
-                return "";
-            });
 
             if (g.isFullWidth() || g.getColumns().size() > 4) {
                 table.setSizeFull();

@@ -49,11 +49,12 @@ public class CellStyleGenerator implements StyleGenerator<Object> {
     @Override
     public String apply(Object o) {
 
-        /*
+/*
         if (generators.containsKey(cellReference.getColumnIndex())) {
             return generators.get(cellReference.getColumnIndex()).getStyle(cellReference.getValue());
         }
-        */
+*/
+
         return null;
 
     }

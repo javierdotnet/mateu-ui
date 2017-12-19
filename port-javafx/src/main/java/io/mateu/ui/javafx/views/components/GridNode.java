@@ -356,6 +356,7 @@ public class GridNode extends VBox {
                                         setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CLOCK_ALT));
                                         setStyle("-fx-alignment: center;");
                                     }
+                                    if (!c.getStyleGenerator().isContentShown()) setText("");
                                 }
                             }
                         }

@@ -63,7 +63,7 @@ public class WizardWindow extends Window {
 
 
         setWidth("800px");
-        setHeight("600px");
+        setHeight("740px");
 
         try {
             wizard.execute(null, dataStore.getData(), new Callback<AbstractWizardPageView>() {

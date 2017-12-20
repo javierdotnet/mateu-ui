@@ -689,7 +689,10 @@ public class ValoThemeUI extends UI {
         menu.addComponent(menuItemsLayout);
 
 
+                /*
+
         // cambio temas
+
 
         List<Pair> temas = Lists.newArrayList(new Pair("quonext", "Quonext"), new Pair("tests-valo-reindeer", "Valo"));
 
@@ -722,6 +725,8 @@ public class ValoThemeUI extends UI {
 
         // fin cambio temas
 
+
+*/
 
         refreshMenu();
 
@@ -817,8 +822,6 @@ public class ValoThemeUI extends UI {
 
             divSelectorArea = new VerticalLayout();
             divSelectorArea.setSpacing(false);
-            divSelectorArea.addComponent(new Label("Area:"));
-            divSelectorArea.addStyleName("divSelectorArea");
 
             List<Pair> areas = new ArrayList<>();
             if (getApp().getAreas().size() > 1) {
@@ -834,30 +837,37 @@ public class ValoThemeUI extends UI {
                 }
             }
 
-            ComboBox<Pair> combo = new ComboBox<>();
-            combo.setItems(areas);
-            combo.setEmptySelectionAllowed(false);
-            combo.setTextInputAllowed(false);
-            combo.setScrollToSelectedItem(true);
+            if (areas.size() > 0) {
+
+                divSelectorArea.addComponent(new Label("Area:"));
+                divSelectorArea.addStyleName("divSelectorArea");
+
+                ComboBox<Pair> combo = new ComboBox<>();
+                combo.setItems(areas);
+                combo.setEmptySelectionAllowed(false);
+                combo.setTextInputAllowed(false);
+                combo.setScrollToSelectedItem(true);
 // Use the name property for item captions
-            combo.setItemCaptionGenerator(Pair::getText);
-            if (areas.size() > 0) combo.setSelectedItem(areas.get(0));
+                combo.setItemCaptionGenerator(Pair::getText);
+                if (areas.size() > 0) combo.setSelectedItem(areas.get(0));
 
-            combo.addValueChangeListener(new HasValue.ValueChangeListener<Pair>() {
-                @Override
-                public void valueChange(HasValue.ValueChangeEvent<Pair> valueChangeEvent) {
-                    if (valueChangeEvent.getValue() != null) {
+                combo.addValueChangeListener(new HasValue.ValueChangeListener<Pair>() {
+                    @Override
+                    public void valueChange(HasValue.ValueChangeEvent<Pair> valueChangeEvent) {
+                        if (valueChangeEvent.getValue() != null) {
 
-                        AbstractArea a = (AbstractArea) valueChangeEvent.getValue().getValue();
+                            AbstractArea a = (AbstractArea) valueChangeEvent.getValue().getValue();
 
-                        setArea(a);
+                            setArea(a);
 
-                        refreshMenu(a);
+                            refreshMenu(a);
+                        }
                     }
-                }
-            });
+                });
 
-            divSelectorArea.addComponent(combo);
+                divSelectorArea.addComponent(combo);
+
+            }
 
             for (AbstractArea a : getApp().getAreas()) {
 

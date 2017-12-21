@@ -41,12 +41,28 @@ public class ValoThemeSessionInitListener implements SessionInitListener {
                 head.appendElement("meta")
                         .attr("name", "apple-mobile-web-app-status-bar-style")
                         .attr("content", "black");
+
+                /*
+                String appId = event.getService().getMainDivId(event.getSession(), event.getRequest(), ValoThemeUI.class);
+
+                String tema = System.getProperty("theme", "mateu");
+
+                response.getDocument().getElementById(appId).removeClass("valo").addClass(tema);
+                for (Element e : response.getDocument().getElementsByAttribute("href")) {
+                    String v = e.attr("href");
+                    //<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="./VAADIN/themes/valo/favicon.ico">
+                    if (v.contains("VAADIN/themes/valo/")) e.attr("href", v.replaceAll("VAADIN/themes/valo/", "VAADIN/themes/" + tema + "/"));
+                }
+                */
             }
 
             @Override
             public void modifyBootstrapFragment(
                     final BootstrapFragmentResponse response) {
                 // TODO Auto-generated method stub
+
+                System.out.println("xxx");
+
             }
         });
     }

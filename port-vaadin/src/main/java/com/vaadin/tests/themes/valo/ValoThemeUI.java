@@ -55,7 +55,7 @@ import java.util.Map.Entry;
 
 
 //@Theme("tests-valo-reindeer")
-@Theme("quonext")
+//@Theme("quonext")
 //@Title("Mateu.io")
 //@StyleSheet("valo-theme-ui.css")
 @StyleSheet({"css/font-awesome.min.css"})
@@ -76,6 +76,8 @@ public class ValoThemeUI extends UI {
     @VaadinServletConfiguration(productionMode = false, ui = ValoThemeUI.class)
     public static class Servlet extends VaadinServlet {
 
+
+
         @Override
         protected void servletInitialized() throws ServletException {
 
@@ -90,6 +92,7 @@ public class ValoThemeUI extends UI {
             System.out.println("***********************************************");
 
             super.servletInitialized();
+
             getService().addSessionInitListener(
                     new ValoThemeSessionInitListener());
 
@@ -860,7 +863,7 @@ public class ValoThemeUI extends UI {
 
                             setArea(a);
 
-                            refreshMenu(a);
+                            refreshMenu(areas, a);
                         }
                     }
                 });
@@ -875,7 +878,7 @@ public class ValoThemeUI extends UI {
 
                 if (!isPublic) {
 
-                    refreshMenu(a);
+                    refreshMenu(areas, a);
 
                     break;
                 }
@@ -1327,11 +1330,11 @@ public class ValoThemeUI extends UI {
         upload.focus();
     }
 
-    private void refreshMenu(AbstractArea a) {
+    private void refreshMenu(List<Pair> areas, AbstractArea a) {
 
         menuItemsLayout.removeAllComponents();
 
-        menuItemsLayout.addComponent(divSelectorArea);
+        if (areas.size() > 1) menuItemsLayout.addComponent(divSelectorArea);
 
         Label label = null;
 

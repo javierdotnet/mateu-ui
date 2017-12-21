@@ -1,7 +1,5 @@
 package io.mateu.ui.javafx.data;
 
-import com.sun.javafx.collections.ObservableMapWrapper;
-import io.mateu.ui.core.client.Mateu;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.FileLocator;
 import io.mateu.ui.core.shared.Pair;
@@ -226,7 +224,7 @@ public class DataStore {
     public Property<Data> getDataProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleObjectProperty<Data>(Mateu.createNewDataContainer()));
+            props.put(id, p = new SimpleObjectProperty<Data>(new Data()));
             p.addListener(listenerx);
         }
         return p;

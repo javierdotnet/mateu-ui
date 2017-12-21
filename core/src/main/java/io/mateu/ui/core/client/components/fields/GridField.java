@@ -3,7 +3,6 @@ package io.mateu.ui.core.client.components.fields;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.GriRowFormatter;
-import io.mateu.ui.core.client.components.fields.grids.GridFieldHelper;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.data.GridFilter;
@@ -11,8 +10,6 @@ import io.mateu.ui.core.client.data.GridFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static io.mateu.ui.core.client.Mateu.getHelper;
 
 /**
  * Created by miguel on 23/10/16.
@@ -115,16 +112,6 @@ public class GridField extends AbstractField implements GriRowFormatter {
         return columns;
     }
 
-    public void keepFocus()
-    {
-        ((GridFieldHelper) getHelper()).keepFocus();
-    }
-
-    public void recoverFocus()
-    {
-        ((GridFieldHelper) getHelper()).recoverFocus();
-    }
-
     public GridField addColumn(AbstractColumn column)
     {
         columns.add(column);
@@ -163,14 +150,6 @@ public class GridField extends AbstractField implements GriRowFormatter {
         return null;
     }
 
-    public GridField setColumnas(List<AbstractColumn> columns, Runnable despues)
-    {
-        this.columns = columns;
-
-        ((GridFieldHelper) getHelper()).repaint(despues);
-
-        return this;
-    }
 
     public int getRowHeight()
     {
@@ -194,13 +173,6 @@ public class GridField extends AbstractField implements GriRowFormatter {
         return new ArrayList<GridFilter>();
     }
 
-    public void selectionHasChanged() {
-        ((GridFieldHelper)getHelper()).selectionHasChanged();
-    }
-
-    public String getInfoSeleccion() {
-        return "" + ((GridFieldHelper)getHelper()).getSelection().size() + " rows selected.";
-    }
 
     public AbstractForm getDataForm() {
         return getDataForm(new Data());

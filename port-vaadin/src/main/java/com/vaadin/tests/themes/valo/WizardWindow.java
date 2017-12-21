@@ -63,7 +63,7 @@ public class WizardWindow extends Window {
 
 
         setWidth("800px");
-        setHeight("740px");
+        setHeight("820px");
 
         try {
             wizard.execute(null, dataStore.getData(), new Callback<AbstractWizardPageView>() {
@@ -171,7 +171,7 @@ public class WizardWindow extends Window {
         b.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
 
-        {
+        if (false) {
             cs.add(b = new Button("Data", e -> {
                 System.out.println("************");
                 System.out.println("getData() = " + getData());

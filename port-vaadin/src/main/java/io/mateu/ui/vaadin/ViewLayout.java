@@ -433,7 +433,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);
             } else {
-                if (row == null || (c instanceof AbstractField && ((AbstractField)c).isBeginingOfLine())) {
+                if (row == null || (c instanceof AbstractField && ((AbstractField)c).isBeginingOfLine()) || c instanceof Tabs) {
                     row = new HorizontalLayout();
                     row.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
                     row.setSpacing(true);

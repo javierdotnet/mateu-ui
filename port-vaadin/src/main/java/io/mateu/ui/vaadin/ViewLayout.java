@@ -439,7 +439,13 @@ public class ViewLayout extends VerticalLayout implements View {
                     row.setSpacing(true);
                     layout.addComponent(row);
                 }
-                if (c instanceof io.mateu.ui.core.client.components.Button) {
+                if (c instanceof Separator) {
+
+                    Label l;
+                    row.addComponent(l = new Label(((Separator) c).getText()));
+                    l.addStyleName("separador");
+
+                } if (c instanceof io.mateu.ui.core.client.components.Button) {
 
                     io.mateu.ui.core.client.components.Button b = (io.mateu.ui.core.client.components.Button) c;
 

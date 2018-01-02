@@ -92,6 +92,5 @@
     <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.13" level="project" />
     <orderEntry type="library" name="Maven: de.jensd:fontawesomefx:8.9" level="project" />
     <orderEntry type="library" name="Maven: com.jfoenix:jfoenix:1.9.1" level="project" />
-    <orderEntry type="module" module-name="sample-app-core" />
   </component>
 </module>

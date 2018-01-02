@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="port-openui:war">
-    <output-path>$PROJECT_DIR$/port-openui/target</output-path>
-    <root id="archive" name="port-openui.war">
-      <element id="artifact" artifact-name="port-openui:war exploded" />
-    </root>
-  </artifact>
-</component>

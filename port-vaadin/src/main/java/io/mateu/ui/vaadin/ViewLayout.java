@@ -16,6 +16,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.tests.themes.valo.ValoThemeUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -392,7 +393,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
                 @Override
                 public void onSearch() {
-                    startWaiting();
+                    ((ValoThemeUI)UI.getCurrent()).search(lv, (Integer) lv.get("_data_currentpageindex"));
                 }
 
                 @Override
@@ -439,13 +440,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     row.setSpacing(true);
                     layout.addComponent(row);
                 }
-                if (c instanceof Separator) {
-
-                    Label l;
-                    row.addComponent(l = new Label(((Separator) c).getText()));
-                    l.addStyleName("separador");
-
-                } if (c instanceof io.mateu.ui.core.client.components.Button) {
+                if (c instanceof io.mateu.ui.core.client.components.Button) {
 
                     io.mateu.ui.core.client.components.Button b = (io.mateu.ui.core.client.components.Button) c;
 
@@ -608,8 +603,12 @@ public class ViewLayout extends VerticalLayout implements View {
 
         Object v = data.get(field.getId());
 
+        if (field instanceof  Separator) {
+            Label l;
+            cs.add(l = new Label(((Separator) field).getText()));
+            l.addStyleName("separador");
 
-        if (field instanceof GridField) {
+        } else if (field instanceof GridField) {
 
             GridField g = (GridField) field;
 
@@ -877,120 +876,150 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 });
 
+                Button bdup;
+                h.addComponent(bdup = new Button("Duplicate", VaadinIcons.COPY_O));
+                bdup.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        List<DataStore> n = new ArrayList<>();
+                        for (DataStore ds : table.getSelectionModel().getSelectedItems()) {
+                            DataStore x = new DataStore(ds.getData().strip("__id"));
+                            x.set("__id", "" + UUID.randomUUID());
+                            n.add(x);
+                        }
+                        p.getValue().addAll(n);
+                    }
+                });
+
+                Button bup;
+                h.addComponent(bup = new Button("Up", VaadinIcons.ARROW_UP));
+                bup.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        ObservableList<DataStore> l = p.getValue();
+                        List<Integer> poses = new ArrayList<>();
+                        int firstSelected = -1;
+                        for (DataStore x : table.getSelectionModel().getSelectedItems()) {
+                            int pos = l.indexOf(x);
+                            if (firstSelected == -1 || pos < firstSelected) firstSelected = pos;
+                            poses.add(pos);
+                        }
+                        if (firstSelected > 0) {
+                            Collections.sort(poses);
+                            for (Integer pos : poses) {
+                                DataStore x = l.get(pos);
+                                l.remove(x);
+                                l.add(pos - 1, x);
+                            }
+                            for (Integer pos : poses) table.getSelectionModel().select(l.get(pos - 1));
+                            for (DataStore d : l) d.set("_selected", false);
+                            for (DataStore d : table.getSelectionModel().getSelectedItems()) if (d != null) d.set("_selected", true);
+                        }
+                    }
+                });
+
+                Button bdown;
+                h.addComponent(bdown = new Button("Down", VaadinIcons.ARROW_DOWN));
+                bdown.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        ObservableList<DataStore> l = p.getValue();
+                        List<Integer> poses = new ArrayList<>();
+                        int lastSelected = -1;
+                        for (DataStore x : table.getSelectionModel().getSelectedItems()) {
+                            int pos = l.indexOf(x);
+                            if (pos > lastSelected) lastSelected = pos;
+                            poses.add(pos);
+                        }
+                        if (lastSelected >= 0 && lastSelected < l.size() - 1) {
+                            Collections.sort(poses);
+                            Collections.reverse(poses);
+                            for (Integer pos : poses) if (pos < l.size() - 1) {
+                                DataStore x = l.get(pos);
+                                l.remove(x);
+                                l.add(pos + 1, x);
+                            }
+                            for (Integer pos : poses) table.getSelectionModel().select(l.get(pos + 1));
+                            for (DataStore d : l) d.set("_selected", false);
+                            for (DataStore d : table.getSelectionModel().getSelectedItems()) if (d != null) d.set("_selected", true);
+                        }
+                    }
+                });
+
                 vl.addComponent(h);
             }
 
             if (g.isPaginated()) {
-                //todo: añadir paginación!!!
-                /*
-                ComboBox og;
-                og = new ComboBox("Page");
-                og.setTextInputAllowed(false);
-                og.setEmptySelectionAllowed(false);
-                og.(0);
-                og.setValue(0);
-                og.setEnabled(false);
 
+                HorizontalLayout hlpaginado = new HorizontalLayout();
+
+                cs.add(hlpaginado);
+
+                hlpaginado.addComponent(new Label("Page:"));
+
+                Button.ClickListener cl = new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        MateuUI.runInUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.set("_data_currentpageindex", clickEvent.getButton().getData());
+                                System.out.println("_data_currentpageindex=" + view.get("_data_currentpageindex"));
+                                ((ListView)view).search();
+                            }
+                        });
+                    }
+                };
+
+
+
+                Property pi = dataStore.getProperty(field.getId() + "_currentpageindex");
                 Property pc = dataStore.getProperty(field.getId() + "_pagecount");
                 pc.addListener(new ChangeListener() {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
 
-                        og.setEnabled(false);
-                        og.removeAllItems();
+                        hlpaginado.setEnabled(false);
+                        hlpaginado.removeAllComponents();
+
+                        hlpaginado.addComponent(new Label("Page:"));
 
                         try {
+
+                            Integer actual = (Integer) pi.getValue();
+
                             int c = (Integer) newValue;
                             for (int i = 0; i < c; i++) {
-                                og.addItem(new Integer(i));
+                                Button l;
+                                Integer v = new Integer(i);
+                                hlpaginado.addComponent(l = new Button("" + v));
+                                l.addStyleName("linkpagina");
+                                if (actual != null && actual.equals(v)) l.addStyleName("paginaactual");
+                                l.setData(v);
+
+                                l.addClickListener(cl);
                             }
+
                         } catch (Exception e) {
 
                         }
-                        og.setValue(0);
-                        og.setEnabled(true);
+                        hlpaginado.setEnabled(true);
                     }
                 });
 
-                Property pi = dataStore.getProperty(field.getId() + "_currentpageindex");
                 pi.addListener(new ChangeListener() {
                     @Override
                     public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                        if (oldValue != null) og.unselect(oldValue);
+                        Integer nv = (Integer) newValue;
+                        Integer ov = (Integer) oldValue;
 
-                        for (Object o : og.getItemIds()) {
-                            if (o.equals(newValue)) og.select(o);
-                        }
+                        if (ov != null && hlpaginado.getComponentCount() > ov + 1) hlpaginado.getComponent(ov + 1).removeStyleName("paginaactual");
+
+                        if (nv != null && hlpaginado.getComponentCount() > nv + 1) hlpaginado.getComponent(nv + 1).addStyleName("paginaactual");
 
                     }
                 });
-                og.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
-                    @Override
-                    public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
-                        if (og.isEnabled()) {
-                            System.out.println("LANZAMOS BÚSQUEDA POR CAMBIO DE PÁGINA");
-                            MateuUI.runInUIThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ListView) view).search();
-                                }
-                            });
-                        }
-                    }
-                });
 
-
-
-                ((ListView)view).addListViewListener(new ListViewListener() {
-                    @Override
-                    public void onReset() {
-                        MateuUI.runInUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                System.out.println("paginación = 0");
-                                og.setEnabled(false);
-                                og.setValue(0);
-                                System.out.println("paginación == 0 ok");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onSearch() {
-                        MateuUI.runInUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                og.setEnabled(false);
-                                System.out.println("paginación deshabilitada");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onSuccess() {
-                        MateuUI.runInUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                og.setEnabled(true);
-                                System.out.println("paginación habilitada");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught) {
-                        MateuUI.runInUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                og.setEnabled(true);
-                                System.out.println("paginación habilitada");
-                            }
-                        });
-                    }
-                });
-
-                cs.add(og);
-                */
             }
 
             cs.add(loqueanadimos);

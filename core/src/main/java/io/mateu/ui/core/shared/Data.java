@@ -47,6 +47,14 @@ public class Data implements Serializable, DataContainer {
         }
     }
 
+    public Data strip(String... ids) {
+        Data d = new Data(this);
+        for (String id : ids) {
+            d.remover(id);
+        }
+        return d;
+    }
+
     public boolean containsKey(Object k) {
         return data.containsKey(k);
     }
@@ -221,7 +229,9 @@ public class Data implements Serializable, DataContainer {
 
 
     public Object clone() {
-        return new Data(data);
+        Data d = new Data(data);
+        if (d.containsKey("__id")) d.set("__id", "" + UUID.randomUUID());
+        return d;
     }
 
     @Override

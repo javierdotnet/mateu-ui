@@ -17,14 +17,12 @@ package com.vaadin.tests.themes.valo;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.BaseEncoding;
 import com.google.common.io.Files;
 import com.vaadin.annotations.*;
 import com.vaadin.data.HasValue;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.navigator.*;
 import com.vaadin.server.*;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.ContentMode;
@@ -70,6 +68,13 @@ public class ValoThemeUI extends UI {
     private static int fileId = 0;
     private Resource foto;
     private VerticalLayout divSelectorArea;
+
+    public void search(AbstractListView lv, int page) {
+        //miguel: buscar
+        String u = lv.getClass().getName() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());
+        if (page != 0) u += "/" + page;
+        navigator.navigateTo(u);
+    }
 
     @WebServlet(value = "/*", asyncSupported = true, loadOnStartup = 1000)
     //@WebServlet(urlPatterns = {"/admin/*", "/VAADIN/*"}, asyncSupported = true, loadOnStartup = 1000)
@@ -399,6 +404,9 @@ public class ValoThemeUI extends UI {
 
         navigator = new Navigator(this, viewDisplay);
 
+        navigator.addProvider(new MiViewProvider());
+
+
         //navigator.addView("common", CommonParts.class);
 
         String f = Page.getCurrent().getUriFragment();
@@ -417,6 +425,53 @@ public class ValoThemeUI extends UI {
 
             @Override
             public void afterViewChange(ViewChangeEvent event) {
+
+                View v = event.getNewView();
+                if (v instanceof ViewLayout) {
+
+                    if (((ViewLayout) v).getView() instanceof AbstractEditorView) {
+                        Object id = null;
+                        String s = event.getParameters();
+                        if (s != null) {
+                            if (s.startsWith("s")) id = s.substring(1);
+                            else if (s.startsWith("l")) id = Long.parseLong(s.substring(1));
+                            else if (s.startsWith("i")) id = Integer.parseInt(s.substring(1));
+                        }
+                        if (id != null) {
+                            ((AbstractEditorView) ((ViewLayout) v).getView()).setInitialId(id);
+                            ((AbstractEditorView) ((ViewLayout) v).getView()).load();
+                        }
+                    } else if (((ViewLayout) v).getView() instanceof AbstractListView) {
+                        AbstractListView lv = (AbstractListView) ((ViewLayout) v).getView();
+                        Data data = null;
+
+                        int page = 0;
+                        String s = event.getParameters();
+                        if (!Strings.isNullOrEmpty(s)) {
+
+                            String d = s;
+                            if (s.contains("/")) {
+                                d = s.split("/")[0];
+                                page = Integer.parseInt(s.split("/")[1]);
+                            }
+
+                            data = new Data(new String(BaseEncoding.base64().decode(d)));
+                        }
+
+                        if (data != null) {
+                            lv.setData(data);
+                        }
+
+                        if (lv.isSearchOnOpen() || (data != null && data.getPropertyNames().size() > 0)) {
+                            lv.set("_data_currentpageindex", page);
+                            lv.rpc();
+                        }
+
+                    }
+
+                }
+
+
                 for (Iterator<Component> it = menuItemsLayout.iterator(); it
                         .hasNext();) {
                     it.next().removeStyleName("selected");
@@ -460,16 +515,6 @@ public class ValoThemeUI extends UI {
     private static void addView(ValoThemeUI ui, AbstractView view) {
 
         System.out.println("abriendo vista " + view.getClass().getName() + "/" + view.getViewId());
-
-        if (view instanceof AbstractCRUDView) {
-            ((AbstractCRUDView)view).addListener(new CRUDListener() {
-                @Override
-                public void openEditor(AbstractEditorView e) {
-                    MateuUI.openView(e);
-                }
-            });
-        }
-
 
         if (view instanceof AbstractDialog) {
             ViewLayout v = new ViewLayout(view);
@@ -515,6 +560,8 @@ public class ValoThemeUI extends UI {
             ui.addWindow(subWindow);
 
         } else {
+
+            /*
 
             String idv;
             Integer viewNumber = ui.viewsIdsInNavigator.get(view.getViewId());
@@ -591,11 +638,15 @@ public class ValoThemeUI extends UI {
                     }
                 });
 
-            }
+                }
 
-            System.out.println("navigating to " + idv);
+                */
 
-            ui.navigator.navigateTo(idv);
+            String viewId = view.getViewId();
+
+            System.out.println("navigating to " + viewId);
+
+            ui.navigator.navigateTo(viewId);
 
         }
 

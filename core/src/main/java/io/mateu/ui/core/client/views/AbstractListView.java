@@ -30,7 +30,6 @@ public abstract class AbstractListView extends AbstractView implements ListView 
         return true;
     }
 
-
     @Override
     public List<AbstractColumn> getColumns() {
         if (columns == null) {
@@ -127,28 +126,32 @@ public abstract class AbstractListView extends AbstractView implements ListView 
         search();
     }
 
+
     @Override
     public void search() {
         for (ListViewListener l : listViewListeners) l.onSearch();
+    }
 
-                rpc(getForm().getData(), new Callback<Data>() {
+    @Override
+    public void rpc() {
+        rpc(getForm().getData(), new Callback<Data>() {
 
-                    @Override
-                    public void onFailure(Throwable caught) {
+            @Override
+            public void onFailure(Throwable caught) {
 
-                                for (ListViewListener l : listViewListeners) l.onFailure(caught);
-                                super.onFailure(caught);
+                for (ListViewListener l : listViewListeners) l.onFailure(caught);
+                super.onFailure(caught);
 
-                    }
-
-                    @Override
-                    public void onSuccess(Data result) {
-                                for (ListViewListener l : listViewListeners) l.onSuccess();
-                                getForm().setData(result, true);
-
-                     }
-                });
             }
+
+            @Override
+            public void onSuccess(Data result) {
+                for (ListViewListener l : listViewListeners) l.onSuccess();
+                getForm().setData(result, true);
+
+            }
+        });
+    }
 
     @Override
     public List<Data> getSelection() {

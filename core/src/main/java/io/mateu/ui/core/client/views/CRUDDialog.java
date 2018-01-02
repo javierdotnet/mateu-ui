@@ -43,6 +43,11 @@ public abstract class CRUDDialog extends AbstractDialog implements ListView {
     }
 
     @Override
+    public void rpc() {
+        crud.rpc();
+    }
+
+    @Override
     public List<Data> getSelection() {
         return crud.getSelection();
     }

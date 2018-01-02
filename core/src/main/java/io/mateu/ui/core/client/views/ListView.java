@@ -16,6 +16,8 @@ public interface ListView {
 
     void search();
 
+    void rpc();
+
     List<Data> getSelection();
 
     void addListViewListener(ListViewListener listener);

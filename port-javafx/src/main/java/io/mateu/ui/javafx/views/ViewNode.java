@@ -20,6 +20,7 @@ import io.mateu.ui.javafx.views.components.GridNode;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -226,7 +227,7 @@ public class ViewNode extends StackPane {
 
         bp = new BorderPane();
         bp.setBorder(Border.EMPTY);
-        if (!(view instanceof AbstractWizardPageView)) bp.setTop(createToolBar(view.getActions()));
+        if (!(view instanceof AbstractWizardPageView) && !(view instanceof AbstractDialog)) bp.setTop(createToolBar(view.getActions()));
         ScrollPane sp = new ScrollPane(componentsCotainer = new VBox(10));
         sp.setBorder(Border.EMPTY);
         componentsCotainer.setBorder(Border.EMPTY);
@@ -457,6 +458,7 @@ public class ViewNode extends StackPane {
                 @Override
                 public void onSearch() {
                     startWaiting();
+                    lv.rpc();
                 }
 
                 @Override

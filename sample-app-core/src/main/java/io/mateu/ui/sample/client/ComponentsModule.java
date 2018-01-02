@@ -124,6 +124,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new ComplexFormView());
                     }
+                }, (MenuEntry) new AbstractAction("Nested dialogs") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new NestedDialogsView());
+                    }
                 }, (MenuEntry) new AbstractAction("Dialog") {
                     @Override
                     public void run() {

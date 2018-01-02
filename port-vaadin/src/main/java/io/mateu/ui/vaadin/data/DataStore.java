@@ -55,7 +55,7 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         super(new HashMap<String, Object>());
         setData(data);
         set("_selected", false);
-        if (!props.containsKey("__id")) set("__id", UUID.randomUUID());
+        if (!props.containsKey("__id")) set("__id", "" + UUID.randomUUID());
     }
 
 

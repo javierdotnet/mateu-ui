@@ -100,6 +100,9 @@
           <element id="library" level="project" name="Maven: com.github.virtuald:curvesapi:1.04" />
           <element id="library" level="project" name="Maven: org.jdom:jdom2:2.0.6" />
           <element id="library" level="project" name="Maven: com.google.guava:guava:21.0" />
+          <element id="archive" name="sample-app-core-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="sample-app-core" />
+          </element>
         </element>
       </element>
       <element id="directory" name="META-INF">

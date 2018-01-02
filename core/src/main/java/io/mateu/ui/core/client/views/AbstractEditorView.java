@@ -94,7 +94,16 @@ public abstract class AbstractEditorView extends AbstractView {
 
     @Override
     public String getViewId() {
-        return super.getViewId() + "-" + getInitialId();
+        String id = super.getViewId();
+        if (getInitialId() != null) {
+            Object iid = getInitialId();
+            String s = "" + iid;
+            if (iid instanceof String) s = "s" + s;
+            else if (iid instanceof Long) s = "l" + s;
+            else if (iid instanceof Integer) s = "i" + s;
+            id += "/" + s;
+        }
+        return id;
     }
 
     public AbstractEditorView addEditorViewListener(EditorViewListener listener) {

@@ -17,6 +17,7 @@ import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
 import io.mateu.ui.javafx.views.components.table.*;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -31,7 +32,9 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by miguel on 30/12/16.
@@ -43,6 +46,8 @@ public class GridNode extends VBox {
     private TableView<DataStore> tableView;
     FlowPane paginationContainer;
     private Pagination pagination;
+    private TableView<DataStore> t;
+    private boolean listenerSelectionActivo = true;
 
     public GridNode(ViewNode viewNode, GridField field) {
         this.viewNode = viewNode;
@@ -155,17 +160,19 @@ public class GridNode extends VBox {
 
                     if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
                     else {
-                        MateuUI.openView(new AbstractDialog() {
+                        MateuUI.openView(new AbstractAddRecordDialog() {
+
+                            @Override
+                            public void addAndClean(Data data) {
+                                DataStore ds = new DataStore(data);
+                                viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().add(ds);
+                                setData(new Data());
+                                set("__id", "" + UUID.randomUUID());
+                            }
 
                             @Override
                             public AbstractForm createForm() {
                                 return f;
-                            }
-
-                            @Override
-                            public void onOk(Data data) {
-                                DataStore ds = new DataStore(data);
-                                viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().add(ds);
                             }
 
                             @Override
@@ -190,6 +197,74 @@ public class GridNode extends VBox {
                     for (DataStore x : borrar) viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().remove(x);
                 }
             });
+            toolBar.getItems().add(b = new Button("Duplicate"));
+            b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    List<DataStore> l = new ArrayList<>();
+                    for (DataStore d : t.getSelectionModel().getSelectedItems()) {
+                        l.add(new DataStore((Data) d.getData().clone()));
+                    }
+                    viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().addAll(l);
+                }
+            });
+
+            toolBar.getItems().add(b = new Button("Up"));
+            b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    ObservableList<DataStore> l = viewNode.getDataStore().getObservableListProperty(field.getId()).getValue();
+                    List<Integer> poses = new ArrayList<>();
+                    int firstSelected = -1;
+                    for (Integer pos : t.getSelectionModel().getSelectedIndices()) {
+                        if (firstSelected == -1) firstSelected = pos;
+                        poses.add(pos);
+                    }
+                    if (firstSelected > 0) {
+                        t.getSelectionModel().clearSelection();
+                        for (Integer pos : poses) {
+                            DataStore x = l.get(pos);
+                            l.remove(x);
+                            l.add(pos - 1, x);
+                        }
+                        listenerSelectionActivo = false;
+                        for (Integer pos : poses) t.getSelectionModel().select(pos - 1);
+                        for (DataStore d : t.getItems()) d.set("_selected", false);
+                        for (DataStore d : t.getSelectionModel().getSelectedItems()) if (d != null) d.set("_selected", true);
+                        listenerSelectionActivo = true;
+                    }
+                    t.requestFocus();
+                }
+            });
+
+            toolBar.getItems().add(b = new Button("Down"));
+            b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    ObservableList<DataStore> l = viewNode.getDataStore().getObservableListProperty(field.getId()).getValue();
+                    List<Integer> poses = new ArrayList<>();
+                    int lastSelected = -1;
+                    for (Integer pos : t.getSelectionModel().getSelectedIndices()) {
+                        lastSelected = pos;
+                        poses.add(pos);
+                    }
+                    if (lastSelected >= 0 && lastSelected < l.size() - 1) {
+                        t.getSelectionModel().clearSelection();
+                        Collections.reverse(poses);
+                        for (Integer pos : poses) if (pos < l.size() - 1) {
+                            DataStore x = l.get(pos);
+                            l.remove(x);
+                            l.add(pos + 1, x);
+                        }
+                        listenerSelectionActivo = false;
+                        for (Integer pos : poses) t.getSelectionModel().select(pos + 1);
+                        for (DataStore d : t.getItems()) d.set("_selected", false);
+                        for (DataStore d : t.getSelectionModel().getSelectedItems()) if (d != null) d.set("_selected", true);
+                        listenerSelectionActivo = true;
+                    }
+                    t.requestFocus();
+                }
+            });
         }
 
 
@@ -209,7 +284,7 @@ public class GridNode extends VBox {
 
 
     private TableView<DataStore> buildTable(GridField c) {
-        TableView<DataStore> t = new TableView<>();
+        t = new TableView<>();
 
         //t.setBlendMode(BlendMode.GREEN);
 
@@ -229,15 +304,17 @@ public class GridNode extends VBox {
         t.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<DataStore>() {
             @Override
             public void onChanged(Change<? extends DataStore> cambios) {
-                if (c.isUsedToSelect()) {
-                    if (c.isUsedToSelectMultipleValues()) {
-                        viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItems());
+                if (listenerSelectionActivo) {
+                    if (c.isUsedToSelect()) {
+                        if (c.isUsedToSelectMultipleValues()) {
+                            viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItems());
+                        } else {
+                            viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItem());
+                        }
                     } else {
-                        viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItem());
+                        for (DataStore d : t.getItems()) d.set("_selected", false);
+                        for (DataStore d : t.getSelectionModel().getSelectedItems()) if (d != null) d.set("_selected", true);
                     }
-                } else {
-                    for (DataStore d : t.getItems()) d.set("_selected", false);
-                    for (DataStore d : t.getSelectionModel().getSelectedItems()) d.set("_selected", true);
                 }
             }
         });
@@ -389,7 +466,37 @@ public class GridNode extends VBox {
 
                     if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
                     else {
-                        MateuUI.openView(new AbstractDialog() {
+
+                        int posx = 0;
+                        for (DataStore d : t.getItems()) {
+                            if (d.get("__id").equals(data.get("__id"))) {
+                                break;
+                            }
+                            posx++;
+                        }
+
+                        int finalPosx = posx;
+                        MateuUI.openView(new AbstractListEditorDialog() {
+
+                            @Override
+                            public Data getData(int pos) {
+                                return t.getItems().get(pos).getData();
+                            }
+
+                            @Override
+                            public void setData(int pos, Data data) {
+                                t.getItems().get(pos).setData(data);
+                            }
+
+                            @Override
+                            public int getListSize() {
+                                return t.getItems().size();
+                            }
+
+                            @Override
+                            public int getInitialPos() {
+                                return finalPosx;
+                            }
 
                             @Override
                             public Data initializeData() {

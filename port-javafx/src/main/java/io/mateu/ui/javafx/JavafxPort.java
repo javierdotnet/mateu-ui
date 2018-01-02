@@ -4,6 +4,7 @@ import io.mateu.ui.App;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.BaseServiceAsync;
+import io.mateu.ui.core.client.components.fields.DataViewerField;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.app.AppNode;
@@ -11,11 +12,16 @@ import io.mateu.ui.javafx.app.ViewTab;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -48,6 +54,10 @@ public class JavafxPort extends Application {
     private static App app;
     public static Stage mainStage;
     private static JavafxPort _this;
+
+    private static Dialog dialogoActual;
+    private static List<Node> pilaContenidos = new ArrayList<>();
+
 
     public static JavafxPort get() {
         return _this;
@@ -107,6 +117,7 @@ public class JavafxPort extends Application {
                     public void run() {
 
                         if (view instanceof AbstractDialog) {
+
                             Dialog d = new Dialog();
                             d.setTitle(view.getTitle());
                             d.setResizable(true);
@@ -191,31 +202,220 @@ public class JavafxPort extends Application {
                             }
 
 
-                            ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
-                            d.getDialogPane().getButtonTypes().addAll(loginButtonType, CANCEL);
 
-                            final Button btOk = (Button) d.getDialogPane().lookupButton(loginButtonType);
-                            btOk.addEventFilter(
-                                    ActionEvent.ACTION,
-                                    event -> {
-                                        // Check whether some conditions are fulfilled
-                                        List<String> errors = view.getForm().validate();
-                                        if (errors.size() > 0) {
-                                            // The conditions are not fulfilled so we consume the event
-                                            // to prevent the dialog to close
+                            for (AbstractAction a : view.getActions()) {
+                                ButtonType bt = new ButtonType(a.getName(), ButtonBar.ButtonData.OTHER);
+                                d.getDialogPane().getButtonTypes().add(bt);
+                                final Button b = (Button) d.getDialogPane().lookupButton(bt);
+                                b.addEventFilter(
+                                        ActionEvent.ACTION,
+                                        event -> {
+                                            a.run();
                                             event.consume();
-                                            MateuUI.notifyErrors(errors);
+                                        }
+                                );
+                            }
+
+                            if (view instanceof AbstractListEditorDialog) {
+
+                                Property<Integer> pos = new SimpleObjectProperty<>();
+
+                                AbstractListEditorDialog lv = (AbstractListEditorDialog) view;
+
+                                pos.setValue(lv.getInitialPos());
+
+                                    ButtonType bt = new ButtonType("Previous", ButtonBar.ButtonData.BACK_PREVIOUS);
+                                    d.getDialogPane().getButtonTypes().add(bt);
+                                    Button prev = (Button) d.getDialogPane().lookupButton(bt);
+                                    prev.addEventFilter(
+                                            ActionEvent.ACTION,
+                                            event -> {
+                                                // Check whether some conditions are fulfilled
+                                                List<String> errors = view.getForm().validate();
+                                                if (errors.size() > 0) {
+                                                    // The conditions are not fulfilled so we consume the event
+                                                    // to prevent the dialog to close
+                                                    event.consume();
+                                                    MateuUI.notifyErrors(errors);
+                                                } else {
+                                                    if (pos.getValue() > 0) {
+                                                        lv.setData(pos.getValue(), view.getForm().getData());
+                                                        pos.setValue(pos.getValue() - 1);
+                                                        view.getForm().setData(lv.getData(pos.getValue()));
+                                                    }
+                                                    event.consume();
+                                                }
+                                            }
+                                    );
+
+                                    bt = new ButtonType("Next", ButtonBar.ButtonData.NEXT_FORWARD);
+                                    d.getDialogPane().getButtonTypes().add(bt);
+                                    Button next = (Button) d.getDialogPane().lookupButton(bt);
+                                    next.addEventFilter(
+                                            ActionEvent.ACTION,
+                                            event -> {
+                                                // Check whether some conditions are fulfilled
+                                                List<String> errors = view.getForm().validate();
+                                                if (errors.size() > 0) {
+                                                    // The conditions are not fulfilled so we consume the event
+                                                    // to prevent the dialog to close
+                                                    event.consume();
+                                                    MateuUI.notifyErrors(errors);
+                                                } else {
+                                                    if (pos.getValue() < lv.getListSize() - 1) {
+                                                        lv.setData(pos.getValue(), view.getForm().getData());
+                                                        pos.setValue(pos.getValue() + 1);
+                                                        view.getForm().setData(lv.getData(pos.getValue()));
+                                                    }
+                                                    event.consume();
+                                                }
+                                            }
+                                    );
+
+                                pos.addListener(new ChangeListener<Integer>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+                                        if (newValue <= 0) {
+                                            prev.setDisable(true);
+                                        } else {
+                                            prev.setDisable(false);
+                                        }
+                                        if (newValue < lv.getListSize() - 1) {
+                                            next.setDisable(false);
+                                        } else {
+                                            next.setDisable(true);
                                         }
                                     }
-                            );
-
-                            Optional<ButtonType> result = d.showAndWait();
-                            if (result.get() == loginButtonType) { //ButtonType.OK){
-                                // ... user chose OK
-                                 ((AbstractDialog)view).onOk(view.getForm().getData());
-                            } else {
-                                // ... user chose CANCEL or closed the dialog
+                                });
                             }
+
+                            if (view instanceof AbstractAddRecordDialog) {
+
+                                ButtonType dataButtonType = new ButtonType("Data", ButtonBar.ButtonData.OTHER);
+                                ButtonType loginButtonType = new ButtonType("Add and reset", ButtonBar.ButtonData.OK_DONE);
+                                d.getDialogPane().getButtonTypes().addAll(dataButtonType, loginButtonType, CANCEL);
+
+                                final Button btOk = (Button) d.getDialogPane().lookupButton(loginButtonType);
+                                btOk.addEventFilter(
+                                        ActionEvent.ACTION,
+                                        event -> {
+                                            // Check whether some conditions are fulfilled
+                                            List<String> errors = view.getForm().validate();
+                                            if (errors.size() > 0) {
+                                                // The conditions are not fulfilled so we consume the event
+                                                // to prevent the dialog to close
+                                                event.consume();
+                                                MateuUI.notifyErrors(errors);
+                                            } else {
+                                                ((AbstractAddRecordDialog) view).addAndClean(view.getForm().getData().strip("_title"));
+                                                event.consume();
+                                            }
+                                        }
+                                );
+
+                                final Button btData = (Button) d.getDialogPane().lookupButton(dataButtonType);
+                                btData.addEventFilter(
+                                        ActionEvent.ACTION,
+                                        event -> {
+                                            MateuUI.openView(new AbstractDialog() {
+                                                @Override
+                                                public void onOk(Data data) {
+
+                                                }
+
+                                                @Override
+                                                public String getTitle() {
+                                                    return "Data";
+                                                }
+
+                                                @Override
+                                                public Data initializeData() {
+                                                    Data d = super.initializeData();
+                                                    d.set("data", view.getForm().getData());
+                                                    return d;
+                                                }
+
+                                                @Override
+                                                public void build() {
+                                                    add(new DataViewerField("data"));
+                                                }
+                                            });
+                                            event.consume();
+                                        }
+                                );
+
+
+                                Optional<ButtonType> result = d.showAndWait();
+                                if (result.get() == loginButtonType) { //ButtonType.OK){
+                                    // ... user chose OK
+                                } else {
+                                    // ... user chose CANCEL or closed the dialog
+                                }
+
+                            } else {
+
+                                ButtonType dataButtonType = new ButtonType("Data", ButtonBar.ButtonData.OTHER);
+
+                                ButtonType loginButtonType = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+                                d.getDialogPane().getButtonTypes().addAll(dataButtonType, loginButtonType, CANCEL);
+
+                                final Button btOk = (Button) d.getDialogPane().lookupButton(loginButtonType);
+                                btOk.addEventFilter(
+                                        ActionEvent.ACTION,
+                                        event -> {
+                                            // Check whether some conditions are fulfilled
+                                            List<String> errors = view.getForm().validate();
+                                            if (errors.size() > 0) {
+                                                // The conditions are not fulfilled so we consume the event
+                                                // to prevent the dialog to close
+                                                event.consume();
+                                                MateuUI.notifyErrors(errors);
+                                            }
+                                        }
+                                );
+
+                                final Button btData = (Button) d.getDialogPane().lookupButton(dataButtonType);
+                                btData.addEventFilter(
+                                        ActionEvent.ACTION,
+                                        event -> {
+                                            MateuUI.openView(new AbstractDialog() {
+                                                @Override
+                                                public void onOk(Data data) {
+
+                                                }
+
+                                                @Override
+                                                public String getTitle() {
+                                                    return "Data";
+                                                }
+
+                                                @Override
+                                                public Data initializeData() {
+                                                    Data d = super.initializeData();
+                                                    d.set("data", view.getForm().getData());
+                                                    return d;
+                                                }
+
+                                                @Override
+                                                public void build() {
+                                                    add(new DataViewerField("data"));
+                                                }
+                                            });
+                                            event.consume();
+                                        }
+                                );
+
+
+                                Optional<ButtonType> result = d.showAndWait();
+                                if (result.get() == loginButtonType) { //ButtonType.OK){
+                                    // ... user chose OK
+                                    ((AbstractDialog)view).onOk(view.getForm().getData());
+                                } else {
+                                    // ... user chose CANCEL or closed the dialog
+                                }
+
+                            }
+
                         } else {
                             if (view instanceof AbstractCRUDView) {
                                 ((AbstractCRUDView)view).addListener(new CRUDListener() {
@@ -491,6 +691,7 @@ public class JavafxPort extends Application {
         }
 
     }
+
 
     public static void showDialog(Dialog<?> dlg) {
         Window owner = mainStage;

@@ -456,5 +456,19 @@
     text-decoration: underline;
   }
 
+  .linkpagina {
+    border:none;
+    background: none;
+    background-image: none;
+    height: inherit;
+    padding: 0px;
+  }
+
+  .paginaactual {
+    font-weight: bold;
+    text-decoration: underline;
+    color: red;
+  }
+
 }
 

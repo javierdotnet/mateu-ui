@@ -1,5 +1,6 @@
 package io.mateu.ui.core.client.views;
 
+import com.google.common.io.BaseEncoding;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.data.ChangeListener;
@@ -80,7 +81,14 @@ public abstract class AbstractView {
     }
 
     public String getViewId() {
-        return getClass().getCanonicalName();
+        String i = getViewIdBase();
+        Data d = getData();
+        if (d != null && !d.getPropertyNames().isEmpty()) i += "/" + BaseEncoding.base64().encode(getData().toString().getBytes());
+        return i;
+    }
+
+    public String getViewIdBase() {
+        return getClass().getName();
     }
 
     public Data initializeData() {

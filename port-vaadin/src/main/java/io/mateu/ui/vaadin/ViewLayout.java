@@ -293,6 +293,8 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
+            buildToolBar();
+
         }
 
 
@@ -304,7 +306,6 @@ public class ViewLayout extends VerticalLayout implements View {
         //setWidth("800px");
         //addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        buildToolBar();
 
         if (view instanceof AbstractListView) {
             add(this, new GridField("_data", ((AbstractListView) view).getColumns(), true).setExpandable(false).setFullWidth(true), false);
@@ -612,7 +613,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             GridField g = (GridField) field;
 
-            Grid<DataStore> table = new Grid<>((g.getLabel() != null) ? g.getLabel().getText() : null);
+            Grid<DataStore> table = new Grid<>(getLabelText(g));
 
             String pname = g.getId();
 
@@ -755,6 +756,8 @@ public class ViewLayout extends VerticalLayout implements View {
             if (g.isExpandable()) {
                 Grid.Column colx;
 
+
+
                 colx = table.getColumn("_edit").setCaption("Edit").setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
                     @Override
                     public void click(ClickableRenderer.RendererClickEvent e) {
@@ -762,7 +765,31 @@ public class ViewLayout extends VerticalLayout implements View {
 
                         if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
                         else {
-                            MateuUI.openView(new AbstractDialog() {
+                            MateuUI.openView(new AbstractListEditorDialog() {
+
+                                DataStore ds = (DataStore) e.getItem();
+
+                                @Override
+                                public Data getData(int pos) {
+                                    ds = p.getValue().get(pos);
+                                    return ds.getData();
+                                }
+
+                                @Override
+                                public void setData(int pos, Data data) {
+                                    p.getValue().get(pos).setData(data);
+                                    ldp.refreshAll();
+                                }
+
+                                @Override
+                                public int getListSize() {
+                                    return p.getValue().size();
+                                }
+
+                                @Override
+                                public int getInitialPos() {
+                                    return p.getValue().indexOf(e.getItem());
+                                }
 
                                 @Override
                                 public Data initializeData() {
@@ -770,9 +797,19 @@ public class ViewLayout extends VerticalLayout implements View {
                                 }
 
                                 @Override
+                                public String getOkText() {
+                                    return "Save";
+                                }
+
+                                @Override
                                 public void onOk(Data data) {
-                                    ((DataStore) e.getItem()).setData(data);
+                                    ds.setData(data);
                                     ldp.refreshAll();
+                                }
+
+                                @Override
+                                public boolean isCloseOnOk() {
+                                    return true;
                                 }
 
                                 @Override
@@ -841,10 +878,24 @@ public class ViewLayout extends VerticalLayout implements View {
                         if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
                         else {
                             MateuUI.openView(new AbstractDialog() {
+
+                                @Override
+                                public boolean isCloseOnOk() {
+                                    return false;
+                                }
+
+                                @Override
+                                public String getOkText() {
+                                    return "Add";
+                                }
+
                                 @Override
                                 public void onOk(Data data) {
                                     DataStore ds = new DataStore(data);
+                                    ds.set("__id", "" + UUID.randomUUID());
                                     p.getValue().add(ds); // añadimos solo al modelo, que luego añadirá al grid al dispararse el evento onchange
+                                    setData(initializeData());
+                                    MateuUI.notifyInfo("Record added");
                                 }
 
                                 @Override
@@ -1050,7 +1101,7 @@ public class ViewLayout extends VerticalLayout implements View {
             List<Pair> valores = new ArrayList<>();
 
             ComboBox<Pair> og;
-            og = new ComboBox<>((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            og = new ComboBox<>(getLabelText(field));
             og.addStyleName("l");
             if (firstField == null) firstField = og;
 
@@ -1087,7 +1138,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof CalendarField || field instanceof io.mateu.ui.core.client.components.fields.DateField) {
 
             DateField cb;
-            cb = new DateField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            cb = new DateField(getLabelText(field));
             cb.setDateFormat("dd/MM/yyyy");
             if (firstField == null) firstField = cb;
 
@@ -1113,7 +1164,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof DateTimeField || field instanceof GMTDateField) {
 
             com.vaadin.ui.DateTimeField cb;
-            cb = new com.vaadin.ui.DateTimeField((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            cb = new com.vaadin.ui.DateTimeField(getLabelText(field));
             cb.setResolution(DateTimeResolution.MINUTE);
             cb.setDateFormat("dd/MM/yyyy HH:mm");
             if (firstField == null) firstField = cb;
@@ -1165,7 +1216,7 @@ public class ViewLayout extends VerticalLayout implements View {
             });
 
             HorizontalLayout h = new HorizontalLayout();
-            h.setCaption((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            h.setCaption(getLabelText(field));
             h.addComponent(cb);
             cs.add(h);
 
@@ -1174,7 +1225,7 @@ public class ViewLayout extends VerticalLayout implements View {
             CheckBoxListField rf = (CheckBoxListField) field;
 
             CheckBoxGroup og;
-            og = new CheckBoxGroup((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            og = new CheckBoxGroup(getLabelText(field));
             if (firstField == null) firstField = og;
 
             List<Pair> valores = new ArrayList<>();
@@ -1218,7 +1269,7 @@ public class ViewLayout extends VerticalLayout implements View {
             String[] labels = {"M", "T", "W", "T", "F", "S", "S"};
 
             CheckBoxGroup og;
-            og = new CheckBoxGroup((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            og = new CheckBoxGroup(getLabelText(field));
             if (firstField == null) firstField = og;
 
             //todo: acabar!!!!
@@ -1284,7 +1335,7 @@ public class ViewLayout extends VerticalLayout implements View {
             List<Pair> valores = new ArrayList<>();
 
             ComboBox<Pair> og;
-            og = new ComboBox<>((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            og = new ComboBox<>(getLabelText(field));
             og.addStyleName("l");
             if (firstField == null) firstField = og;
 
@@ -1323,7 +1374,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof DoubleField) {
 
             TextField intf;
-            intf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            intf = new TextField(getLabelText(field));
             if (firstField == null) firstField = (AbstractComponent) intf;
             intf.setValueChangeMode(ValueChangeMode.BLUR);
             intf.addStyleName("camponumerico");
@@ -1428,7 +1479,7 @@ public class ViewLayout extends VerticalLayout implements View {
             h.addComponent(upload);
             cs.add(h);
 
-            h.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText():null);
+            h.setCaption(getLabelText(field));
 
             // Open the URL in a new window/tab
             l.setTargetName("_blank");
@@ -1445,7 +1496,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof IntegerField) {
 
             TextField intf;
-            intf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            intf = new TextField(getLabelText(field));
             if (firstField == null) firstField = (AbstractComponent) intf;
             intf.setValueChangeMode(ValueChangeMode.BLUR);
             intf.addStyleName("camponumerico");
@@ -1498,7 +1549,7 @@ public class ViewLayout extends VerticalLayout implements View {
             ListSelectionField rf = (ListSelectionField) field;
 
             TwinColSelect tcs ;
-            tcs = new TwinColSelect((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            tcs = new TwinColSelect(getLabelText(field));
             tcs.setLeftColumnCaption("All");
             tcs.setRightColumnCaption("Selected");
             //tcs.setNewItemsAllowed(true);
@@ -1543,7 +1594,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof LongField) {
 
             TextField intf;
-            intf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            intf = new TextField(getLabelText(field));
             if (firstField == null) firstField = (AbstractComponent) intf;
             intf.setValueChangeMode(ValueChangeMode.BLUR);
             intf.addStyleName("camponumerico");
@@ -1579,7 +1630,7 @@ public class ViewLayout extends VerticalLayout implements View {
             RadioButtonField rf = (RadioButtonField) field;
 
             RadioButtonGroup<Pair> og =
-                    new RadioButtonGroup<>((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+                    new RadioButtonGroup<>(getLabelText(field));
 
             if (firstField == null) firstField = og;
 
@@ -1608,7 +1659,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
         } else if (field instanceof RichTextField)  {
 
-            RichTextArea rta = new RichTextArea((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            RichTextArea rta = new RichTextArea(getLabelText(field));
             if (firstField == null) firstField = rta;
             rta.addStyleName("l");
             if (v != null) rta.setValue("" + v);
@@ -1636,7 +1687,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             if (inToolbar) {
 
-                TextField tf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+                TextField tf = new TextField(getLabelText(field));
                 tf.addStyleName("l");
                 if (firstField == null) firstField = tf;
 
@@ -1666,7 +1717,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 cs.add(hl);
 
                 TextField tf;
-                hl.addComponent(tf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null));
+                hl.addComponent(tf = new TextField(getLabelText(field)));
                 if (firstField == null) firstField = tf;
 
                 Property p = dataStore.getProperty(field.getId());
@@ -1731,7 +1782,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
         } else if (field instanceof ShowTextField) {
             Label tf = new Label();
-            tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            tf.setCaption(getLabelText(field));
             tf.addStyleName("l");
             tf.setContentMode(ContentMode.HTML);
             if (v != null) tf.setValue("" + v);
@@ -1749,7 +1800,7 @@ public class ViewLayout extends VerticalLayout implements View {
             cs.add(tf);
         } else if (field instanceof ShowEntityField) {
             Label tf = new Label();
-            tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            tf.setCaption(getLabelText(field));
             tf.addStyleName("l");
             tf.setContentMode(ContentMode.HTML);
             if (v != null) tf.setValue("" + v);
@@ -1768,7 +1819,7 @@ public class ViewLayout extends VerticalLayout implements View {
             cs.add(tf);
         } else if (field instanceof HtmlField) {
             Label tf = new Label();
-            tf.setCaption((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            tf.setCaption(getLabelText(field));
             tf.addStyleName("l");
             tf.setContentMode(ContentMode.HTML);
             if (v != null) tf.setValue("" + v);
@@ -1789,7 +1840,7 @@ public class ViewLayout extends VerticalLayout implements View {
             List<Pair> valores = new ArrayList<>();
 
             ComboBox<Pair> og;
-            og = new ComboBox<>((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            og = new ComboBox<>(getLabelText(field));
             og.addStyleName("l");
             if (firstField == null) firstField = og;
 
@@ -1858,7 +1909,7 @@ public class ViewLayout extends VerticalLayout implements View {
             List<Pair> valores = new ArrayList<>();
 
             ComboBox<Pair> og;
-            og = new ComboBox<>((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            og = new ComboBox<>(getLabelText(field));
             og.addStyleName("l");
             if (firstField == null) firstField = og;
 
@@ -1926,7 +1977,7 @@ public class ViewLayout extends VerticalLayout implements View {
             SqlListSelectionField rf = (SqlListSelectionField) field;
 
             TwinColSelect tcs ;
-            tcs = new TwinColSelect((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            tcs = new TwinColSelect(getLabelText(field));
             tcs.setLeftColumnCaption("All");
             tcs.setRightColumnCaption("Selected");
             //tcs.setNewItemsAllowed(true);
@@ -1989,7 +2040,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof TextAreaField)  {
 
 
-            TextArea ta = new TextArea((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            TextArea ta = new TextArea(getLabelText(field));
             ta.addStyleName("l");
             if (firstField == null) firstField = ta;
 
@@ -2017,7 +2068,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof io.mateu.ui.core.client.components.fields.TextField) {
 
 
-            TextField tf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            TextField tf = new TextField(getLabelText(field));
             tf.addStyleName("l");
             if (firstField == null) firstField = tf;
 
@@ -2045,7 +2096,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
         } else if (field instanceof WebField) {
             BrowserFrame b;
-            b = new BrowserFrame((field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null);
+            b = new BrowserFrame(getLabelText(field));
             b.setWidth("600px");
             b.setHeight("400px");
 
@@ -2066,7 +2117,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else {
 
 
-            TextField tf = new TextField((field.getLabel() != null && field.getLabel().getText() != null) ? field.getLabel().getText() : null);
+            TextField tf = new TextField(getLabelText(field));
             if (firstField == null) firstField = tf;
 
             if (v != null) tf.setValue("" + v);
@@ -2114,6 +2165,12 @@ public class ViewLayout extends VerticalLayout implements View {
 
 
         return cs;
+    }
+
+    private String getLabelText(AbstractField field) {
+        String l = (field.getLabel() != null && field.getLabel().getText() != null)?field.getLabel().getText():null;
+        if (!Strings.isNullOrEmpty(field.getHelp())) l += " (?)";
+        return l;
     }
 
     @Override

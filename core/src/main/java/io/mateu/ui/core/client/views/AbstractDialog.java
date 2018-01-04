@@ -9,4 +9,12 @@ public abstract class AbstractDialog extends AbstractView {
 
     public abstract void onOk(Data data);
 
+    public String getOkText() {
+        return "Ok";
+    }
+
+    public boolean isCloseOnOk() {
+        return true;
+    }
+
 }

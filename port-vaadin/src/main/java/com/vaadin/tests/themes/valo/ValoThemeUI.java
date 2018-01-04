@@ -22,6 +22,7 @@ import com.google.common.io.Files;
 import com.vaadin.annotations.*;
 import com.vaadin.data.HasValue;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.*;
 import com.vaadin.server.*;
 import com.vaadin.shared.Position;
@@ -37,8 +38,13 @@ import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.*;
+import io.mateu.ui.core.shared.ViewProvider;
 import io.mateu.ui.vaadin.HomeView;
 import io.mateu.ui.vaadin.ViewLayout;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -46,6 +52,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -71,229 +78,9 @@ public class ValoThemeUI extends UI {
 
     public void search(AbstractListView lv, int page) {
         //miguel: buscar
-        String u = lv.getClass().getName() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());
+        String u = lv.getViewIdBase() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());
         if (page != 0) u += "/" + page;
         navigator.navigateTo(u);
-    }
-
-    @WebServlet(value = "/*", asyncSupported = true, loadOnStartup = 1000)
-    //@WebServlet(urlPatterns = {"/admin/*", "/VAADIN/*"}, asyncSupported = true, loadOnStartup = 1000)
-    @VaadinServletConfiguration(productionMode = false, ui = ValoThemeUI.class)
-    public static class Servlet extends VaadinServlet {
-
-
-
-        @Override
-        protected void servletInitialized() throws ServletException {
-
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-            System.out.println("***********************************************");
-
-            super.servletInitialized();
-
-            getService().addSessionInitListener(
-                    new ValoThemeSessionInitListener());
-
-            MateuUI.setClientSideHelper(new ClientSideHelper() {
-
-                public BaseServiceAsync baseServiceImpl = new BaseServiceClientSideImpl();
-
-                @Override
-                public void openView(AbstractView view) {
-                    System.out.println("openView(" + view.getClass().getName() + ")");
-                    addView((ValoThemeUI) UI.getCurrent(), view);
-                    //views.addView(view);
-                }
-
-                @Override
-                public Data getNewDataContainer() {
-                    return new Data();
-                }
-
-                @Override
-                public <T> T create(Class<?> serviceInterface) {
-                    try {
-                        return (T) Class.forName(serviceInterface.getName().replaceAll("\\.shared\\.", ".client.") + "ClientSideImpl").newInstance();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-
-                @Override
-                public void alert(String msg) {
-                    Notification.show("Alert", msg, Notification.Type.WARNING_MESSAGE);
-                }
-
-                @Override
-                public void run(Runnable runnable) {
-                    runnable.run();
-                    //new Thread(runnable).start();
-                }
-
-                @Override
-                public void runInUIThread(Runnable runnable) {
-
-                    UI.getCurrent().access(runnable);
-
-                }
-
-                @Override
-                public BaseServiceAsync getBaseService() {
-                    return baseServiceImpl;
-                }
-
-                @Override
-                public void run(Runnable runnable, Runnable onerror) {
-                    try {
-                        //new Thread(runnable).start();
-                        runnable.run();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        onerror.run();
-                    }
-                }
-
-                @Override
-                public void openView(AbstractView parentView, AbstractView view) {
-                }
-
-                @Override
-                public void notifyErrors(List<String> msgs) {
-                    StringBuffer sb = new StringBuffer();
-                    boolean primero = true;
-                    for (String s : msgs) {
-                        if (primero) primero = false;
-                        else sb.append("\n");
-                        sb.append(s);
-                    }
-                    Notification n = new Notification("Error", sb.toString(), Notification.Type.ERROR_MESSAGE);
-                    n.setPosition(Position.MIDDLE_CENTER);
-                    n.setDelayMsec(1000);
-                    n.show(Page.getCurrent());
-                }
-
-                @Override
-                public AbstractApplication getApp() {
-                    return ((ValoThemeUI)UI.getCurrent()).getApp();
-                }
-
-                @Override
-                public void notifyError(String msg) {
-                    Notification n = new Notification("Info", msg, Notification.Type.ERROR_MESSAGE);
-                    n.setPosition(Position.MIDDLE_CENTER);
-                    n.setDelayMsec(1000);
-                    n.show(Page.getCurrent());
-                }
-
-                @Override
-                public void notifyInfo(String msg) {
-                    Notification n = new Notification("Info", msg, Notification.Type.WARNING_MESSAGE);
-                    n.setPosition(Position.MIDDLE_CENTER);
-                    n.setDelayMsec(1000);
-                    n.show(Page.getCurrent());
-                }
-
-                @Override
-                public void notifyDone(String msg) {
-                    Notification n = new Notification("Done", msg, Notification.Type.WARNING_MESSAGE);
-                    n.setPosition(Position.MIDDLE_CENTER);
-                    n.setStyleName("warning success");
-                    n.setDelayMsec(1000);
-                    n.show(Page.getCurrent());
-                }
-
-                @Override
-                public void open(URL url) {
-                    System.out.println("open(" + url + ")");
-                    Page.getCurrent().open(url.toString(), url.toString());
-                }
-
-                @Override
-                public void confirm(String text, Runnable onOk) {
-
-                    // Create a sub-window and set the content
-                    Window subWindow = new Window("Please confirm");
-
-                    VerticalLayout v = new VerticalLayout();
-                    v.addComponent(new Label(text));
-
-                    HorizontalLayout footer = new HorizontalLayout();
-                    footer.setWidth("100%");
-                    footer.setSpacing(true);
-                    footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-
-                    Label footerText = new Label("");
-                    footerText.setSizeUndefined();
-
-                    Button ok = new Button("Ok", e -> {
-                        subWindow.close();
-                        onOk.run();
-                    });
-                    ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-                    ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-
-                    Button cancel = new Button("Cancel");
-
-                    footer.addComponents(footerText, ok); //, cancel);
-                    footer.setExpandRatio(footerText, 1);
-
-                    v.addComponent(footer);
-
-                    subWindow.setContent(v);
-
-                    // Center it in the browser window
-                    subWindow.center();
-
-                    subWindow.setModal(true);
-
-                    // Open it in the UI
-                    UI.getCurrent().addWindow(subWindow);
-
-                }
-
-                @Override
-                public void open(AbstractWizard wizard) {
-
-                    // Create a sub-window and set the content
-                    WizardWindow subWindow = new WizardWindow(wizard);
-
-                    // Open it in the UI
-                    UI.getCurrent().addWindow(subWindow);
-                }
-            });
-
-
-            if (false && System.getProperty("appname", "Mateu ERP").toLowerCase().contains("quoon")) getService().addSessionInitListener((SessionInitListener) event -> event.getSession().addBootstrapListener(new BootstrapListener() {
-
-                @Override
-                public void modifyBootstrapFragment(
-                        BootstrapFragmentResponse response) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void modifyBootstrapPage(BootstrapPageResponse response) {
-                    response.getDocument().head().
-                            getElementsByAttributeValue("rel", "shortcut icon").attr("href", "/com/vaadin/tests/themes/tests-valo-reindeer/Q-sola-favicon.png");
-                    response.getDocument().head()
-                            .getElementsByAttributeValue("rel", "icon")
-                            .attr("href", "/com/vaadin/tests/themes/tests-valo-reindeer/Q-sola-favicon.png");
-                }}
-            ));
-        }
     }
 
     private TestIcon testIcon = new TestIcon(100);
@@ -312,6 +99,11 @@ public class ValoThemeUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
+
+        TooltipConfiguration ttc = super.getTooltipConfiguration();
+        ttc.setOpenDelay(200);
+        ttc.setQuickOpenDelay(300);
+        ttc.setQuickOpenTimeout(300);
 
         if (getApp() == null) {
             Iterator<App> apps = ServiceLoader.load(App.class).iterator();
@@ -404,7 +196,19 @@ public class ValoThemeUI extends UI {
 
         navigator = new Navigator(this, viewDisplay);
 
-        navigator.addProvider(new MiViewProvider());
+        ServiceLoader<ViewProvider> sl = ServiceLoader.load(ViewProvider.class);
+
+        for (ViewProvider p : sl) navigator.addProvider(new com.vaadin.navigator.ViewProvider() {
+            @Override
+            public String getViewName(String viewNameAndParameters) {
+                return p.getViewName(viewNameAndParameters);
+            }
+
+            @Override
+            public View getView(String viewName) {
+                return getVaadinView(p.getView(viewName));
+            }
+        });
 
 
         //navigator.addView("common", CommonParts.class);
@@ -428,6 +232,13 @@ public class ValoThemeUI extends UI {
 
                 View v = event.getNewView();
                 if (v instanceof ViewLayout) {
+
+                    ((ViewLayout) v).getView().addListener(new ViewListener() {
+                        @Override
+                        public void onClose() {
+                            UI.getCurrent().getPage().getJavaScript().execute("history.back()");
+                        }
+                    });
 
                     if (((ViewLayout) v).getView() instanceof AbstractEditorView) {
                         Object id = null;
@@ -502,100 +313,40 @@ public class ValoThemeUI extends UI {
         if (!hayPartePublica) openLoginDialog();
     }
 
-    private void setApp(AbstractApplication app) {
-        app.setPort(AbstractApplication.PORT_VAADIN);
-        VaadinSession.getCurrent().setAttribute("app", app);
-    }
+    public View getVaadinView(AbstractView view) {
+        System.out.println("getVaadinView(" + ((view != null)?view.getClass().getName():"null") + ")");
 
-    public AbstractApplication getApp() {
-        return (AbstractApplication) VaadinSession.getCurrent().getAttribute("app");
-    }
+        ViewLayout v = null;
+        try {
 
+            if (view != null) {
 
-    private static void addView(ValoThemeUI ui, AbstractView view) {
+                v = new ViewLayout(view);
 
-        System.out.println("abriendo vista " + view.getClass().getName() + "/" + view.getViewId());
-
-        if (view instanceof AbstractDialog) {
-            ViewLayout v = new ViewLayout(view);
-
-            // Create a sub-window and set the content
-            Window subWindow = new Window(((AbstractDialog)view).getTitle());
-
-            HorizontalLayout footer = new HorizontalLayout();
-            footer.setWidth("100%");
-            footer.setSpacing(true);
-            footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-
-            Label footerText = new Label("");
-            footerText.setSizeUndefined();
-
-            Button ok = new Button("Ok", e -> {
-                List<String> errors = v.getView().getForm().validate();
-                if (errors.size() > 0) {
-                    MateuUI.notifyErrors(errors);
-                } else {
-                    subWindow.close();
-                    ((AbstractDialog)view).onOk(v.getView().getForm().getData());
+                if (view instanceof AbstractCRUDView) {
+                    ((AbstractCRUDView)view).addListener(new CRUDListener() {
+                        @Override
+                        public void openEditor(AbstractEditorView e) {
+                            MateuUI.openView(e);
+                        }
+                    });
                 }
-            });
-            ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-            ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-
-            Button cancel = new Button("Cancel");
-
-            footer.addComponents(footerText, ok); //, cancel);
-            footer.setExpandRatio(footerText, 1);
-
-            v.addComponent(footer);
-
-            subWindow.setContent(v);
-
-            // Center it in the browser window
-            subWindow.center();
-
-            subWindow.setModal(true);
-
-            // Open it in the UI
-            ui.addWindow(subWindow);
-
-        } else {
-
-            /*
-
-            String idv;
-            Integer viewNumber = ui.viewsIdsInNavigator.get(view.getViewId());
-
-            if (viewNumber != null && viewNumber >= ui.contViews - 20) {
-
-                ui.viewsIdsInNavigator.remove(view.getViewId());
-                ui.navigator.removeView("view_" + viewNumber);
-
-            }
-
-
-            {
-
-                //setText(view.getTitle());
-                ViewLayout v = new ViewLayout(view);
-                //trueViewDisplay.showView(v);
-
-                if (ui.contViews > 20) {
-                    ui.navigator.removeView("view_" + (ui.contViews - 20));
-                }
-
 
                 if (view instanceof AbstractEditorView) {
+
                     view.getForm().addDataSetterListener(new DataSetterListener() {
                         @Override
                         public void setted(Data newData) {
                             if (newData.get("_id") != null) {
+                                /*
                                 if (!newData.get("_id").equals(((AbstractEditorView) view).getInitialId())) {
                                     String oldK = view.getViewId();
+
                                     Integer oldContView = ui.viewsIdsInNavigator.remove(oldK);
                                     ((AbstractEditorView) view).setInitialId(newData.get("_id"));
                                     ui.viewsIdsInNavigator.put(view.getViewId(), oldContView);
                                 }
+                                    */
                             }
                         }
 
@@ -611,36 +362,149 @@ public class ValoThemeUI extends UI {
                     });
                 }
 
-                if (view instanceof AbstractListView && ((AbstractListView) view).isSearchOnOpen()) {
-                    ((AbstractListView)view).search();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return v;
+    }
+
+
+    private void setApp(AbstractApplication app) {
+        app.setPort(AbstractApplication.PORT_VAADIN);
+        VaadinSession.getCurrent().setAttribute("app", app);
+    }
+
+    public AbstractApplication getApp() {
+        return (AbstractApplication) VaadinSession.getCurrent().getAttribute("app");
+    }
+
+
+    public static void addView(ValoThemeUI ui, AbstractView view) {
+
+        System.out.println("abriendo vista " + view.getClass().getName() + "::" + view.getViewId());
+
+        if (view instanceof AbstractDialog) {
+            ViewLayout v = new ViewLayout(view);
+
+            AbstractDialog d = (AbstractDialog) view;
+
+            // Create a sub-window and set the content
+            Window subWindow = new Window(((AbstractDialog)view).getTitle());
+
+            HorizontalLayout footer = new HorizontalLayout();
+            footer.setWidth("100%");
+            footer.setSpacing(true);
+            footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+
+            Label footerText = new Label("");
+            footerText.setSizeUndefined();
+
+            Button ok = new Button(d.getOkText(), e -> {
+                List<String> errors = v.getView().getForm().validate();
+                if (errors.size() > 0) {
+                    MateuUI.notifyErrors(errors);
+                } else {
+                    if (d.isCloseOnOk()) subWindow.close();
+                    ((AbstractDialog)view).onOk(v.getView().getForm().getData());
                 }
+            });
+            ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+            ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
+            footer.addComponents(footerText);
 
-                ui.viewsIdsInNavigator.put(view.getViewId(), ui.contViews);
-                ui.navigator.addView(idv = "view_" + ui.contViews++, v);
-
-                View oldv = ui.navigator.getCurrentView();
-                System.out.println("current view = " + ui.navigator.getCurrentView());
-                String oldvid = null;
-                if (oldv != null && oldv instanceof ViewLayout) {
-                    oldvid = ((ViewLayout)oldv).getView().getViewId();
+            for (AbstractAction a : d.getActions()) {
+                Button b = new Button(a.getName(), e -> {
+                    a.run();
+                });
+                //b.addStyleName(ValoTheme.BUTTON_);
+                //b.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+                if ("previous".equalsIgnoreCase(a.getName())) {
+                    b.setIcon(VaadinIcons.ANGLE_LEFT);
+                } else if ("next".equalsIgnoreCase(a.getName())) {
+                    b.setIcon(VaadinIcons.ANGLE_RIGHT);
                 }
-                System.out.println("oldvid = " + oldvid);
+                footer.addComponent(b);
+            }
 
-                String finalOldvid = oldvid;
-                view.addListener(new ViewListener() {
+            if (d instanceof AbstractListEditorDialog) {
+                AbstractListEditorDialog lv = (AbstractListEditorDialog) d;
+
+                Property<Integer> pos = new SimpleObjectProperty<>();
+
+                pos.setValue(lv.getInitialPos());
+
+
+                Button prev = new Button("Previous", e -> {
+                    List<String> errors = v.getView().getForm().validate();
+                    if (errors.size() > 0) {
+                        MateuUI.notifyErrors(errors);
+                    } else {
+
+                        if (pos.getValue() > 0) {
+                            lv.setData(pos.getValue(), view.getForm().getData());
+                            pos.setValue(pos.getValue() - 1);
+                            view.getForm().setData(lv.getData(pos.getValue()));
+                        }
+
+                    }
+                });
+                prev.setIcon(VaadinIcons.ANGLE_LEFT);
+                footer.addComponent(prev);
+
+                Button next = new Button("Next", e -> {
+                    List<String> errors = v.getView().getForm().validate();
+                    if (errors.size() > 0) {
+                        MateuUI.notifyErrors(errors);
+                    } else {
+
+                        if (pos.getValue() < lv.getListSize() - 1) {
+                            lv.setData(pos.getValue(), view.getForm().getData());
+                            pos.setValue(pos.getValue() + 1);
+                            view.getForm().setData(lv.getData(pos.getValue()));
+                        }
+
+                    }
+                });
+                next.setIcon(VaadinIcons.ANGLE_RIGHT);
+                footer.addComponent(next);
+
+                pos.addListener(new ChangeListener<Integer>() {
                     @Override
-                    public void onClose() {
-                        ui.viewsIdsInNavigator.remove(view.getViewId());
-                        ui.navigator.removeView(idv);
-                        if (finalOldvid != null) ui.navigator.navigateTo("view_" + ui.viewsIdsInNavigator.get(finalOldvid));
-                        else ui.navigator.navigateTo("");
+                    public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+                        if (newValue <= 0) {
+                            prev.setEnabled(false);
+                        } else {
+                            prev.setEnabled(true);
+                        }
+                        if (newValue < lv.getListSize() - 1) {
+                            next.setEnabled(true);
+                        } else {
+                            next.setEnabled(false);
+                        }
                     }
                 });
 
-                }
+            }
 
-                */
+            footer.addComponents(ok); //, cancel);
+            footer.setExpandRatio(footerText, 1);
+
+            v.addComponent(footer);
+
+            subWindow.setContent(v);
+
+            // Center it in the browser window
+            subWindow.center();
+
+            subWindow.setModal(true);
+
+            // Open it in the UI
+            ui.addWindow(subWindow);
+
+        } else {
 
             String viewId = view.getViewId();
 

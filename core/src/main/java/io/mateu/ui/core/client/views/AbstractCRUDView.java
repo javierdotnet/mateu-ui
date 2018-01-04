@@ -88,6 +88,14 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         }
     }
 
+    public void open(Object id) {
+        try {
+            openEditor(getNewEditorView().setInitialId(id));
+        } catch (Throwable e) {
+            MateuUI.notifyError(e.getMessage());
+        }
+    }
+
     public abstract List<AbstractColumn> createExtraColumns();
 
     public abstract void delete(List<Data> selection, AsyncCallback<Void> callback);

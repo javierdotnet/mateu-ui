@@ -88,7 +88,7 @@ public abstract class AbstractView {
     }
 
     public String getViewIdBase() {
-        return getClass().getName();
+        return "mui.." + getClass().getName();
     }
 
     public Data initializeData() {

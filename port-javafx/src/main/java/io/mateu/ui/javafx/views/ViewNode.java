@@ -43,6 +43,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.HTMLEditor;
@@ -729,8 +730,12 @@ public class ViewNode extends StackPane {
             if (showLabels) {
                 if (((AbstractField) c).getLabel() != null) {
 
+                    String lt = ((AbstractField) c).getLabel().getText();
+
+                    if (!Strings.isNullOrEmpty(((AbstractField) c).getHelp())) lt = ((lt != null)?lt:"") +  " (?)";
+
                     javafx.scene.control.Label l;
-                    donde.getChildren().add(l = new javafx.scene.control.Label(((AbstractField) c).getLabel().getText()));
+                    donde.getChildren().add(l = new javafx.scene.control.Label(lt));
                     if (!inToolBar) l.setStyle("-fx-min-width: 200px;-fx-alignment: baseline-left;");
                     else l.setStyle("-fx-alignment: baseline-left;");
 
@@ -2027,7 +2032,8 @@ public class ViewNode extends StackPane {
             if (!Strings.isNullOrEmpty(((AbstractField) c).getHelp())) {
                 final Tooltip tooltip = new Tooltip();
                 tooltip.setText(((AbstractField) c).getHelp());
-                control.setTooltip(tooltip);
+//                control.setTooltip(tooltip);
+                bindTooltip(control, tooltip);
             }
 
         } else {
@@ -2092,6 +2098,24 @@ public class ViewNode extends StackPane {
         }
 
         return n;
+    }
+
+    public static void bindTooltip(final Node node, final Tooltip tooltip){
+        node.setOnMouseMoved(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event) {
+                // +15 moves the tooltip 15 pixels below the mouse cursor;
+                // if you don't change the y coordinate of the tooltip, you
+                // will see constant screen flicker
+                tooltip.show(node, event.getScreenX(), event.getScreenY() + 15);
+            }
+        });
+        node.setOnMouseExited(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event){
+                tooltip.hide();
+            }
+        });
     }
 
     private Node empaquetar(Node n, int width) {

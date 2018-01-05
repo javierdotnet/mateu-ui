@@ -537,7 +537,7 @@ public class ViewLayout extends VerticalLayout implements View {
             bx.setHeight("0px");
             bx.setStyleName("transparent");
             bx.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-            bx.setVisible(false);
+            //bx.setVisible(false);
             addComponent(bx);
         } else {
             // no hacer nada

@@ -333,15 +333,15 @@ public abstract class BaseServerSideApp implements ServerSideApp {
                         Collection<String> ns = data.getPropertyNames();
                         for (String n : data.getPropertyNames()) {
                             if (!n.startsWith("_") && !"id".equalsIgnoreCase(n)) {
+                                if (pos++ > 0) sql += ",";
                                 sql += n;
-                                if (pos < ns.size() - 1) sql += ",";
                             }
-                            pos++;
                         }
                         sql+= ") values (";
                         pos = 0;
                         for (String n : ns) {
                             if (!n.startsWith("_") && !"id".equalsIgnoreCase(n)) {
+                                if (pos++ > 0) sql += ",";
                                 Object v = data.get(n);
                                 if (v == null) {
                                     sql += "null";
@@ -349,9 +349,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
                                     if (v instanceof String) sql += "'" + ((String)v).replaceAll("'", "''") + "'";
                                     else sql += v;
                                 }
-                                if (pos < ns.size() - 1) sql += ",";
                             }
-                            pos++;
                         }
                         sql += ")";
                     } else {
@@ -360,6 +358,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
                         Collection<String> ns = data.getPropertyNames();
                         for (String n : ns) {
                             if (!n.startsWith("_") && !"id".equalsIgnoreCase(n)) {
+                                if (pos++ > 0) sql += ",";
                                 sql += n;
                                 sql += "=";
                                 Object v = data.get(n);
@@ -369,9 +368,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
                                     if (v instanceof String) sql += "'" + ((String)v).replaceAll("'", "''") + "'";
                                     else sql += v;
                                 }
-                                if (pos < ns.size() - 1) sql += ",";
                             }
-                            pos++;
                         }
                         sql += " where id = " + data.get("_id");
                     }

@@ -16,6 +16,8 @@ import java.util.List;
  * Created by miguel on 31/12/16.
  */
 public class CRUDCrimesView extends AbstractCRUDView {
+
+
     @Override
     public String getSql() {
         String sql = "select id,codetime,address, beat , crimedescr from crimes " +
@@ -50,7 +52,7 @@ public class CRUDCrimesView extends AbstractCRUDView {
 
             @Override
             public String getServerSideControllerKey() {
-                return "crud";
+                return "crimescrud";
             }
 
             @Override
@@ -60,8 +62,8 @@ public class CRUDCrimesView extends AbstractCRUDView {
 
             @Override
             public void build() {
-                add(new TextField("col2", "Address").setRequired(true))
-                        .add(new TextField("col3", "Crime description"))
+                add(new TextField("address", "Address").setRequired(true))
+                        .add(new TextField("crimedescr", "Crime description"))
                         ;
             }
         };

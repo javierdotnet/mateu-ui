@@ -331,6 +331,7 @@ public abstract class BaseServerSideApp implements ServerSideApp {
                         sql += "insert into " + tableName + " (";
                         int pos = 0;
                         Collection<String> ns = data.getPropertyNames();
+
                         for (String n : data.getPropertyNames()) {
                             if (!n.startsWith("_") && !"id".equalsIgnoreCase(n)) {
                                 if (pos++ > 0) sql += ",";

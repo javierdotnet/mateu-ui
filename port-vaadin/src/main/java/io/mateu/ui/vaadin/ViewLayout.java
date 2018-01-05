@@ -1784,7 +1784,7 @@ public class ViewLayout extends VerticalLayout implements View {
         } else if (field instanceof ShowTextField) {
             Label tf = new Label();
             tf.setCaption(getLabelText(field));
-            tf.addStyleName("l");
+            //tf.addStyleName("l");
             tf.setContentMode(ContentMode.HTML);
             if (v != null) tf.setValue("" + v);
 

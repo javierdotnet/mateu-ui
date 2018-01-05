@@ -731,6 +731,7 @@ public class ViewLayout extends VerticalLayout implements View {
                             ((LinkColumn) col).run(((DataStore) e.getItem()).getData());
                         }
                     }));
+
                 } else {
                     colx = table.getColumn("__col_" + pos);
                 }

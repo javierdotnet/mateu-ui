@@ -478,53 +478,7 @@ public class ViewNode extends StackPane {
 
     private Node createToolBar(List<AbstractAction> actions) {
         ToolBar toolBar = new ToolBar();
-
-        //toolBar.setBlendMode(BlendMode.GREEN);
-        //toolBar.setOpaqueInsets(Insets.EMPTY);
-        //toolBar.setBlendMode(BlendMode.SCREEN);
-        //toolBar.setStyle("-fx-background-insets: 0, 0 0 1 0;");
-        //toolBar.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
         toolBar.setStyle("-fx-background-color: #f4f4f4;");
-
-        if (false && view instanceof ListView) {
-            ListView lv = (ListView) view;
-
-            validationSupport = new ValidationSupport();
-
-            Pane contenedor = new HBox();
-
-            int pos = 0;
-            int posField = 0;
-            List<Component> cs = lv.getForm().getComponentsSequence();
-            for (Component c : cs) {
-                addComponent(validationSupport,null, null, contenedor, c, false, true);
-
-                if (c instanceof AbstractField) posField++;
-                if (posField >= lv.getMaxFieldsInHeader()) break;
-            }
-
-            if (contenedor.getChildren().size() > 0) {
-                toolBar.getItems().add(contenedor);
-
-                int numFields = 0;
-                for (Component c : cs) {
-                    if (c instanceof AbstractField) numFields++;
-                }
-
-                if (numFields > lv.getMaxFieldsInHeader()) {
-                    Button bmf;
-                    toolBar.getItems().add(bmf = new Button("+"));
-                    bmf.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent event) {
-                            addMoreFiltersDialog().showAndWait();
-                        }
-                    });
-
-                }
-
-            }
-        }
 
         for (AbstractAction a : actions) {
             Button b;
@@ -536,6 +490,8 @@ public class ViewNode extends StackPane {
                 }
             });
         }
+
+
         {
             Button b;
             toolBar.getItems().add(b = new Button("Data"));
@@ -569,6 +525,7 @@ public class ViewNode extends StackPane {
                 }
             });
         }
+
         return toolBar;
     }
 

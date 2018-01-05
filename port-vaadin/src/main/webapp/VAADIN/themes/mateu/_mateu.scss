@@ -1,29 +1,6 @@
 @mixin mateu {
   @include valo;
 
-  #themeSelect {
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    right: 0;
-    padding: 0 10px;
-    background-color: darken($v-app-background-color, 5%);
-    background-color: rgba(darken($v-app-background-color, 5%), .9);
-    color: valo-font-color($v-app-background-color);
-    border-radius: 0 0 0 $v-border-radius;
-
-    &:before {
-      content: "Theme:";
-    }
-
-    select {
-      background: transparent;
-      color: inherit;
-      border: none;
-      display: inline-block;
-    }
-  }
-
   .v-ui {
     @include width-range($max: 800px) {
       #themeSelect {
@@ -144,5 +121,413 @@
 
   .v-menubar-color1 {
     @include valo-menubar-style($background-color: $v-selection-color, $unit-size: null);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .contenedorgrid {
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .contenedorgrid .v-button {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    margin-top: 3px;
+  }
+
+  .contenedorgrid .v-button:hover {
+    background-color: darkgrey;
+  }
+
+  .botonera .v-menubar-menuitem:hover {
+    background-color: darkgrey;
+  }
+
+
+
+
+  .v-nativebutton {
+    text-align: center;
+    color: blue;
+    background:none!important;
+    border:none;
+    padding:0!important;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .v-nativebutton:hover {
+    color: cornflowerblue;
+  }
+
+
+
+
+
+  #testMenu {
+    min-width: 225px;
+    xxbackground-color: darkred;
+    font-size: 12px;
+  }
+
+  .v-menubar-popup {
+    font-size: 12px;
+  }
+
+  .v-menubar > .v-menubar-menuitem-selected {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    color: white;
+  }
+
+  .v-menubar > .v-menubar-menuitem:hover:before {
+    background: none;
+    border: none;
+  }
+
+  .submenu {
+    fnt-size: 12px;
+  }
+
+  .submenu > .v-menubar-menuitem:hover:first-child:last-child {
+    padding: 0px;
+    background: none;
+    color: white;
+  }
+
+
+
+  .valo-menu .v-menubar:focus:after {
+    border:none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .valo-menu .v-menubar:hover:after {
+    border:none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .valo-menu-item:focus, .valo-menu-item:hover, .valo-menu-item.selected {
+    color: white;
+  }
+
+  .v-menubar-submenu:hover {
+    background: none;
+  }
+
+  .v-menubar-submenu {
+    .v-menubar-menuitem:focus, .v-menubar-menuitem:hover, .v-menubar-menuitem.selected {
+      background: none;
+      color: red;
+    }
+  }
+  .popupContent .v-menubar-menuitem:hover:first-child:last-child {
+    color: red;
+  }
+
+  #testMenu .valo-menu-title {
+    background-color: darkred;
+    border-bottom: none;
+    background-image: none;
+  }
+
+  .divSelectorArea {
+    padding: 0px;
+    margin-bottom: 20px;
+
+    .v-filterselect {
+      width: 145px;
+    }
+  }
+
+  .valo-menu-subtitle {
+    margin: 7px 0 7px 0px;
+  }
+
+  .valo-menu-item {
+    padding: 0px;
+  }
+
+  .v-menubar-user-menu  > .v-menubar-menuitem img.v-icon {
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 100px;
+  }
+
+  .user-menu .v-menubar-submenu-indicator + .v-menubar-menuitem-caption:after {
+    color: #426da9;
+    font-family: FontAwesome;
+    content: "\f013";
+    /* font-size: 0.7em; */
+    font-size: 1.7em;
+    margin-left: 73px;
+    opacity: 1;
+  }
+
+  .valo-menuitems {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  .submenu > .v-menubar-menuitem:first-child:last-child {
+    padding: 0px;
+  }
+
+
+
+
+
+  #testMenu .v-menubar {
+    color: #fff;
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    text-shadow: none;
+  }
+
+  #testMenu .v-menubar > .v-menubar-menuitem {
+    border: none;
+    background-color: transparent;
+    background-image:none;
+    color: #a6a6a6;
+    font-size: 12px;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .superbadge {
+    background-color: darkgray;
+    color: white;
+    font-size: 16px;
+    margin-left: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    font-weight: bold;
+  }
+
+  .rojo {
+    background-color: red !important;
+  }
+
+  .azul {
+    background-color: blue !important;
+  }
+
+  .verde {
+    background-color: green !important;
+  }
+
+  .verdemarino {
+    background-color: darkseagreen !important;
+  }
+
+  .marron {
+    background-color: brown !important;
+  }
+
+  .amarillo {
+    background-color: yellow !important;
+  }
+
+  .naranja {
+    background-color: orange !important;
+  }
+
+  .transparent {
+    opacity: 0 !important;
+  }
+
+  .s {
+    width: 65px !important;
+  }
+
+  .m {
+    width: 130px !important;
+  }
+
+  .l {
+    width: 260px !important;
+  }
+
+  .xl {
+    width: 520px !important;
+  }
+
+  .xxl {
+    width: 100% !important;
+  }
+
+
+
+  /* cell styles */
+
+  .red {
+    color: red !important;
+  }
+
+  .blue {
+    color: blue !important;
+  }
+
+  .green {
+    color: green !important;
+  }
+
+  .yellow {
+    color: yellow !important;
+  }
+
+  .orange {
+    color: orange !important;
+  }
+
+  .success {
+    background-color: #dff0d8 !important;
+  }
+
+  .info {
+    background-color: #d9edf7 !important;
+  }
+
+  .warning {
+    background-color: #fcf8e3 !important;
+  }
+
+  .danger {
+    background-color: #f2dede !important;
+  }
+
+
+  .cell-valid {
+    border-right: 10px solid darkseagreen !important;
+  }
+
+  .cell-warning {
+    border-right: 10px solid orange !important;
+  }
+
+  .cell-invalid {
+    border-right: 10px solid red !important;
+  }
+
+
+  .pending {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+
+  .pending:before {
+    font-size: initial !important;
+    content: "\f1db" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+  .done {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+  .done:before {
+    font-size: initial !important;
+    content: "\f00c" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+  .cancelled {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+  .cancelled:before {
+    font-size: initial !important;
+    content: "\f00d" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+  .expired {
+    font-size: 0 !important;
+    position:relative !important;
+  }
+  .expired:before {
+    font-size: initial !important;
+    content: "\f017" !important;
+    font-family: FontAwesome !important;
+    /*left:-5px !important;*/
+    position:absolute !important;
+    top:0 !important;
+  }
+
+
+
+  .saveandclose {
+    background-color: lightgreen !important;
+  }
+
+  .v-menubar-menuitem-saveandclose {
+    background-color: lightgreen !important;
+  }
+
+  .separador {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  .linkpagina {
+    border:none;
+    background: none;
+    background-image: none;
+    height: inherit;
+    padding: 0px;
+  }
+
+  .paginaactual {
+    font-weight: bold;
+    text-decoration: underline;
+    color: red;
   }
 }

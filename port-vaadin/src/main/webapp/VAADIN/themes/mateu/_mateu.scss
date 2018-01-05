@@ -530,4 +530,38 @@
     text-decoration: underline;
     color: red;
   }
+
+
+
+
+
+
+  .o-closed {
+    width: 15px;
+    height: 15px;
+    text-align: center;
+    border-radius: 50%;
+    border: 3px solid #994f4f;
+    background-color: #994f4f;
+    color: white;
+  }
+
+  .o-partial {
+    width: 15px;
+    height: 15px;
+    text-align: center;
+    border-radius: 50%;
+    border: 3px solid #e8c955;
+    background-color: #e8c955;
+  }
+
+  .o-open {
+    width: 15px;
+    height: 15px;
+    text-align: center;
+    border-radius: 50%;
+    border: 3px solid #80af82;
+    background-color: #80af82;
+  }
+
 }

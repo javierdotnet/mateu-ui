@@ -1081,7 +1081,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "8.1.7";
+	content: "${project.version}";
 }
 
 .v-widget {
@@ -1761,6 +1761,61 @@ div.v-layout.v-horizontal.v-widget {
 	content: "!";
 }
 
+.quonext .v-errorindicator-info {
+	color: #00a7f5;
+	font-weight: 600;
+	width: 14px;
+	text-align: center;
+}
+
+.quonext .v-errorindicator-info:before {
+	content: "!";
+}
+
+.quonext .v-errorindicator-warning {
+	color: #fc9c00;
+	font-weight: 600;
+	width: 14px;
+	text-align: center;
+}
+
+.quonext .v-errorindicator-warning:before {
+	content: "!";
+}
+
+.quonext .v-errorindicator-error {
+	color: #ed473b;
+	font-weight: 600;
+	width: 14px;
+	text-align: center;
+}
+
+.quonext .v-errorindicator-error:before {
+	content: "!";
+}
+
+.quonext .v-errorindicator-critical {
+	color: #fa007d;
+	font-weight: 600;
+	width: 14px;
+	text-align: center;
+}
+
+.quonext .v-errorindicator-critical:before {
+	content: "!";
+}
+
+.quonext .v-errorindicator-system {
+	color: #bb00ff;
+	font-weight: 600;
+	width: 14px;
+	text-align: center;
+}
+
+.quonext .v-errorindicator-system:before {
+	content: "!";
+}
+
 .quonext .v-required-field-indicator {
 	color: #ed473b;
 	padding: 0 0.2em;
@@ -1838,6 +1893,26 @@ div.v-layout.v-horizontal.v-widget {
 .quonext .v-tooltip .v-errormessage h2:only-child {
 	font: inherit;
 	line-height: inherit;
+}
+
+.quonext .v-tooltip .v-errormessage-info {
+	color: #00a7f5;
+}
+
+.quonext .v-tooltip .v-errormessage-warning {
+	color: #fc9c00;
+}
+
+.quonext .v-tooltip .v-errormessage-error {
+	color: #ed473b;
+}
+
+.quonext .v-tooltip .v-errormessage-critical {
+	color: #fa007d;
+}
+
+.quonext .v-tooltip .v-errormessage-system {
+	color: #bb00ff;
 }
 
 .quonext .v-tooltip .v-tooltip-text {
@@ -3093,6 +3168,61 @@ div.v-layout.v-horizontal.v-widget {
 .quonext .v-filterselect-error .v-filterselect-button {
 	color: #ed473b;
 	border-color: #ed473b;
+}
+
+.quonext .v-filterselect-error-info .v-filterselect-input {
+	border-color: #00a7f5 !important;
+	background: #fafdff;
+	color: #195774;
+}
+
+.quonext .v-filterselect-error-info .v-filterselect-button {
+	color: #00a7f5;
+	border-color: #00a7f5;
+}
+
+.quonext .v-filterselect-error-warning .v-filterselect-input {
+	border-color: #fc9c00 !important;
+	background: #fffdfa;
+	color: #745119;
+}
+
+.quonext .v-filterselect-error-warning .v-filterselect-button {
+	color: #fc9c00;
+	border-color: #fc9c00;
+}
+
+.quonext .v-filterselect-error-error .v-filterselect-input {
+	border-color: #ed473b !important;
+	background: #fffbfb;
+	color: #6c2621;
+}
+
+.quonext .v-filterselect-error-error .v-filterselect-button {
+	color: #ed473b;
+	border-color: #ed473b;
+}
+
+.quonext .v-filterselect-error-critical .v-filterselect-input {
+	border-color: #fa007d !important;
+	background: #fffafc;
+	color: #741947;
+}
+
+.quonext .v-filterselect-error-critical .v-filterselect-button {
+	color: #fa007d;
+	border-color: #fa007d;
+}
+
+.quonext .v-filterselect-error-system .v-filterselect-input {
+	border-color: #bb00ff !important;
+	background: #fefaff;
+	color: #5c1974;
+}
+
+.quonext .v-filterselect-error-system .v-filterselect-button {
+	color: #bb00ff;
+	border-color: #bb00ff;
 }
 
 .quonext .v-filterselect-suggestpopup {
@@ -5076,6 +5206,36 @@ div.v-layout.v-horizontal.v-widget {
 	color: #6c2621;
 }
 
+.quonext .v-textfield-error-info {
+	border-color: #00a7f5 !important;
+	background: #fafdff;
+	color: #195774;
+}
+
+.quonext .v-textfield-error-warning {
+	border-color: #fc9c00 !important;
+	background: #fffdfa;
+	color: #745119;
+}
+
+.quonext .v-textfield-error-error {
+	border-color: #ed473b !important;
+	background: #fffbfb;
+	color: #6c2621;
+}
+
+.quonext .v-textfield-error-critical {
+	border-color: #fa007d !important;
+	background: #fffafc;
+	color: #741947;
+}
+
+.quonext .v-textfield-error-system {
+	border-color: #bb00ff !important;
+	background: #fefaff;
+	color: #5c1974;
+}
+
 .quonext .v-textfield-borderless {
 	border: none;
 	border-radius: 0;
@@ -5813,6 +5973,61 @@ div.v-layout.v-horizontal.v-widget {
 .quonext .v-datefield-error .v-datefield-button {
 	color: #ed473b;
 	border-color: #ed473b;
+}
+
+.quonext .v-datefield-error-info .v-datefield-textfield {
+	border-color: #00a7f5 !important;
+	background: #fafdff;
+	color: #195774;
+}
+
+.quonext .v-datefield-error-info .v-datefield-button {
+	color: #00a7f5;
+	border-color: #00a7f5;
+}
+
+.quonext .v-datefield-error-warning .v-datefield-textfield {
+	border-color: #fc9c00 !important;
+	background: #fffdfa;
+	color: #745119;
+}
+
+.quonext .v-datefield-error-warning .v-datefield-button {
+	color: #fc9c00;
+	border-color: #fc9c00;
+}
+
+.quonext .v-datefield-error-error .v-datefield-textfield {
+	border-color: #ed473b !important;
+	background: #fffbfb;
+	color: #6c2621;
+}
+
+.quonext .v-datefield-error-error .v-datefield-button {
+	color: #ed473b;
+	border-color: #ed473b;
+}
+
+.quonext .v-datefield-error-critical .v-datefield-textfield {
+	border-color: #fa007d !important;
+	background: #fffafc;
+	color: #741947;
+}
+
+.quonext .v-datefield-error-critical .v-datefield-button {
+	color: #fa007d;
+	border-color: #fa007d;
+}
+
+.quonext .v-datefield-error-system .v-datefield-textfield {
+	border-color: #bb00ff !important;
+	background: #fefaff;
+	color: #5c1974;
+}
+
+.quonext .v-datefield-error-system .v-datefield-button {
+	color: #bb00ff;
+	border-color: #bb00ff;
 }
 
 .quonext .v-datefield-full {
@@ -8297,6 +8512,30 @@ div.v-layout.v-horizontal.v-widget {
 	color: inherit;
 }
 
+.quonext .v-window-closebox:focus::after {
+	content: "";
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	bottom: 5px;
+	left: 2px;
+	border-radius: 0px;
+	-webkit-box-shadow: 0 4px 0 0px #003366;
+	box-shadow: 0 4px 0 0px #003366;
+}
+
+.quonext .v-window-maximizebox:focus::after, .quonext .v-window-restorebox:focus::after {
+	content: "";
+	position: absolute;
+	top: 5px;
+	right: 2px;
+	bottom: 5px;
+	left: 5px;
+	border-radius: 0px;
+	-webkit-box-shadow: 0 4px 0 0px #003366;
+	box-shadow: 0 4px 0 0px #003366;
+}
+
 .quonext .v-window-closebox {
 	padding-right: 3px;
 }
@@ -8318,6 +8557,10 @@ div.v-layout.v-horizontal.v-widget {
 	width: 28px;
 	padding-right: 0;
 	border-bottom-left-radius: 0px;
+}
+
+.quonext .v-window-closebox-disabled  + .v-window-closebox:focus::after, .quonext .v-window-resizebox-disabled  + .v-window-closebox:focus::after, .quonext .v-window-restorebox-disabled  + .v-window-closebox:focus::after, .quonext .v-window-maximizebox-disabled  + .v-window-closebox:focus::after {
+	left: 5px;
 }
 
 .quonext .v-window-maximizebox:before {
@@ -12645,6 +12888,36 @@ div.v-layout.v-horizontal.v-widget {
 	color: #6c2621;
 }
 
+.quonext .v-select-twincol-error-info .v-select-twincol-options, .quonext .v-select-twincol-error-info .v-select-twincol-selections {
+	border-color: #00a7f5 !important;
+	background: #fafdff;
+	color: #195774;
+}
+
+.quonext .v-select-twincol-error-warning .v-select-twincol-options, .quonext .v-select-twincol-error-warning .v-select-twincol-selections {
+	border-color: #fc9c00 !important;
+	background: #fffdfa;
+	color: #745119;
+}
+
+.quonext .v-select-twincol-error-error .v-select-twincol-options, .quonext .v-select-twincol-error-error .v-select-twincol-selections {
+	border-color: #ed473b !important;
+	background: #fffbfb;
+	color: #6c2621;
+}
+
+.quonext .v-select-twincol-error-critical .v-select-twincol-options, .quonext .v-select-twincol-error-critical .v-select-twincol-selections {
+	border-color: #fa007d !important;
+	background: #fffafc;
+	color: #741947;
+}
+
+.quonext .v-select-twincol-error-system .v-select-twincol-options, .quonext .v-select-twincol-error-system .v-select-twincol-selections {
+	border-color: #bb00ff !important;
+	background: #fefaff;
+	color: #5c1974;
+}
+
 .quonext .v-select select {
 	border: 1px solid #c9c9c9;
 	background-color: #ffffff;
@@ -14466,101 +14739,6 @@ div.v-layout.v-horizontal.v-widget {
 	outline: none;
 }
 
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part {
-	background-color: #4d4d4d;
-	min-width: 56px;
-	max-width: 84px;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-title {
-	font-size: 9px;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-title .v-label-undef-w {
-	white-space: normal;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .v-menubar-user-menu {
-	margin-left: 0;
-	margin-right: 0;
-	font-size: 8px;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .v-menubar-user-menu img.v-icon {
-	width: 22px;
-	height: 22px;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part [class*="subtitle"] {
-	margin: 7px 0 0;
-	padding: 6px 19px 6px 7px;
-	line-height: 1;
-	border: none;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	background: #3d3d3d;
-	font-size: 10px;
-	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part [class*="subtitle"] [class*="badge"] {
-	right: 7px;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part [class*="subtitle"]  + .valo-menu-item {
-	border-top: none;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item {
-	display: block;
-	font-size: 19px;
-	line-height: 1;
-	padding: 9px;
-	text-align: center;
-	border-top: 1px solid #575757;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item:first-child {
-	border-top: none;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item [class*="caption"] {
-	display: block;
-	width: auto;
-	margin: 0.3em 0 0;
-	padding: 0;
-	font-size: 8px;
-	line-height: 1.3;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item .v-icon {
-	margin: 0;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item span.v-icon {
-	opacity: 0.8;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected {
-	background: #454545;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected .v-icon {
-	opacity: 1;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item.selected [class*="badge"] {
-	border-color: #454545;
-}
-
-.quonext .valo-menu-responsive[width-range~="801px-1100px"] .valo-menu-part .valo-menu-item [class*="badge"] {
-	padding-left: 3px;
-	padding-right: 3px;
-	top: 6px;
-	right: 6px;
-	border: 2px solid #4d4d4d;
-}
-
 .quonext .valo-menu-responsive[width-range~="0-800px"] {
 	padding-top: 28px;
 	-webkit-box-sizing: border-box;
@@ -14643,7 +14821,8 @@ div.v-layout.v-horizontal.v-widget {
 	height: auto;
 	max-width: 100%;
 	overflow: auto;
-	padding: 14px 0;
+	xxpadding: 14px 0;
+	padding: 20px;
 	-webkit-transform: translatex(-100%);
 	-moz-transform: translatex(-100%);
 	-ms-transform: translatex(-100%);
@@ -14676,10 +14855,37 @@ div.v-layout.v-horizontal.v-widget {
 	background: yellow;
 }
 
-.quonext #testMenu {
+.quonext .valo-menu-responsive .testMenu {
 	min-width: 225px;
 	background-color: #001c32;
 	font-size: 12px;
+}
+
+.quonext .valo-menu-responsive[width-range~="0-800px"] .testMenu {
+	display: inline;
+}
+
+.quonext .valo-menu-responsive[width-range~="0-800px"] .valo-menu .v-menubar-user-menu img.v-icon {
+	display: none;
+}
+
+.quonext .valo-menu-responsive[width-range~="0-500px"] .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
+	width: inherit;
+}
+
+.quonext .valo-menu-responsive .v-button-primary {
+	border: none;
+	background-color: transparent;
+	background-image: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.quonext .valo-menu-responsive .v-button-primary:focus:after {
+	border: inherit;
+	-webkit-box-shadow: inherit;
+	box-shadow: inherit;
 }
 
 .quonext .v-menubar-popup {
@@ -14742,7 +14948,7 @@ div.v-layout.v-horizontal.v-widget {
 	color: red;
 }
 
-.quonext #testMenu .valo-menu-title {
+.quonext .testMenu .valo-menu-title {
 	background-color: #001c32;
 	border-bottom: none;
 	background-image: none;
@@ -15071,29 +15277,17 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .quonext .o-closed {
-	width: 15px;
-	height: 15px;
 	text-align: center;
-	border-radius: 50%;
-	border: 3px solid #994f4f;
-	background-color: #994f4f;
+	border-bottom: 3px solid #994f4f !important;
 	color: white;
 }
 
 .quonext .o-partial {
-	width: 15px;
-	height: 15px;
 	text-align: center;
-	border-radius: 50%;
-	border: 3px solid #e8c955;
-	background-color: #e8c955;
+	border-bottom: 3px solid #e8c955 !important;
 }
 
 .quonext .o-open {
-	width: 15px;
-	height: 15px;
 	text-align: center;
-	border-radius: 50%;
-	border: 3px solid #80af82;
-	background-color: #80af82;
+	border-bottom: 3px solid #80af82 !important;
 }

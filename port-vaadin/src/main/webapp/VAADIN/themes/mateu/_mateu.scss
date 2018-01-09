@@ -129,8 +129,9 @@
 
 
 
-
-
+  .valo-menuitems {
+    padding-left: 20px;
+  }
 
 
 
@@ -158,9 +159,43 @@
     background-color: darkgrey;
   }
 
+
+
+
+
+
+
+  .v-menubar {
+    border: none;
+    background-color: transparent;
+    background-image: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    text-shadow: none;
+  }
+
+  .v-menubar > .v-menubar-menuitem {
+    border: none;
+    background-color: transparent;
+    background-image:none;
+  }
+
+  .botonera:focus::after {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .botonera .v-menubar-menuitem {
+    background-color: lightgrey;
+    margin-right: 4px;
+    border-radius: 2px;
+    color: #464646;
+  }
+
   .botonera .v-menubar-menuitem:hover {
     background-color: darkgrey;
   }
+
 
 
 
@@ -185,11 +220,57 @@
 
 
 
-  #testMenu {
-    min-width: 225px;
-    xxbackground-color: darkred;
-    font-size: 12px;
+  .xxx {
+    color: red;
   }
+
+  .v-menubar {
+    color: #a5a5a5;
+  }
+
+
+  .valo-menu-responsive {
+
+    .testMenu {
+      min-width: 225px;
+      font-size: 12px;
+    }
+
+
+    @include width-range($max: 800px) {
+
+      .testMenu {
+        display: inline;
+      }
+
+      .valo-menu .v-menubar-user-menu img.v-icon {
+        display: none;
+      }
+
+    }
+
+    @include width-range($max: 500px) {
+      .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
+        width: inherit;
+      }
+    }
+
+    .v-button-primary {
+      border: none;
+      background-color: transparent;
+      background-image: none;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      text-shadow: none;
+    }
+
+    .v-button-primary:focus:after {
+      border: inherit;
+      -webkit-box-shadow: inherit;
+      box-shadow: inherit;
+    }
+  }
+
 
   .v-menubar-popup {
     font-size: 12px;
@@ -250,7 +331,13 @@
     color: red;
   }
 
-  #testMenu .valo-menu-title {
+  .botonera.v-menubar > .v-menubar-menuitem {
+    border-left-width: inherit;
+    border-right-width: inherit;
+    border-radius: inherit;
+  }
+
+  .testMenu .valo-menu-title {
     background-color: darkred;
     border-bottom: none;
     background-image: none;
@@ -512,6 +599,10 @@
     background-color: lightgreen !important;
   }
 
+  .v-menubar-menuitem-saveandclose:hover {
+    background-color: darkseagreen !important;
+  }
+
   .separador {
     font-weight: bold;
     text-decoration: underline;
@@ -537,31 +628,19 @@
 
 
   .o-closed {
-    width: 15px;
-    height: 15px;
     text-align: center;
-    border-radius: 50%;
-    border: 3px solid #994f4f !important;
-    background-color: #994f4f !important;
+    border-bottom: 3px solid #994f4f !important;
     color: white;
   }
 
   .o-partial {
-    width: 15px;
-    height: 15px;
     text-align: center;
-    border-radius: 50%;
-    border: 3px solid #e8c955 !important;
-    background-color: #e8c955 !important;
+    border-bottom: 3px solid #e8c955 !important;
   }
 
   .o-open {
-    width: 15px;
-    height: 15px;
     text-align: center;
-    border-radius: 50%;
-    border: 3px solid #80af82 !important;
-    background-color: #80af82 !important;
+    border-bottom: 3px solid #80af82 !important;
   }
 
 }

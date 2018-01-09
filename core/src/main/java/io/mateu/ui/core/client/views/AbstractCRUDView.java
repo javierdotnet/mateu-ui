@@ -70,7 +70,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
     @Override
     public List<AbstractColumn> createColumns() {
         List<AbstractColumn> cols = new ArrayList<>();
-        cols.add(new LinkColumn("_id", "Id", 100) {
+        if (isIdColumnNeeded()) cols.add(new LinkColumn("_id", "Id", 100) {
             @Override
             public void run(Data data) {
                 open(getId(), data);

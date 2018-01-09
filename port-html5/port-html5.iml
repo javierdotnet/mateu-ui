@@ -17,9 +17,7 @@
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/annotations" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -114,7 +112,7 @@
     <orderEntry type="library" name="Maven: com.google.guava:guava:21.0" level="project" />
     <orderEntry type="library" name="Maven: de.iterable:teavm-jquery-core:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: de.iterable:teavm-jquery-utils:0.0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: io.mateu.ui:port-html5-core:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="port-html5-core" />
     <orderEntry type="library" name="Maven: io.mateu.ui:sampleapp:1.0-SNAPSHOT" level="project" />
   </component>
 </module>

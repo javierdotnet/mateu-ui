@@ -42,6 +42,10 @@ public abstract class AbstractListView extends AbstractView implements ListView 
         return true;
     }
 
+    public boolean isIdColumnNeeded() {
+        return true;
+    }
+
     @Override
     public List<AbstractColumn> getColumns() {
         if (columns == null) {

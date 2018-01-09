@@ -90,7 +90,7 @@ public class ValoThemeUI extends UI {
     VerticalLayout menuItemsLayout = new VerticalLayout();
 
     {
-        menu.setId("testMenu");
+        menu.addStyleName("testMenu");
         menuItemsLayout.setSpacing(false);
     }
     private Navigator navigator;

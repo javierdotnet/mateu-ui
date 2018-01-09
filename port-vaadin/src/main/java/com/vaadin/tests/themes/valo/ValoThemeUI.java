@@ -274,8 +274,13 @@ public class ValoThemeUI extends UI {
                         }
 
                         if (lv.isSearchOnOpen() || (data != null && data.getPropertyNames().size() > 0)) {
-                            lv.set("_data_currentpageindex", page);
-                            lv.rpc();
+                                lv.set("_data_currentpageindex", page);
+                            List<String> errors = lv.getForm().validate();
+                            if (errors.size() > 0) {
+                                MateuUI.notifyErrors(errors);
+                            } else {
+                                lv.rpc();
+                            }
                         }
 
                     }

@@ -1,11 +1,12 @@
 package io.mateu.ui.core.shared;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GridData<T> implements Serializable {
 
-    private List<T> data;
+    private List<T> data = new ArrayList<>();
     private int offset;
     private int totalLength;
 

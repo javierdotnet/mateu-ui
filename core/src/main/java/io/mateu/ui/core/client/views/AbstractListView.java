@@ -20,6 +20,10 @@ public abstract class AbstractListView extends AbstractView implements ListView 
 
     public abstract List<AbstractColumn> createColumns();
 
+    public boolean useAutoColumnIds() {
+        return true;
+    }
+
     private List<ListViewListener> listViewListeners = new ArrayList<>();
 
     public Data getMetadata() {
@@ -27,6 +31,14 @@ public abstract class AbstractListView extends AbstractView implements ListView 
     }
 
     public boolean isSearchOnOpen() {
+        return true;
+    }
+
+    public boolean isExcelEnabled() {
+        return true;
+    }
+
+    public boolean isPdfEnabled() {
         return true;
     }
 
@@ -75,7 +87,7 @@ public abstract class AbstractListView extends AbstractView implements ListView 
             }
         });
 
-        as.add(new AbstractAction("Excel") {
+        if (isExcelEnabled()) as.add(new AbstractAction("Excel") {
             @Override
             public void run() {
                 Data p = getForm().getData();
@@ -91,7 +103,7 @@ public abstract class AbstractListView extends AbstractView implements ListView 
                 });
             }
         });
-        as.add(new AbstractAction("Pdf") {
+        if (isPdfEnabled()) as.add(new AbstractAction("Pdf") {
             @Override
             public void run() {
                 Data p = getForm().getData();
@@ -129,7 +141,12 @@ public abstract class AbstractListView extends AbstractView implements ListView 
 
     @Override
     public void search() {
-        for (ListViewListener l : listViewListeners) l.onSearch();
+        List<String> errors = getForm().validate();
+        if (errors.size() > 0) {
+            MateuUI.notifyErrors(errors);
+        } else {
+            for (ListViewListener l : listViewListeners) l.onSearch();
+        }
     }
 
     @Override

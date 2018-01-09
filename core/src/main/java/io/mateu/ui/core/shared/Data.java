@@ -236,6 +236,7 @@ public class Data implements Serializable, DataContainer {
 
     @Override
     public String toString() {
+        if (containsKey("_text")) return get("_text");
         return new Jsonizer().toJson(this);
     }
 
@@ -249,6 +250,15 @@ public class Data implements Serializable, DataContainer {
 
 
     public static void main(String... args) {
+
+        String s = "ewoiX3NlbGVjdGVkIiA6ZmFsc2UKLCAiX3N1YnRpdGxlIiA6IjMgcmVjb3JkcyBmb3VuZCBpbiA0bXMuIgosICJfbGlua3MiIDpbXQosICJmIiA6ImV1ciIKLCAiX2RhdGFfdG90YWxyb3dzIiA6MwosICJfX2lkIiA6bnVsbAosICJfdGl0bGUiIDoiQ1JVRCIKLCAiX2RhdGFfcGFnZWNvdW50IiA6MQosICJfYmFkZ2VzIiA6W10KLCAiX2RhdGFfY3VycmVudHBhZ2VpbmRleCIgOjAKLCAiX19fZGF0YWNsYXNzbmFtZSIgOiJpby5tYXRldS51aS5jb3JlLnNoYXJlZC5EYXRhIgp9";
+
+        String s2 = "ewoiX3NlbGVjdGVkIiA6ZmFsc2UKLCAiX3N1YnRpdGxlIiA6IjMgcmVjb3JkcyBmb3VuZCBpbiAxNzY3bXMuIgosICJfbGlua3MiIDpbXQosICJmIiA6ImV1ciIKLCAiX2RhdGFfdG90YWxyb3dzIiA6MwosICJfX2lkIiA6bnVsbAosICJfdGl0bGUiIDoiQ1JVRCIKLCAiX2RhdGFfcGFnZWNvdW50IiA6MQosICJfYmFkZ2VzIiA6W10KLCAiX2RhdGFfY3VycmVudHBhZ2VpbmRleCIgOjAKLCAiX19fZGF0YWNsYXNzbmFtZSIgOiJpby5tYXRldS51aS5jb3JlLnNoYXJlZC5EYXRhIgp9";
+
+        Data dx = new Data(new String(Base64.getDecoder().decode(s)));
+
+        System.out.println("dx=" + dx);
+
         Data d = new Data(
 
                 "entero", 5, "doble", 3.2, "null", null, "cadena", "qhdoiq diqw \"dwq ede", "array", new int[] {3, 4, 10}

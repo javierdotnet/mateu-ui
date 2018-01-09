@@ -85,6 +85,7 @@ public class Jsonizer {
                                     else if ("true".equals(s)) valor = true;
                                     else if ("false".equals(s)) valor = false;
                                     else if ("null".equals(s)) valor = null;
+                                    else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
                                     else valor = Integer.parseInt(s);
 
                                 }
@@ -97,7 +98,18 @@ public class Jsonizer {
                             if (estados.size() > 0) estado = estados.remove(estados.size() - 1);
                             else estado = INITIAL;
                             if (estado == INSIDEDATA) {
-                                ((Data)o).set(clave.remove(clave.size() - 1), valor);
+                                String pn = clave.remove(clave.size() - 1);
+                                if ("___dataclassname".equalsIgnoreCase(pn)) {
+                                    try {
+                                        Data old = (Data) o;
+                                        o = Class.forName((String) valor).newInstance();
+                                        ((Data)o).setAll(old);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    ((Data)o).set(pn, valor);
+                                }
                             } else if (estado == INSIDELIST) {
                                 ((List)o).add(valor);
                             }
@@ -133,6 +145,7 @@ public class Jsonizer {
                                     else if ("true".equals(s)) valor = true;
                                     else if ("false".equals(s)) valor = false;
                                     else if ("null".equals(s)) valor = null;
+                                    else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
                                     else valor = Integer.parseInt(s);
 
                                 }
@@ -146,7 +159,18 @@ public class Jsonizer {
                             if (estados.size() > 0) estado = estados.remove(estados.size() - 1);
                             else estado = INITIAL;
                             if (estado == INSIDEDATA) {
-                                ((Data)o).set(clave.remove(clave.size() - 1), valor);
+                                String pn = clave.remove(clave.size() - 1);
+                                if ("___dataclassname".equalsIgnoreCase(pn)) {
+                                    try {
+                                        Data old = (Data) o;
+                                        o = Class.forName((String) valor).newInstance();
+                                        ((Data)o).setAll(old);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    ((Data)o).set(pn, valor);
+                                }
                             } else if (estado == INSIDELIST) {
                                 ((List)o).add(valor);
                             }
@@ -188,6 +212,7 @@ public class Jsonizer {
                                     else if ("true".equals(s)) valor = true;
                                     else if ("false".equals(s)) valor = false;
                                     else if ("null".equals(s)) valor = null;
+                                    else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
                                     else valor = Integer.parseInt(s);
 
                                 }
@@ -200,7 +225,18 @@ public class Jsonizer {
                             if (estados.size() > 0) estado = estados.remove(estados.size() - 1);
                             else estado = INITIAL;
                             if (estado == INSIDEDATA) {
-                                ((Data)o).set(clave.remove(clave.size() - 1), valor);
+                                String pn = clave.remove(clave.size() - 1);
+                                if ("___dataclassname".equalsIgnoreCase(pn)) {
+                                    try {
+                                        Data old = (Data) o;
+                                        o = Class.forName((String) valor).newInstance();
+                                        ((Data)o).setAll(old);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    ((Data)o).set(pn, valor);
+                                }
                             } else if (estado == INSIDELIST) {
                                 ((List)o).add(valor);
                             }
@@ -245,7 +281,18 @@ public class Jsonizer {
                 if (pila.size() > 0) o = pila.remove(pila.size() - 1);
                 else o = null;
                 if (estado == INSIDEDATA) {
-                    ((Data)o).set(clave.remove(clave.size() - 1), valor);
+                    String pn = clave.remove(clave.size() - 1);
+                    if ("___dataclassname".equalsIgnoreCase(pn)) {
+                        try {
+                            Data old = (Data) o;
+                            o = Class.forName((String) valor).newInstance();
+                            ((Data)o).setAll(old);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        ((Data)o).set(pn, valor);
+                    }
                 } else if (estado == INSIDELIST) {
                     ((List)o).add(valor);
                 }
@@ -264,6 +311,7 @@ public class Jsonizer {
 
         if (o instanceof Data) {
             sb.append("{\n");
+
             Map<String, Object> m = ((Data)o).getProperties();
 
             int pos = 0;
@@ -271,6 +319,9 @@ public class Jsonizer {
                 if (pos++ > 0) sb.append(", ");
                 sb.append("\"" + n + "\" :" + toJson(m.get(n)) + "\n");
             }
+            if (pos++ > 0) sb.append(", ");
+            sb.append("\"___dataclassname\" :\"" + o.getClass().getName()  + "\"\n");
+
             sb.append("}");
         } else if (o instanceof String) {
             return "\"" + ((String) o).replaceAll("\"", "\\\\\"") + "\"";
@@ -328,6 +379,8 @@ public class Jsonizer {
                 sb.append(toJson(w));
             }
             sb.append("]");
+        } else if (o instanceof Long) {
+            return "" + o + "l";
         } else {
             return "" + o;
         }

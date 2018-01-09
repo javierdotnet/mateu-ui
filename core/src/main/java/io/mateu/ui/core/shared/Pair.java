@@ -24,6 +24,10 @@ public class Pair extends Data {
         super(json);
     }
 
+    public Pair() {
+
+    }
+
     public Object getValue() {
         return get("value");
     }

@@ -661,6 +661,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
                     });
                 }
+                aux.setSortable(false);
             }
             if (g.getColumns().size() > 3) table.setFrozenColumnCount(3);
             if (g.isExpandable())

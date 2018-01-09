@@ -655,6 +655,8 @@ public class ViewLayout extends VerticalLayout implements View {
                         if (value instanceof DataStore) vx = ((DataStore) value).get(col.getId());
                         else if (value instanceof Data) vx = ((Data) value).get(col.getId());
 
+                        if (vx instanceof DataStore) vx = ((DataStore) vx).getData();
+
                         return col.getStyleGenerator().getStyle(vx);
 
                     });

@@ -347,17 +347,17 @@ public class GridNode extends VBox {
 
             if (c instanceof DataColumn) {
                 col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                col.setCellFactory(MateuDataColumnTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override
                     public String toString(Object object) {
-                        return (object == null) ? null : ((object instanceof DataStore)?((DataStore)object).get("_text"):"" + object);
+                        return (object == null) ? null : ((object instanceof DataStore)?"" + ((DataStore)object).get("_text"):"" + object);
                     }
 
                     @Override
                     public Object fromString(String string) {
                         return string;
                     }
-                }, (ActionOnRow) c, new CellStyleGenerator() {
+                }, c.getId(), (ActionOnRow) c, new CellStyleGenerator() {
                     @Override
                     public String getStyle(Object value) {
                         return (value != null && value instanceof DataStore)?((DataStore)value).get("_css"):null;
@@ -373,6 +373,7 @@ public class GridNode extends VBox {
                 col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
                     @Override
                     public String toString(Object object) {
+                        if (((LinkColumn) c).getText() != null) return ((LinkColumn) c).getText();
                         return (object == null)?null:"" + object;
                     }
 

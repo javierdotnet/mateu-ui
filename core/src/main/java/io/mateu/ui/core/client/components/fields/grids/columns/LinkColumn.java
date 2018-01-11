@@ -11,4 +11,8 @@ public abstract class LinkColumn extends AbstractColumn implements ActionOnRow {
         super(id, label, width, false);
     }
 
+    public String getText() {
+        return null;
+    }
+
 }

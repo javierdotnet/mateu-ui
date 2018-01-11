@@ -17114,17 +17114,30 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mateu .o-closed {
-	text-align: center;
-	border-bottom: 3px solid #994f4f !important;
-	color: white;
+	background-color: #ef786f !important;
 }
 
 .mateu .o-partial {
-	text-align: center;
-	border-bottom: 3px solid #e8c955 !important;
+	background-color: #fea65d !important;
 }
 
 .mateu .o-open {
-	text-align: center;
-	border-bottom: 3px solid #80af82 !important;
+	background-color: #a5bfa5 !important;
+}
+
+.mateu .o-closed.o-weekend {
+	background-color: #da1616 !important;
+}
+
+.mateu .o-partial.o-weekend {
+	background-color: #d18100 !important;
+}
+
+.mateu .o-open.o-weekend {
+	background-color: #80af82 !important;
+}
+
+.mateu .o-today {
+	border-top: 3px solid black !important;
+	border-bottom: 3px solid black !important;
 }

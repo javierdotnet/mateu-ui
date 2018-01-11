@@ -6,8 +6,14 @@ import io.mateu.ui.core.shared.UserData;
 
 public interface RPCView<T, S> {
 
-    public GridData rpc() throws Throwable;
+    GridData rpc() throws Throwable;
 
-    public Data get(UserData user, Object id) throws Throwable;
+    default Data get(UserData user, Object id) throws Throwable {
+        return null;
+    }
+
+    default String getViewTitle() {
+        return null;
+    }
 
 }

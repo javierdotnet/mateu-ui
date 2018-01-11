@@ -15277,17 +15277,30 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .quonext .o-closed {
-	text-align: center;
-	border-bottom: 3px solid #994f4f !important;
-	color: white;
+	background-color: #ef786f !important;
 }
 
 .quonext .o-partial {
-	text-align: center;
-	border-bottom: 3px solid #e8c955 !important;
+	background-color: #fea65d !important;
 }
 
 .quonext .o-open {
-	text-align: center;
-	border-bottom: 3px solid #80af82 !important;
+	background-color: #a5bfa5 !important;
+}
+
+.quonext .o-closed.o-weekend {
+	background-color: #da1616 !important;
+}
+
+.quonext .o-partial.o-weekend {
+	background-color: #d18100 !important;
+}
+
+.quonext .o-open.o-weekend {
+	background-color: #80af82 !important;
+}
+
+.quonext .o-today {
+	border-top: 3px solid black !important;
+	border-bottom: 3px solid black !important;
 }

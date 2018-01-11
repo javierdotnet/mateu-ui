@@ -509,20 +509,34 @@
 
 
   .o-closed {
-    text-align: center;
-    border-bottom: 3px solid #994f4f !important;
-    color: white;
+    background-color: #ef786f !important;
   }
 
   .o-partial {
-    text-align: center;
-    border-bottom: 3px solid #e8c955 !important;
+    background-color: #fea65d !important;
   }
 
   .o-open {
-    text-align: center;
-    border-bottom: 3px solid #80af82 !important;
+    background-color: #a5bfa5 !important;
   }
+
+  .o-closed.o-weekend {
+    background-color: #da1616 !important;
+  }
+
+  .o-partial.o-weekend {
+    background-color: #d18100 !important;
+  }
+
+  .o-open.o-weekend {
+    background-color: #80af82 !important;
+  }
+
+  .o-today {
+    border-top: 3px solid black !important;
+    border-bottom: 3px solid black !important;
+  }
+
 
 }
 

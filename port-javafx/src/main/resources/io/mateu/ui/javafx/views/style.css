@@ -289,3 +289,24 @@
     -fx-table-header-background-color: #f4f4f4;
 }
 */
+
+
+.o-closed {
+    -fx-background-color: #ef786f;
+}
+
+.o-partial {
+    -fx-background-color: #fea65d;
+}
+
+.o-open {
+    -fx-background-color: #80af82;
+}
+
+.o-weekend {
+    -fx-border-bottom: 3px solid darkgrey;
+}
+
+.o-today {
+    -fx-border-bottom: 3px solid black;
+}

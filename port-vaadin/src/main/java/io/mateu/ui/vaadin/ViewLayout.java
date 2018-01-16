@@ -1821,6 +1821,127 @@ public class ViewLayout extends VerticalLayout implements View {
             });
 
             cs.add(tf);
+
+        } else if (field instanceof MultilanguageTextField) {
+            TextField tf = new TextField();
+            tf.setCaption(getLabelText(field));
+            //tf.addStyleName("l");
+            if (v != null) {
+                if (((Data) v).get("_selected") == null) {
+                    ((Data) v).set("_selected", "en");
+                }
+            }
+            if (v != null && ((Data) v).get("_selected") != null && ((Data)v).get(((Data) v).get("_selected")) != null) tf.setValue(((Data)v).get(((Data) v).get("_selected")));
+            if (firstField == null) firstField = tf;
+
+
+            ComboBox<String> lc = new ComboBox<>("", Arrays.asList("en", "es", "de", "fr", "it", "ar", "cz", "ru"));
+            lc.setWidth("55px");
+            lc.setTextInputAllowed(false);
+            lc.setEmptySelectionAllowed(false);
+            if (v != null) lc.setValue(((Data)v).get("_selected"));
+            else lc.setValue("en");
+
+            HorizontalLayout b = new HorizontalLayout();
+
+            b.addComponent(tf);
+            b.addComponent(lc);
+
+            cs.add(b);
+
+
+            Property p = dataStore.getDataProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    Data data = (Data) newValue;
+                    if (data.get("_selected") == null) {
+                        data.set("_selected", "en");
+                    }
+                    tf.setValue((data.get(data.get("_selected")) != null)?data.get(data.get("_selected")):"");
+                    lc.setValue(data.get("_selected"));
+                }
+            });
+
+            tf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
+                @Override
+                public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
+                    Data data = new Data((Data) p.getValue());
+                    data.set(data.get("_selected"), valueChangeEvent.getValue());
+                    p.setValue(data);
+                }
+            });
+
+            lc.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
+                @Override
+                public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
+                    Data data = new Data((Data) p.getValue());
+                    data.set("_selected", valueChangeEvent.getValue());
+                    p.setValue(data);
+                }
+            });
+
+
+        } else if (field instanceof MultilanguageTextAreaField) {
+            TextArea tf = new TextArea();
+            tf.setCaption(getLabelText(field));
+            //tf.addStyleName("l");
+            if (v != null) {
+                if (((Data) v).get("_selected") == null) {
+                    ((Data) v).set("_selected", "en");
+                }
+            }
+            if (v != null && ((Data) v).get("_selected") != null && ((Data)v).get(((Data) v).get("_selected")) != null) tf.setValue(((Data)v).get(((Data) v).get("_selected")));
+            if (firstField == null) firstField = tf;
+
+
+            ComboBox<String> lc = new ComboBox<>("", Arrays.asList("en", "es", "de", "fr", "it", "ar", "cz", "ru"));
+            lc.setWidth("55px");
+            lc.setTextInputAllowed(false);
+            lc.setEmptySelectionAllowed(false);
+            if (v != null) lc.setValue(((Data)v).get("_selected"));
+            else lc.setValue("en");
+
+            HorizontalLayout b = new HorizontalLayout();
+
+            b.addComponent(tf);
+            b.addComponent(lc);
+
+            cs.add(b);
+
+
+            Property p = dataStore.getDataProperty(field.getId());
+            p.addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    Data data = (Data) newValue;
+                    if (data.get("_selected") == null) {
+                        data.set("_selected", "en");
+                    }
+                    tf.setValue((data.get(data.get("_selected")) != null)?data.get(data.get("_selected")):"");
+                    lc.setValue(data.get("_selected"));
+                }
+            });
+
+            tf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
+                @Override
+                public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
+                    Data data = new Data((Data) p.getValue());
+                    data.set(data.get("_selected"), valueChangeEvent.getValue());
+                    p.setValue(data);
+                }
+            });
+
+            lc.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
+                @Override
+                public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
+                    Data data = new Data((Data) p.getValue());
+                    data.set("_selected", valueChangeEvent.getValue());
+                    p.setValue(data);
+                }
+            });
+
+
         } else if (field instanceof HtmlField) {
             Label tf = new Label();
             tf.setCaption(getLabelText(field));

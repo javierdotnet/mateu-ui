@@ -140,6 +140,7 @@ public abstract class AbstractForm extends FieldContainer {
                 }
             });
         }
+
         return this;
     }
 

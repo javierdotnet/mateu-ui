@@ -1915,6 +1915,123 @@ public class ViewNode extends StackPane {
                 tf.getStyleClass().add("l");
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
                 n = control = tf;
+            } else if (c instanceof MultilanguageTextField) {
+
+                HBox b;
+                n = b = new HBox();
+
+                Property<Data> prop = dataStore.getDataProperty(((AbstractField) c).getId());
+
+                javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
+
+                tf.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        Data data = new Data(prop.getValue());
+                        data.set(data.get("_selected"), newValue);
+                        prop.setValue(data);
+                    }
+                });
+
+                Data data = prop.getValue();
+                if (!data.containsKey("_selected")) {
+                    data.set("_selected", "en");
+                }
+                tf.setText(data.get(data.get("_selected")));
+
+                control = tf;
+                tf.getStyleClass().add("l");
+                if (firstField == null) {
+                    firstField = tf;
+                }
+
+
+                b.getChildren().add(tf);
+
+                ObservableList<String> idiomas = FXCollections.observableArrayList("en", "es", "de", "fr", "it", "ar", "cz", "ru");
+                ComboBox<String> lc;
+                b.getChildren().add(lc = new ComboBox<String>(idiomas));
+
+
+                lc.valueProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        if (newValue == null) newValue = "en";
+                        Data data = new Data(prop.getValue());
+                        data.set("_selected", newValue);
+                        prop.setValue(data);
+                    }
+                });
+
+                lc.setValue(data.get("_selected"));
+
+
+                prop.addListener(new ChangeListener<Data>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Data> observable, Data oldValue, Data newValue) {
+                        tf.setText((newValue != null)?newValue.get(newValue.get("_selected")):null);
+                        lc.setValue((newValue != null)?newValue.get("_selected"):null);
+                    }
+                });
+
+
+            } else if (c instanceof MultilanguageTextAreaField) {
+                HBox b;
+                n = b = new HBox();
+
+                Property<Data> prop = dataStore.getDataProperty(((AbstractField) c).getId());
+
+                javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
+
+                tf.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        Data data = new Data(prop.getValue());
+                        data.set(data.get("_selected"), newValue);
+                        prop.setValue(data);
+                    }
+                });
+
+                Data data = prop.getValue();
+                if (!data.containsKey("_selected")) {
+                    data.set("_selected", "en");
+                }
+                tf.setText(data.get(data.get("_selected")));
+
+                control = tf;
+                tf.getStyleClass().add("l");
+                if (firstField == null) {
+                    firstField = tf;
+                }
+
+
+                b.getChildren().add(tf);
+
+                ObservableList<String> idiomas = FXCollections.observableArrayList("en", "es", "de", "fr", "it", "ar", "cz", "ru");
+                ComboBox<String> lc;
+                b.getChildren().add(lc = new ComboBox<String>(idiomas));
+
+
+                lc.valueProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        if (newValue == null) newValue = "en";
+                        Data data = new Data(prop.getValue());
+                        data.set("_selected", newValue);
+                        prop.setValue(data);
+                    }
+                });
+
+                lc.setValue(data.get("_selected"));
+
+
+                prop.addListener(new ChangeListener<Data>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Data> observable, Data oldValue, Data newValue) {
+                        tf.setText((newValue != null)?newValue.get(newValue.get("_selected")):null);
+                        lc.setValue((newValue != null)?newValue.get("_selected"):null);
+                    }
+                });
             } else if (c instanceof io.mateu.ui.core.client.components.fields.TextField) {
                 javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
                 tf.textProperty().bindBidirectional(dataStore.getStringProperty(((io.mateu.ui.core.client.components.fields.TextField) c).getId()));

@@ -74,6 +74,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new TextFieldView());
                     }
+                }, (MenuEntry) new AbstractAction("Multilanguage") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new MultilanguageView());
+                    }
                 }, (MenuEntry) new AbstractAction("ComboBoxField") {
                     @Override
                     public void run() {

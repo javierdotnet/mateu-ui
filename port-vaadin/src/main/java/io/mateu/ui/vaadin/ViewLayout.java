@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.*;
 import java.util.*;
 
@@ -613,6 +614,11 @@ public class ViewLayout extends VerticalLayout implements View {
             cs.add(l = new Label(((Separator) field).getText()));
             l.addStyleName("separador");
 
+        } else if (field instanceof CalendarField) {
+            CalendarField f = (CalendarField) field;
+
+            cs.add(new CalendarLayout(f, dataStore.getDataProperty(f.getId())));
+
         } else if (field instanceof GridField) {
 
             GridField g = (GridField) field;
@@ -1143,7 +1149,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
             cs.add(og);
 
-        } else if (field instanceof CalendarField || field instanceof io.mateu.ui.core.client.components.fields.DateField) {
+        } else if (field instanceof io.mateu.ui.core.client.components.fields.DateField) {
 
             DateField cb;
             cb = new DateField(getLabelText(field));
@@ -1166,6 +1172,8 @@ public class ViewLayout extends VerticalLayout implements View {
                     p.setValue(valueChangeEvent.getValue());
                 }
             });
+
+            //cb.setTextFieldEnabled(false);
 
             cs.add(cb);
 
@@ -1193,6 +1201,8 @@ public class ViewLayout extends VerticalLayout implements View {
                     p.setValue(valueChangeEvent.getValue());
                 }
             });
+
+            //cb.setTextFieldEnabled(false);
 
             cs.add(cb);
         } else if (field instanceof CheckBoxField) {
@@ -1389,11 +1399,13 @@ public class ViewLayout extends VerticalLayout implements View {
 
             if (v != null) intf.setValue("" + v);
 
+            DecimalFormat df = new DecimalFormat("##############################.############");
+
             Property<Double> p = dataStore.getDoubleProperty(field.getId());
             p.addListener(new ChangeListener<Double>() {
                 @Override
                 public void changed(ObservableValue observable, Double oldValue, Double newValue) {
-                    intf.setValue((newValue != null)?"" + newValue:"");
+                    intf.setValue((newValue != null)?df.format(newValue):"");
                 }
             });
             intf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
@@ -1404,11 +1416,14 @@ public class ViewLayout extends VerticalLayout implements View {
                         p.setValue((!Strings.isNullOrEmpty(valueChangeEvent.getValue()))?new Double(valueChangeEvent.getValue().replaceAll(",", ".")):null);
                         intf.setComponentError(null);
                     } catch (Exception e) {
-                        intf.setComponentError(new UserError("Must be a valid number"));
+                        intf.setComponentError(new UserError("Must be a valid number without decimals"));
+                        intf.setValue(valueChangeEvent.getOldValue());
                     }
 
                 }
             });
+
+            intf.setValueChangeMode(ValueChangeMode.EAGER);
 
             cs.add(intf);
 
@@ -1518,6 +1533,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     intf.setValue((newValue != null)?"" + newValue:"");
                 }
             });
+
             intf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
 
                 @Override
@@ -1527,10 +1543,13 @@ public class ViewLayout extends VerticalLayout implements View {
                         intf.setComponentError(null);
                     } catch (Exception e) {
                         intf.setComponentError(new UserError("Must be a valid number without decimals"));
+                        intf.setValue(valueChangeEvent.getOldValue());
                     }
 
                 }
             });
+
+            intf.setValueChangeMode(ValueChangeMode.EAGER);
 
             cs.add(intf);
 
@@ -1616,6 +1635,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     intf.setValue((newValue != null)?"" + newValue:"");
                 }
             });
+
             intf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
 
                 @Override
@@ -1625,10 +1645,13 @@ public class ViewLayout extends VerticalLayout implements View {
                         intf.setComponentError(null);
                     } catch (Exception e) {
                         intf.setComponentError(new UserError("Must be a valid number without decimals"));
+                        intf.setValue(valueChangeEvent.getOldValue());
                     }
 
                 }
             });
+
+            intf.setValueChangeMode(ValueChangeMode.EAGER);
 
             cs.add(intf);
 

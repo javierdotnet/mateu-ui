@@ -1,9 +1,6 @@
 package io.mateu.ui.javafx.data;
 
-import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.core.shared.FileLocator;
-import io.mateu.ui.core.shared.Pair;
-import io.mateu.ui.core.shared.PairList;
+import io.mateu.ui.core.shared.*;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -95,7 +92,7 @@ public class DataStore {
 
         }
 
-        for (String n : props.keySet()) if (!n.startsWith("_")) {
+        for (String n : props.keySet()) if (n != null && !n.startsWith("_")) {
             Property p = props.get(n);
             if (p != null && !vistas.contains(n)) {
                 if (p.getValue() != null && !(p.getValue() instanceof ObservableList)) {
@@ -154,6 +151,11 @@ public class DataStore {
             Property<ObservableList<DataStore>> p = getObservableListProperty(name);
             p.getValue().clear();
             for (Data x : (List<Data>) value) p.getValue().add(new DataStore(x));
+        } else if (value instanceof Pair) {
+            ((Property)getProperty(name)).setValue(value);
+        } else if (value instanceof Data) {
+            Property p = getDataProperty(name);
+            p.setValue(new DataStore((Data) value));
         } else {
             try {
                 if (value != null && value instanceof Boolean) {
@@ -170,11 +172,16 @@ public class DataStore {
     }
 
     public <X> X get(String property) {
-        X value = (X) ((Property)getProperty(property)).getValue();
+        X value = getPure(property);
         if (value != null && value instanceof LocalDate) {
             Instant instant = Instant.from(((LocalDate)value).atStartOfDay(ZoneId.systemDefault()));
             value = (X) Date.from(instant);
         }
+        return value;
+    }
+
+    public <X> X getPure(String property) {
+        X value = (X) ((Property)getProperty(property)).getValue();
         return value;
     }
 
@@ -186,6 +193,8 @@ public class DataStore {
     @Override
     public String toString() {
         String s = "";
+        if (props.containsKey("_nameproperty")) return get(get("_nameproperty"));
+        if (props.containsKey("_text")) return get("_text");
         //s = super.toString();
         for (String k : props.keySet()) {
             if (props.get(k).getValue() instanceof DataStore) {
@@ -221,10 +230,10 @@ public class DataStore {
         return p;
     }
 
-    public Property<Data> getDataProperty(String id) {
+    public Property<DataStore> getDataProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleObjectProperty<Data>(new Data()));
+            props.put(id, p = new DataStoreProperty(new DataStore(null)));
             p.addListener(listenerx);
         }
         return p;
@@ -275,6 +284,16 @@ public class DataStore {
         }
         return p;
     }
+
+    public Property<SupplementOrPositive> getSupplementOrPositiveProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<SupplementOrPositive>());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
+
     public Property<Number> getNumberProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
@@ -374,7 +393,9 @@ public class DataStore {
 
 
     public void clear() {
-        props.clear();
+        for (String k : props.keySet()) if (!k.startsWith("_")) {
+            props.get(k).setValue(null);
+        }
     }
 
     public void resetIds() {
@@ -394,4 +415,11 @@ public class DataStore {
         }
     }
 
+    public boolean containsKey(String name) {
+        return props.containsKey(name);
+    }
+
+    public void remove(Object key) {
+        props.remove(key);
+    }
 }

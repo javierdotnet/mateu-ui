@@ -33,7 +33,6 @@ import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
 import io.mateu.ui.core.client.components.fields.*;
 import io.mateu.ui.core.client.components.fields.DateTimeField;
-import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
@@ -140,6 +139,11 @@ public class ViewLayout extends VerticalLayout implements View {
             @Override
             public void idsResetted() {
                 ViewLayout.this.dataStore.resetIds();
+            }
+
+            @Override
+            public void cleared() {
+                ViewLayout.this.dataStore.clear();
             }
         });
         this.dataStore.set("_title", view.getTitle());

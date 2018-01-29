@@ -6,50 +6,50 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.ActionOnRow;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.components.fields.GridField;
-import io.mateu.ui.core.client.components.fields.grids.columns.*;
+import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
+import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.client.views.ListView;
 import io.mateu.ui.core.shared.CellStyleGenerator;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.data.DataStore;
 import io.mateu.ui.javafx.views.ViewNode;
-import io.mateu.ui.javafx.views.components.table.*;
+import io.mateu.ui.javafx.views.components.tree.PropertyValueFactory;
+import io.mateu.ui.javafx.views.components.tree.MateuDataColumnTreeTableCell;
+import io.mateu.ui.javafx.views.components.tree.MateuLinkTreeTableCell;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Created by miguel on 30/12/16.
  */
-public class GridNode extends VBox {
+public class TreeGridNode extends VBox {
 
     private final GridField field;
     private final ViewNode viewNode;
-    private TableView<DataStore> tableView;
+    private TreeTableView<DataStore> tableView;
     FlowPane paginationContainer;
     private Pagination pagination;
-    private TableView<DataStore> t;
+    private TreeTableView<DataStore> t;
     private boolean listenerSelectionActivo = true;
 
-    public GridNode(ViewNode viewNode, GridField field) {
+    public TreeGridNode(ViewNode viewNode, GridField field) {
         this.viewNode = viewNode;
         this.field = field;
 
@@ -165,7 +165,24 @@ public class GridNode extends VBox {
                             @Override
                             public void addAndClean(Data data) {
                                 DataStore ds = new DataStore(data);
-                                viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().add(ds);
+                                Property p = viewNode.getDataStore().getProperty(field.getId());
+                                DataStore donde = (DataStore) p.getValue();
+                                List<DataStore> ll = aplanarDataStore((DataStore) p.getValue());
+                                for (TreeItem<DataStore> i : t.getSelectionModel().getSelectedItems()) if (i.getValue() != null) {
+                                    for (DataStore z : ll) if (z.get("__id").equals(i.getValue().get("__id"))) {
+                                        donde = z;
+                                    }
+                                }
+                                System.out.println("donde=" + donde);
+                                if (donde != null) {
+                                    donde.getObservableListProperty("_children").getValue().add(ds);
+                                    if (t.getSelectionModel().getSelectedItem() != null) t.getSelectionModel().getSelectedItem().getChildren().add(new TreeItem<DataStore>(ds));
+                                    else if (t.getRoot() != null) t.getRoot().getChildren().add(new TreeItem<DataStore>(ds));
+                                    else t.setRoot(new TreeItem<DataStore>(ds));
+                                } else {
+                                    p.setValue(ds);
+                                    t.setRoot(new TreeItem<DataStore>(ds));
+                                }
                                 setData(new Data());
                                 set("__id", "" + UUID.randomUUID());
                             }
@@ -193,21 +210,33 @@ public class GridNode extends VBox {
                 @Override
                 public void handle(ActionEvent event) {
                     List<DataStore> borrar = new ArrayList<>();
-                    for (DataStore x : viewNode.getDataStore().getObservableListProperty(field.getId()).getValue()) if (x.getBooleanProperty("_selected").getValue()) borrar.add(x);
-                    for (DataStore x : borrar) viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().remove(x);
+
+                    Property p = viewNode.getDataStore().getProperty(field.getId());
+                    List<DataStore> ll = aplanarDataStore((DataStore) p.getValue());
+                    for (TreeItem<DataStore> i : new ArrayList<>(t.getSelectionModel().getSelectedItems())) if (i != null) {
+                        if (i.getParent() != null) {
+                            i.getParent().getValue().getObservableListProperty("_children").getValue().remove(i.getValue());
+                            i.getParent().getChildren().remove(i);
+                        }
+                        else if (i.equals(t.getRoot())) {
+                            p.setValue(null);
+                            t.setRoot(null);
+                        }
+                    }
                 }
             });
             toolBar.getItems().add(b = new Button("Duplicate"));
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
+                    /*
                     List<DataStore> l = new ArrayList<>();
                     for (DataStore d : t.getSelectionModel().getSelectedItems()) {
-                        DataStore x = new DataStore((Data) d.getData().clone());
-                        x.remove("_id");
-                        l.add(x);
+                        l.add(new DataStore((Data) d.getData().clone()));
                     }
                     viewNode.getDataStore().getObservableListProperty(field.getId()).getValue().addAll(l);
+                    */
+                    System.out.println("****PENDIENTE****");
                 }
             });
 
@@ -215,6 +244,7 @@ public class GridNode extends VBox {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
+                    /*
                     ObservableList<DataStore> l = viewNode.getDataStore().getObservableListProperty(field.getId()).getValue();
                     List<Integer> poses = new ArrayList<>();
                     int firstSelected = -1;
@@ -236,6 +266,8 @@ public class GridNode extends VBox {
                         listenerSelectionActivo = true;
                     }
                     t.requestFocus();
+                    */
+                    System.out.println("****PENDIENTE****");
                 }
             });
 
@@ -243,6 +275,7 @@ public class GridNode extends VBox {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
+                    /*
                     ObservableList<DataStore> l = viewNode.getDataStore().getObservableListProperty(field.getId()).getValue();
                     List<Integer> poses = new ArrayList<>();
                     int lastSelected = -1;
@@ -265,6 +298,8 @@ public class GridNode extends VBox {
                         listenerSelectionActivo = true;
                     }
                     t.requestFocus();
+                    */
+                    System.out.println("****PENDIENTE****");
                 }
             });
         }
@@ -284,9 +319,31 @@ public class GridNode extends VBox {
         if (toolBar.getItems().size() > 0) getChildren().add(toolBar);
     }
 
+    private DataStore aDataStore(TreeItem<DataStore> root) {
+        if (root == null) return null;
+        else {
+            DataStore data = root.getValue();
+            for (TreeItem<DataStore> h : root.getChildren()) {
+                data.getObservableListProperty("_children").getValue().add(aDataStore(h));
+            }
+            return data;
+        }
+    }
 
-    private TableView<DataStore> buildTable(GridField c) {
-        t = new TableView<>();
+    private Data aData(TreeItem<Data> root) {
+        if (root == null) return null;
+        else {
+            Data data = root.getValue();
+            for (TreeItem<Data> h : root.getChildren()) {
+                data.getList("_children").add(aData(h));
+            }
+            return data;
+        }
+    }
+
+
+    private TreeTableView<DataStore> buildTable(GridField c) {
+        t = new TreeTableView<>();
 
         //t.setBlendMode(BlendMode.GREEN);
 
@@ -298,14 +355,27 @@ public class GridNode extends VBox {
             pname += "_data";
         }
 
-        Property<ObservableList<DataStore>> i = viewNode.getDataStore().getObservableListProperty(pname);//dataStore.getFilteredObservableListProperty3(id, campo.getFiltros());
-        t.itemsProperty().bindBidirectional(i);
+        Property p = viewNode.getDataStore().getProperty(pname);
+
+        p.addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                DataStore d = null;
+                System.out.println("property has changed to " + ((newValue != null)?newValue.getClass().getName():"null"));
+                if (newValue instanceof DataStore) d = (DataStore) newValue;
+                else if (newValue instanceof Data) d = new DataStore((Data) newValue);
+                fill(t, d);
+            }
+        });
+
+        fill(t, (DataStore)p.getValue());
+
 
         if (!c.isUsedToSelect() || c.isUsedToSelectMultipleValues()) t.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         else t.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        t.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<DataStore>() {
+        t.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<DataStore>>() {
             @Override
-            public void onChanged(Change<? extends DataStore> cambios) {
+            public void onChanged(Change<? extends TreeItem<DataStore>> item) {
                 if (listenerSelectionActivo) {
                     if (c.isUsedToSelect()) {
                         if (c.isUsedToSelectMultipleValues()) {
@@ -314,10 +384,17 @@ public class GridNode extends VBox {
                             viewNode.getDataStore().getProperty(c.getId()).setValue(t.getSelectionModel().getSelectedItem());
                         }
                     } else {
-                        for (DataStore d : t.getItems()) d.set("_selected", false);
-                        for (DataStore d : t.getSelectionModel().getSelectedItems()) if (d != null) d.set("_selected", true);
+                        for (DataStore d : aplanarDataStore(((DataStore)p.getValue()))) if (d != null) d.set("_selected", false);
+                        List<DataStore> ll = aplanarDataStore(((DataStore)p.getValue()));
+                        for (TreeItem<DataStore> i : t.getSelectionModel().getSelectedItems()) if (i != null && i.getValue() != null) {
+                            i.getValue().set("_selected", true);
+                            for (DataStore z : ll) if (z.get("__id").equals(i.getValue().get("__id"))) {
+                                z.set("_selected", true);
+                            }
+                        }
                     }
                 }
+
             }
         });
         t.setEditable(false);
@@ -333,6 +410,97 @@ public class GridNode extends VBox {
         return t;
     }
 
+    private List<DataStore> aplanarDataStore(DataStore data) {
+        List<DataStore> l = new ArrayList<>();
+        aplanarDataStore(l, data);
+        return l;
+    }
+
+    private void aplanarDataStore(List<DataStore> l, DataStore data) {
+        if (data != null) {
+            l.add(data);
+            for (DataStore d : data.getObservableListProperty("_children").getValue()) {
+                aplanarDataStore(l, d);
+            }
+        }
+    }
+
+    private List<Data> aplanarData(Data data) {
+        List<Data> l = new ArrayList<>();
+        aplanarData(l, data);
+        return l;
+    }
+
+    private void aplanarData(List<Data> l, Data data) {
+        if (data != null) {
+            l.add(data);
+            for (Data d : data.getList("_children")) {
+                aplanarData(l, d);
+            }
+        }
+    }
+
+    private Data cloneDataTree(Data data) {
+        if (data == null) return null;
+        else {
+            return new Data(data);
+        }
+    }
+
+    private void logTree(Data data) {
+        System.out.println("tree=");
+        log("", data);
+        System.out.println("end of tree.");
+    }
+
+    private void log(String prefijo, Data data) {
+        System.out.println(prefijo + data + " (_selected=" + ((data != null)?data.get("_selected"):"---") + ")");
+        for (Data d : data.getList("_children")) {
+            log(prefijo + "  ", d);
+        }
+    }
+
+    private List<Data> aplanarDatastores(TreeItem<Data> root) {
+        List<Data> l = new ArrayList<>();
+        aplanarDatastores(l, root);
+        return l;
+    }
+
+    private void aplanarDatastores(List<Data> l, TreeItem<Data> root) {
+        if (root != null) {
+            l.add(root.getValue());
+            for (TreeItem<Data> i : root.getChildren()) {
+                aplanarDatastores(l, i);
+            }
+        }
+    }
+
+    private void fill(TreeTableView treeView, DataStore data) {
+
+        TreeItem root = createTreeItems(data);
+
+        treeView.setShowRoot(true);
+
+        treeView.setRoot(root);
+
+    }
+
+    private TreeItem createTreeItems(DataStore data) {
+
+        TreeItem<DataStore> root = new TreeItem<DataStore>(data);
+
+        root.setExpanded(true);
+
+        if (data != null) {
+            for (DataStore d : data.getObservableListProperty("_children").getValue()) {
+                root.getChildren().add(createTreeItems(d));
+            }
+        }
+
+        return root;
+
+    }
+
     private double getWidth(List<AbstractColumn> columns) {
         double w = 0;
         for (AbstractColumn c : columns) w += c.getWidth();
@@ -340,16 +508,29 @@ public class GridNode extends VBox {
         return w;
     }
 
-    private List<TableColumn<DataStore, ?>> buildColumns(TableView<DataStore> t, GridField g) {
-        List<TableColumn<DataStore, ?>> l = new ArrayList<>();
+    private List<TreeTableColumn<DataStore, ?>> buildColumns(TreeTableView<DataStore> t, GridField g) {
+        List<TreeTableColumn<DataStore, ?>> l = new ArrayList<>();
+
+
+
+        //Creating a column
+        TreeTableColumn<DataStore,String> treecolumn = new TreeTableColumn<>("Column");
+        treecolumn.setPrefWidth(150);
+
+        //Defining cell content
+        treecolumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<DataStore, String> p) ->
+                new ReadOnlyStringWrapper((p.getValue() != null && p.getValue().getValue() != null)?p.getValue().getValue().toString():null));
+
+        l.add(treecolumn);
+
 
         for (AbstractColumn c : g.getColumns()) {
 
-            TableColumn col = new TableColumn(c.getLabel());
+            TreeTableColumn col = new TreeTableColumn(c.getLabel());
 
             if (c instanceof DataColumn) {
                 col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                col.setCellFactory(MateuDataColumnTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                col.setCellFactory(MateuDataColumnTreeTableCell.<DataStore, Object>forTreeTableColumn(new StringConverter<Object>() {
                     @Override
                     public String toString(Object object) {
                         return (object == null) ? null : ((object instanceof DataStore)?"" + ((DataStore)object).get("_text"):"" + object);
@@ -372,7 +553,7 @@ public class GridNode extends VBox {
                 }));
             } else if (c instanceof LinkColumn) {
                 col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
-                col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+                col.setCellFactory(MateuLinkTreeTableCell.<DataStore, Object>forTreeTableColumn(new StringConverter<Object>() {
                     @Override
                     public String toString(Object object) {
                         if (((LinkColumn) c).getText() != null) return ((LinkColumn) c).getText();
@@ -397,7 +578,7 @@ public class GridNode extends VBox {
             } else {
                 col.setCellValueFactory(new PropertyValueFactory<Object>(c.getId()));
                 col.setCellFactory(column -> {
-                    return new TableCell<Data, Object>() {
+                    return new TreeTableCell<Data, Object>() {
 
                         @Override
                         protected void updateItem(Object item, boolean empty) {
@@ -450,9 +631,9 @@ public class GridNode extends VBox {
         }
 
         if (field.isExpandable()) {
-            TableColumn col = new TableColumn("Edit");
+            TreeTableColumn col = new TreeTableColumn("Edit");
 
-            col.setCellFactory(MateuLinkTableCell.<DataStore, Object>forTableColumn(new StringConverter<Object>() {
+            col.setCellFactory(MateuLinkTreeTableCell.<DataStore, Object>forTreeTableColumn(new StringConverter<Object>() {
                 @Override
                 public String toString(Object object) {
                     return "Edit";
@@ -470,35 +651,28 @@ public class GridNode extends VBox {
                     if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
                     else {
 
-                        int posx = 0;
-                        for (DataStore d : t.getItems()) {
-                            if (d.get("__id").equals(data.get("__id"))) {
-                                break;
-                            }
-                            posx++;
-                        }
 
-                        int finalPosx = posx;
+                        TreeItem item = findItem(t.getRoot(), data);
                         MateuUI.openView(new AbstractListEditorDialog() {
 
                             @Override
                             public Data getData(int pos) {
-                                return t.getItems().get(pos).getData();
+                                return ((DataStore)item.getValue()).getData();
                             }
 
                             @Override
                             public void setData(int pos, Data data) {
-                                t.getItems().get(pos).setData(data);
+                                ((DataStore)item.getValue()).setData(data);
                             }
 
                             @Override
                             public int getListSize() {
-                                return t.getItems().size();
+                                return (item.getParent() != null)?item.getParent().getChildren().size():0;
                             }
 
                             @Override
                             public int getInitialPos() {
-                                return finalPosx;
+                                return (item.getParent() != null)?item.getParent().getChildren().indexOf(item):0;
                             }
 
                             @Override
@@ -508,12 +682,7 @@ public class GridNode extends VBox {
 
                             @Override
                             public void onOk(Data data) {
-                                for (DataStore d : t.getItems()) {
-                                    if (d.get("__id").equals(data.get("__id"))) {
-                                        d.setData(data);
-                                        break;
-                                    }
-                                }
+                                item.setValue(data);
                             }
 
                             @Override
@@ -553,7 +722,25 @@ public class GridNode extends VBox {
         return l;
     }
 
-    public TableView<DataStore> getTableView() {
+    private TreeItem findItem(TreeItem<DataStore> root, Data data) {
+        if (root == null || root.getValue() == null || root.getValue().get("__id") == null || data == null) return null;
+        if (root.getValue().get("__id").equals(data.get("__id"))) return root;
+        else {
+            TreeItem<DataStore> item = null;
+            for (TreeItem<DataStore> i : root.getChildren()) {
+                if (i.getValue().get("__id").equals(data.get("__id"))) {
+                    item = i;
+                    break;
+                } else {
+                    item = findItem(i, data);
+                    if (item != null) break;
+                }
+            }
+            return item;
+        }
+    }
+
+    public TreeTableView<DataStore> getTableView() {
         return tableView;
     }
 }

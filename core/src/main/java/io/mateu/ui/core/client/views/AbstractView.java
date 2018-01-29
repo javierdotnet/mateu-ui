@@ -104,6 +104,10 @@ public abstract class AbstractView {
         getForm().set(k, v);
     }
 
+    public void clear() {
+        getForm().clear();
+    }
+
     public Data getData() {
         return getForm().getData();
     }

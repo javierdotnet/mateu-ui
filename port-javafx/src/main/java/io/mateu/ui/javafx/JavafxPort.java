@@ -164,12 +164,22 @@ public class JavafxPort extends Application {
 
                                                     @Override
                                                     public void setted(String k, Object v) {
-                                                        // do nothing
+                                                        if ("_id".equals(k)) {
+                                                            String oldK = view.getViewId();
+                                                            tabs.remove(oldK);
+                                                            ((AbstractEditorView) view).setInitialId(v);
+                                                            tabs.put(view.getViewId(), t);
+                                                        }
                                                     }
 
                                                     @Override
                                                     public void idsResetted() {
+                                                        ((AbstractEditorView) view).setInitialId(null);
+                                                    }
 
+                                                    @Override
+                                                    public void cleared() {
+                                                        ((AbstractEditorView) view).setInitialId(null);
                                                     }
                                                 });
                                             }

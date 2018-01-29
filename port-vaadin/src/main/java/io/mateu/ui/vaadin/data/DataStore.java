@@ -191,6 +191,8 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     @Override
     public String toString() {
         String s = "";
+        if (props.containsKey("_nameproperty")) return get(get("_nameproperty"));
+        if (props.containsKey("_text")) return get("_text");
         //s = super.toString();
         for (String k : props.keySet()) {
             if (props.get(k).getValue() instanceof DataStore) {

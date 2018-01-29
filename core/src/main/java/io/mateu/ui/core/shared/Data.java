@@ -237,6 +237,7 @@ public class Data implements Serializable, DataContainer {
     @Override
     public String toString() {
         if (containsKey("_text")) return get("_text");
+        if (containsKey("_nameproperty")) return get(get("_nameproperty"));
         return new Jsonizer().toJson(this);
     }
 

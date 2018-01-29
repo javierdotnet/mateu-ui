@@ -310,3 +310,139 @@
 .o-today {
     -fx-border-bottom: 3px solid black;
 }
+
+
+
+.mascara {
+    -fx-background-color: grey;
+    -fx-opacity: 0;
+}
+
+.seleccionado {
+    -fx-opacity: 0.5 !important;
+}
+
+
+
+.random-0 {
+    -fx-background-color: #c2ccbd;
+}
+.random-1 {
+    -fx-background-color: #879182;
+}
+.random-2 {
+    -fx-background-color: #d6ddd2;
+}
+.random-3 {
+    -fx-background-color: #ede9d5;
+}
+.random-4 {
+    -fx-background-color: #d8d7d0;
+}
+.random-5 {
+    -fx-background-color: #f7f1c5;
+}
+.random-6 {
+    -fx-background-color: #f4d8cd;
+}
+.random-7 {
+    -fx-background-color: #dbac99;
+}
+.random-8 {
+    -fx-background-color: #c9e2e8;
+}
+.random-9 {
+    -fx-background-color: #abc9d1;
+}
+.random-10 {
+    -fx-background-color: #dcf1f7;
+}
+.random-11 {
+    -fx-background-color: #bab1c9;
+}
+.random-12 {
+    -fx-background-color: #dacbf2;
+}
+.random-13 {
+    -fx-background-color: #dfdce5;
+}
+.random-14 {
+    -fx-background-color: #f9dbf4;
+}
+.random-15 {
+    -fx-background-color: #d1b1cb;
+}
+.random-16 {
+    -fx-background-color: #d6c5d2;
+}
+.random-17 {
+    -fx-background-color: #f2d0d8;
+}
+.random-18 {
+    -fx-background-color: #a57f88;
+}
+.random-19 {
+    -fx-background-color: #c4cec8;
+}
+.random-20 {
+    -fx-background-color: #93a59a;
+}
+.random-21 {
+    -fx-background-color: #83af95;
+}
+.random-22 {
+    -fx-background-color: #c3ccc7;
+}
+.random-23 {
+    -fx-background-color: #d8d7c5;
+}
+.random-24 {
+    -fx-background-color: #f7f5d7;
+}
+.random-25 {
+    -fx-background-color: #cec765;
+}
+.random-26 {
+    -fx-background-color: #8c8170;
+}
+.random-27 {
+    -fx-background-color: #ceba9a;
+}
+.random-28 {
+    -fx-background-color: #f9d8a2;
+}
+.random-29 {
+    -fx-background-color: #f4a422;
+}
+.random-30 {
+    -fx-background-color: #b57001;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

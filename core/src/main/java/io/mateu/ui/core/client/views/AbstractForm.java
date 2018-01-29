@@ -187,4 +187,8 @@ public abstract class AbstractForm extends FieldContainer {
     public void resetIds() {
         for (DataSetterListener l : dataSetterListeners) l.idsResetted();
     }
+
+    public void clear() {
+        for (DataSetterListener l : dataSetterListeners) l.cleared();
+    }
 }

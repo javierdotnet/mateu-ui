@@ -364,6 +364,11 @@ public class ValoThemeUI extends UI {
                         public void idsResetted() {
 
                         }
+
+                        @Override
+                        public void cleared() {
+
+                        }
                     });
                 }
 

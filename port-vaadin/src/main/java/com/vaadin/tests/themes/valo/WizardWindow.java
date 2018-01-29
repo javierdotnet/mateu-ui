@@ -46,6 +46,11 @@ public class WizardWindow extends Window {
             public void idsResetted() {
                 dataStore.resetIds();
             }
+
+            @Override
+            public void cleared() {
+                dataStore.clear();
+            }
         });
         wizard.addListener(new ViewListener() {
             @Override
@@ -98,6 +103,11 @@ public class WizardWindow extends Window {
 
             public void idsResetted() {
                 WizardWindow.this.dataStore.resetIds();
+            }
+
+            @Override
+            public void cleared() {
+                dataStore.clear();
             }
         });
 

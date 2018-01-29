@@ -121,6 +121,53 @@ public class ComponentsModule extends AbstractModule {
                     }
                 });
             }
+        }, (MenuEntry) new AbstractMenu("Trees") {
+
+            @Override
+            public List<MenuEntry> getEntries() {
+                return Arrays.asList((MenuEntry) new AbstractAction("Tree") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new TreeView());
+                    }
+                }, (MenuEntry) new AbstractAction("TreeGrid") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new TreeGridView());
+                    }
+                });
+            }
+
+        }, (MenuEntry) new AbstractMenu("Dates") {
+
+            @Override
+            public List<MenuEntry> getEntries() {
+                return Arrays.asList((MenuEntry) new AbstractAction("Date & datetime") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new DateFieldView());
+                    }
+                }, (MenuEntry) new AbstractAction("Calendar") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new CalendarFieldView());
+                    }
+                });
+            }
+
+        }, (MenuEntry) new AbstractMenu("Fares") {
+
+            @Override
+            public List<MenuEntry> getEntries() {
+                return Arrays.asList((MenuEntry) new AbstractAction("Fares") {
+                    @Override
+                    public void run() {
+                        MateuUI.openView(new FaresView());
+                    }
+                });
+            }
+
+
         }, (MenuEntry) new AbstractMenu("More components") {
             @Override
             public List<MenuEntry> getEntries() {

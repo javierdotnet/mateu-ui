@@ -12,4 +12,6 @@ public interface DataSetterListener {
     public void setted(String k, Object v);
 
     void idsResetted();
+
+    void cleared();
 }

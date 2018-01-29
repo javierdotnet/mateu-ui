@@ -7,7 +7,6 @@ import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.components.Separator;
 import io.mateu.ui.core.client.components.Tab;
 import io.mateu.ui.core.client.components.fields.*;
-import io.mateu.ui.core.client.components.fields.grids.CalendarField;
 import io.mateu.ui.core.client.views.ListView;
 import io.mateu.ui.core.server.ServerSideHelper;
 import io.mateu.ui.core.shared.*;
@@ -15,9 +14,11 @@ import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Pair;
 import io.mateu.ui.javafx.JFXHelper;
 import io.mateu.ui.javafx.data.DataStore;
+import io.mateu.ui.javafx.data.DataStoreProperty;
 import io.mateu.ui.javafx.data.ViewNodeDataStore;
+import io.mateu.ui.javafx.views.components.CalendarNode;
 import io.mateu.ui.javafx.views.components.GridNode;
-import javafx.application.Platform;
+import io.mateu.ui.javafx.views.components.TreeGridNode;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -38,14 +39,13 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -63,10 +63,11 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.*;
 import java.util.List;
 
@@ -156,6 +157,11 @@ public class ViewNode extends StackPane {
             @Override
             public void idsResetted() {
                 dataStore.resetIds();
+            }
+
+            @Override
+            public void cleared() {
+                dataStore.clear();
             }
         });
         build();
@@ -389,6 +395,9 @@ public class ViewNode extends StackPane {
                     });
                 }
             });
+
+            dataStore.getProperty("_title").setValue("New " + view.getTitle());
+
 
         }
 
@@ -703,12 +712,14 @@ public class ViewNode extends StackPane {
 
                 ComboBox<Pair> cmb = new ComboBox<Pair>();
                 cmb.getStyleClass().add("l");
-                cmb.getItems().addAll(((AutocompleteField)c).getValues());
+                cmb.getItems().addAll(((AutocompleteField) c).getValues());
                 cmb.setCellFactory(new Callback<javafx.scene.control.ListView<Pair>, ListCell<Pair>>() {
-                    @Override public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
+                    @Override
+                    public ListCell<Pair> call(javafx.scene.control.ListView<Pair> p) {
                         return new ListCell<Pair>() {
 
-                            @Override protected void updateItem(Pair item, boolean empty) {
+                            @Override
+                            protected void updateItem(Pair item, boolean empty) {
                                 super.updateItem(item, empty);
 
                                 if (item == null || empty) {
@@ -721,7 +732,7 @@ public class ViewNode extends StackPane {
                     }
                 });
 
-                cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
+                cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField) c).getId()));
 
                 n = control = cmb;
 
@@ -744,14 +755,14 @@ public class ViewNode extends StackPane {
                     public void handle(KeyEvent event) {
                         if (event.getCode() == KeyCode.UP) {
                             caretPos = -1;
-                            moveCaret((cmb.getEditor().getText() != null)?cmb.getEditor().getText().length():0);
+                            moveCaret((cmb.getEditor().getText() != null) ? cmb.getEditor().getText().length() : 0);
                             return;
                         } else if (event.getCode() == KeyCode.DOWN) {
                             if (!cmb.isShowing()) {
                                 cmb.show();
                             }
                             caretPos = -1;
-                            moveCaret((cmb.getEditor().getText() != null)?cmb.getEditor().getText().length():0);
+                            moveCaret((cmb.getEditor().getText() != null) ? cmb.getEditor().getText().length() : 0);
                             return;
                         } else if (event.getCode() == KeyCode.BACK_SPACE) {
                             moveCaretToPos = true;
@@ -771,7 +782,7 @@ public class ViewNode extends StackPane {
 
                         ObservableList<Pair> list = FXCollections.observableArrayList();
                         for (Pair aData : data) {
-                            if (aData != null && (cmb.getEditor().getText() == null  || (aData.getText() != null
+                            if (aData != null && (cmb.getEditor().getText() == null || (aData.getText() != null
                                     && aData.getText().toLowerCase().contains(cmb.getEditor().getText().toLowerCase())))) {
                                 list.add(aData);
                             }
@@ -783,7 +794,7 @@ public class ViewNode extends StackPane {
                         if (!moveCaretToPos) {
                             caretPos = -1;
                         }
-                        moveCaret((t != null)?t.length():0);
+                        moveCaret((t != null) ? t.length() : 0);
                         if (!list.isEmpty()) {
                             cmb.show();
                         }
@@ -803,10 +814,62 @@ public class ViewNode extends StackPane {
                     firstField = cmb.getEditor();
                 }
 
+            } else if (c instanceof CalendarField) {
 
-            } else if (c instanceof CalendarField || c instanceof DateField) {
+                CalendarField f = (CalendarField) c;
+
+                n = new CalendarNode(this, f, dataStore.getDataProperty(f.getId()));
+
+            } else if (c instanceof DateField) {
                 DatePicker tf;
                 n = control = tf = new DatePicker();
+                tf.converterProperty().setValue(new StringConverter<LocalDate>() {
+                    @Override
+                    public String toString(LocalDate d) {
+                        return (d != null)?d.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")):null;
+                    }
+
+                    @Override
+                    public LocalDate fromString(String s) {
+                        LocalDate d = null;
+                        if (!Strings.isNullOrEmpty(s)) {
+                            int i = 0;
+                            try {
+                                i = Integer.parseInt(s);
+                            } catch (Exception e) {
+
+                            }
+                            if (i > 0) {
+                                if (s.length() == 4) {
+                                    int m = i % 100;
+                                    int z = (i - m) / 100;
+                                    d = LocalDate.of(LocalDate.now().getYear(), m, z);
+                                    if (d.isBefore(LocalDate.now())) d = d.plusYears(1);
+                                } else if (s.length() == 6) {
+                                    int y = i % 100;
+                                    i = (i - y) / 100;
+                                    int m = i % 100;
+                                    int z = (i - m) / 100;
+                                    d = LocalDate.of(2000 + y, m, z);
+                                    if (d.isBefore(LocalDate.now())) d = d.plusYears(1);
+                                } else if (s.length() == 8) {
+                                    int y = i % 10000;
+                                    i = (i - y) / 10000;
+                                    int m = i % 100;
+                                    int z = (i - m) / 100;
+                                    d = LocalDate.of(y, m, z);
+                                }
+                            } else {
+                                try {
+                                    d = LocalDate.parse(s, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                                } catch (Exception e) {
+
+                                }
+                            }
+                        }
+                        return d;
+                    }
+                });
                 tf.valueProperty().bindBidirectional(dataStore.getLocalDateProperty(((AbstractField) c).getId()));
                 n = empaquetar(tf, 260);
             } else if (c instanceof DateTimeField || c instanceof GMTDateField) {
@@ -814,11 +877,91 @@ public class ViewNode extends StackPane {
                 n = control = tf = new TextField();
                 tf.getStyleClass().add("l");
 
-                String pattern = "yyyy-MM-dd HH:mm";
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+                String pattern = "dd/MM/yyyy HH:mm";
                 tf.setTooltip(new Tooltip(pattern));
 
-                tf.textProperty().bindBidirectional(dataStore.getLocalDateTimeProperty(((AbstractField) c).getId()), new LocalDateTimeStringConverter(formatter, null));
+                Property<LocalDateTime> prop = dataStore.getLocalDateTimeProperty(((AbstractField) c).getId());
+
+                tf.focusedProperty().addListener(new ChangeListener<Boolean>()
+                {
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+                    {
+                        if (!newPropertyValue)
+                        {
+                            tf.setText((prop.getValue() != null)?prop.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")):null);
+                        }
+                    }
+                });
+
+                tf.textProperty().bindBidirectional(prop, new StringConverter<LocalDateTime>() {
+                    @Override
+                    public String toString(LocalDateTime d) {
+                        return (d != null)?d.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")):null;
+                    }
+
+                    @Override
+                    public LocalDateTime fromString(String s) {
+                        LocalDateTime d = null;
+                        if (!Strings.isNullOrEmpty(s)) {
+                            int i = 0;
+                            try {
+                                i = Integer.parseInt(s);
+                            } catch (Exception e) {
+
+                            }
+                            if (i > 0) {
+                                if (s.length() == 4) {
+                                    int mi = i % 100;
+                                    i = (i - mi) / 100;
+                                    int h = i % 100;
+                                    i = (i - h) / 100;
+                                    d = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), h, mi);
+                                    if (d.isBefore(LocalDateTime.now())) d = d.plusDays(1);
+                                } else if (s.length() == 6) {
+                                    int mi = i % 100;
+                                    i = (i - mi) / 100;
+                                    int h = i % 100;
+                                    i = (i - h) / 100;
+                                    int dd = i % 100;
+                                    i = (i - dd) / 100;
+                                    d = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), dd, h, mi);
+                                    if (d.isBefore(LocalDateTime.now())) d = d.plusMonths(1);
+                                } else if (s.length() == 8) {
+                                    int mi = i % 100;
+                                    i = (i - mi) / 100;
+                                    int h = i % 100;
+                                    i = (i - h) / 100;
+                                    int m = i % 100;
+                                    i = (i - m) / 100;
+                                    int dd = i % 100;
+                                    i = (i - dd) / 100;
+                                    d = LocalDateTime.of(LocalDate.now().getYear(), m, dd, h, mi);
+                                    if (d.isBefore(LocalDateTime.now())) d = d.plusYears(1);
+                                } else if (s.length() == 8) {
+                                    int mi = i % 100;
+                                    i = (i - mi) / 100;
+                                    int h = i % 100;
+                                    i = (i - h) / 100;
+                                    int m = i % 100;
+                                    i = (i - m) / 100;
+                                    int dd = i % 100;
+                                    i = (i - dd) / 100;
+                                    d = LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), dd, h, mi);
+                                    if (d.isBefore(LocalDateTime.now())) d = d.plusMonths(1);
+                                }
+                            } else {
+                                try {
+                                    d = LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                                } catch (Exception e) {
+
+                                }
+                            }
+                        }
+                        return d;
+                    }
+                });
+
             } else if (c instanceof CheckBoxField) {
                 CheckBox tf;
                 n = control = tf = new CheckBox();
@@ -1057,7 +1200,7 @@ public class ViewNode extends StackPane {
                 HBox h1;
                 v.getChildren().add(h1 = new HBox());
 
-                dataStore.getFileLocatorProperty(((AbstractField)c).getId()).addListener(new ChangeListener<FileLocator>() {
+                dataStore.getFileLocatorProperty(((AbstractField) c).getId()).addListener(new ChangeListener<FileLocator>() {
 
                     @Override
                     public void changed(ObservableValue<? extends FileLocator> arg0, FileLocator oldValue, FileLocator newValue) {
@@ -1082,7 +1225,7 @@ public class ViewNode extends StackPane {
 
                                 @Override
                                 public void handle(ActionEvent paramT) {
-                                    dataStore.getFileLocatorProperty(((AbstractField)c).getId()).setValue(null);
+                                    dataStore.getFileLocatorProperty(((AbstractField) c).getId()).setValue(null);
                                 }
                             });
 
@@ -1091,7 +1234,8 @@ public class ViewNode extends StackPane {
                             v.setSpacing(0);
                         }
                     }
-                });;
+                });
+                ;
 
                 Button b;
                 h1.getChildren().add(b = new Button("Choose file..."));
@@ -1107,7 +1251,7 @@ public class ViewNode extends StackPane {
                         FileChooser fc = new FileChooser();
                         File f = fc.showOpenDialog(s);
                         if (f != null) try {
-                            dataStore.getFileLocatorProperty(((AbstractField)c).getId()).setValue(ServerSideHelper.getServerSideApp().upload(f.getName(), JFXHelper.read(new FileInputStream(f)), ((FileField)c).isTemporary()));
+                            dataStore.getFileLocatorProperty(((AbstractField) c).getId()).setValue(ServerSideHelper.getServerSideApp().upload(f.getName(), JFXHelper.read(new FileInputStream(f)), ((FileField) c).isTemporary()));
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                             MateuUI.alert("" + e.getClass().getName() + ":" + e.getMessage());
@@ -1125,6 +1269,56 @@ public class ViewNode extends StackPane {
 
                 n = empaquetar(n, 260);
 
+            } else if (c instanceof TreeField) {
+                TreeField f = (TreeField) c;
+
+
+                TreeView<Data> treeView = new TreeView<Data>();
+
+                treeView.setCellFactory(new Callback<TreeView<Data>, TreeCell<Data>>() {
+                    @Override
+                    public TreeCell<Data> call(TreeView<Data> param) {
+                        TreeCell cell = new TreeCell() {
+                            @Override
+                            protected void updateItem(Object item, boolean empty) {
+                                super.updateItem(item, empty);
+                                setText(item == null ? "" : item.toString());
+                            }
+                        };
+
+                        cell.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+                            @Override public void handle(MouseEvent t) {
+                                if (t.getButton() == MouseButton.PRIMARY && t.getClickCount() == 2) {
+                                    t.consume();
+                                    f.open((Data) cell.getTreeItem().getValue());
+                                }
+                            }
+                        });
+                        return cell;
+                    }
+                });
+
+                Property p = dataStore.getProperty(f.getId());
+
+                p.addListener(new ChangeListener<Object>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                        Data d = null;
+                        if (newValue instanceof DataStore) d = ((DataStore)newValue).getData();
+                        else if (newValue instanceof Data) d = (Data) newValue;
+                        fill(treeView, d);
+                    }
+                });
+
+                fill(treeView, ((DataStore)p.getValue()).getData());
+
+                n = treeView;
+
+            } else if (c instanceof TreeGridField) {
+                TreeGridField f = (TreeGridField) c;
+                TreeGridNode gn;
+                n = gn = new TreeGridNode(this, f);
+                control = gn.getTableView();
             } else if (c instanceof GridField) {
                 GridNode gn;
                 n = gn = new GridNode(this, (GridField) c);
@@ -1311,6 +1505,38 @@ public class ViewNode extends StackPane {
 
                         }
                         return d;
+                    }
+                });
+                n = tf;
+
+            } else if (c instanceof SupplementOrPositiveField) {
+                TextField tf;
+                n = control = tf = new TextField() {
+                    public void replaceText(int start, int end, String text) {
+                        //System.out.println("replaceText(" + start + "," + end + "," + text + ")");
+                        String s = getText();
+                        if (s == null) s = "";
+                        s = s.substring(0, start) + text + s.substring(end);
+                        if (s.matches("[+-]?[0-9]+[,\\.]?[0-9]*[%]?")) {
+                            super.replaceText(start, end, text);
+                        } else {
+                            //Aga2.getHelper().display("Campo numérico entero. Solo acepta valores enteros, sin decimales");
+                        }
+                    };
+                };
+                n = empaquetar(n, 260);
+                tf.setAlignment(Pos.BASELINE_RIGHT);
+
+                tf.textProperty().bindBidirectional(dataStore.getSupplementOrPositiveProperty(((SupplementOrPositiveField) c).getId()), new StringConverter<SupplementOrPositive>() {
+                    @Override
+                    public String toString(SupplementOrPositive object) {
+                        if (object == null) return null;
+                        else return object.toStringValue();
+                    }
+
+                    @Override
+                    public SupplementOrPositive fromString(String string) {
+                        return SupplementOrPositive.fromStringValue(string);
                     }
                 });
                 n = tf;
@@ -1539,15 +1765,15 @@ public class ViewNode extends StackPane {
                 javafx.scene.control.Label tf = new javafx.scene.control.Label();
                 tf.setWrapText(true);
                 tf.setMaxWidth(260);
-                tf.textProperty().bindBidirectional(dataStore.getDataProperty(((AbstractField) c).getId()), new StringConverter<Data>() {
+                tf.textProperty().bindBidirectional(dataStore.getDataProperty(((AbstractField) c).getId()), new StringConverter<DataStore>() {
                     @Override
-                    public String toString(Data object) {
-                        if (object != null) return object.getString("text");
+                    public String toString(DataStore object) {
+                        if (object != null) return object.get("text");
                         return null;
                     }
 
                     @Override
-                    public Data fromString(String string) {
+                    public DataStore fromString(String string) {
                         return null;
                     }
                 });
@@ -1920,24 +2146,11 @@ public class ViewNode extends StackPane {
                 HBox b;
                 n = b = new HBox();
 
-                Property<Data> prop = dataStore.getDataProperty(((AbstractField) c).getId());
+                DataStoreProperty prop = (DataStoreProperty) dataStore.getDataProperty(((AbstractField) c).getId());
 
                 javafx.scene.control.TextField tf = new javafx.scene.control.TextField();
 
-                tf.textProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        Data data = new Data(prop.getValue());
-                        data.set(data.get("_selected"), newValue);
-                        prop.setValue(data);
-                    }
-                });
-
-                Data data = prop.getValue();
-                if (!data.containsKey("_selected")) {
-                    data.set("_selected", "en");
-                }
-                tf.setText(data.get(data.get("_selected")));
+                DataStore data = prop.getValue();
 
                 control = tf;
                 tf.getStyleClass().add("l");
@@ -1953,24 +2166,33 @@ public class ViewNode extends StackPane {
                 b.getChildren().add(lc = new ComboBox<String>(idiomas));
 
 
+                tf.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        prop.getValue().set(lc.getValue(), newValue);
+                        DataStore nds = new DataStore(prop.getValue().getData());
+                        nds.set("__id", UUID.randomUUID().toString());
+                        prop.setValue(nds);
+                    }
+                });
+
+
                 lc.valueProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                         if (newValue == null) newValue = "en";
-                        Data data = new Data(prop.getValue());
-                        data.set("_selected", newValue);
-                        prop.setValue(data);
+                        tf.setText(prop.getValue().get(newValue));
                     }
                 });
 
-                lc.setValue(data.get("_selected"));
+                lc.setValue("en");
 
+                tf.setText(data.get(lc.getValue()));
 
-                prop.addListener(new ChangeListener<Data>() {
+                prop.addListener(new ChangeListener<DataStore>() {
                     @Override
-                    public void changed(ObservableValue<? extends Data> observable, Data oldValue, Data newValue) {
-                        tf.setText((newValue != null)?newValue.get(newValue.get("_selected")):null);
-                        lc.setValue((newValue != null)?newValue.get("_selected"):null);
+                    public void changed(ObservableValue<? extends DataStore> observable, DataStore oldValue, DataStore newValue) {
+                        tf.setText((newValue != null)?newValue.get(lc.getValue()):null);
                     }
                 });
 
@@ -1979,24 +2201,11 @@ public class ViewNode extends StackPane {
                 HBox b;
                 n = b = new HBox();
 
-                Property<Data> prop = dataStore.getDataProperty(((AbstractField) c).getId());
+                DataStoreProperty prop = (DataStoreProperty) dataStore.getDataProperty(((AbstractField) c).getId());
 
                 javafx.scene.control.TextArea tf = new javafx.scene.control.TextArea();
 
-                tf.textProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        Data data = new Data(prop.getValue());
-                        data.set(data.get("_selected"), newValue);
-                        prop.setValue(data);
-                    }
-                });
-
-                Data data = prop.getValue();
-                if (!data.containsKey("_selected")) {
-                    data.set("_selected", "en");
-                }
-                tf.setText(data.get(data.get("_selected")));
+                DataStore data = prop.getValue();
 
                 control = tf;
                 tf.getStyleClass().add("l");
@@ -2012,24 +2221,33 @@ public class ViewNode extends StackPane {
                 b.getChildren().add(lc = new ComboBox<String>(idiomas));
 
 
+                tf.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        prop.getValue().set(lc.getValue(), newValue);
+                        DataStore nds = new DataStore(prop.getValue().getData());
+                        nds.set("__id", UUID.randomUUID().toString());
+                        prop.setValue(nds);
+                    }
+                });
+
+
                 lc.valueProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                         if (newValue == null) newValue = "en";
-                        Data data = new Data(prop.getValue());
-                        data.set("_selected", newValue);
-                        prop.setValue(data);
+                        tf.setText(prop.getValue().get(newValue));
                     }
                 });
 
-                lc.setValue(data.get("_selected"));
+                lc.setValue("en");
 
+                tf.setText(data.get(lc.getValue()));
 
-                prop.addListener(new ChangeListener<Data>() {
+                prop.addListener(new ChangeListener<DataStore>() {
                     @Override
-                    public void changed(ObservableValue<? extends Data> observable, Data oldValue, Data newValue) {
-                        tf.setText((newValue != null)?newValue.get(newValue.get("_selected")):null);
-                        lc.setValue((newValue != null)?newValue.get("_selected"):null);
+                    public void changed(ObservableValue<? extends DataStore> observable, DataStore oldValue, DataStore newValue) {
+                        tf.setText((newValue != null)?newValue.get(lc.getValue()):null);
                     }
                 });
             } else if (c instanceof io.mateu.ui.core.client.components.fields.TextField) {
@@ -2172,6 +2390,32 @@ public class ViewNode extends StackPane {
         }
 
         return n;
+    }
+
+    private void fill(TreeView<Data> treeView, Data data) {
+
+        TreeItem<Data> root = createTreeItems(data);
+
+        treeView.setShowRoot(true);
+
+        treeView.setRoot(root);
+
+    }
+
+    private TreeItem<Data> createTreeItems(Data data) {
+
+        TreeItem<Data> root = new TreeItem<Data>(data);
+
+        root.setExpanded(true);
+
+        if (data != null) {
+            for (Data d : data.getList("_children")) {
+                root.getChildren().add(createTreeItems(d));
+            }
+        }
+
+        return root;
+
     }
 
     public static void bindTooltip(final Node node, final Tooltip tooltip){

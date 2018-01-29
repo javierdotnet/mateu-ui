@@ -55,6 +55,13 @@ public class WizardDialog extends Dialog {
             public void idsResetted() {
                 dataStore.resetIds();
             }
+
+            @Override
+            public void cleared() {
+                dataStore.clear();
+            }
+
+
         });
         wizard.addListener(new ViewListener() {
             @Override

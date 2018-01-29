@@ -71,6 +71,11 @@ public class ViewsComponent extends TabSheet {
                     public void idsResetted() {
 
                     }
+
+                    @Override
+                    public void cleared() {
+
+                    }
                 });
             }
 

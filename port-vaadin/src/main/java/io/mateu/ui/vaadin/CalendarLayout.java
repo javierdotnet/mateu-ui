@@ -322,10 +322,11 @@ public class CalendarLayout extends VerticalLayout {
                         {
                             List<Data> l = prop.getValue().getList("_options");
                             l.add(data);
-                            ((ListDataProvider<Data>)comboOpciones.getDataProvider()).getItems().add(data);
+                            //((ListDataProvider<Data>)comboOpciones.getDataProvider()).getItems().add(data);
+                            comboOpciones.getDataProvider().refreshAll();
                             data.set("_css", RandomStyle.getCsss().get(l.size() % RandomStyle.getCsss().size()));
                         }
-                        clear();
+                        setData(new Data());
                         set("__id", "" + UUID.randomUUID());
 
                         if (fecha != null) {

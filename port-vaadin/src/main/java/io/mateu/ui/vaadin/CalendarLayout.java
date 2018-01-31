@@ -1,11 +1,14 @@
 package io.mateu.ui.vaadin;
 
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.ui.*;
+import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.components.RandomStyle;
 import io.mateu.ui.core.client.components.fields.CalendarField;
+import io.mateu.ui.core.client.views.AbstractAddRecordDialog;
+import io.mateu.ui.core.client.views.AbstractForm;
+import io.mateu.ui.core.client.views.AbstractListEditorDialog;
 import io.mateu.ui.core.shared.Data;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
@@ -14,16 +17,14 @@ import javafx.beans.value.ObservableValue;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CalendarLayout extends VerticalLayout {
 
     private final CalendarField field;
     private final CssLayout layoutCalendario;
     private final HorizontalLayout layoutFormulario;
+    public ComboBox<Data> comboOpciones;
     private final Property<Data> prop;
 
 
@@ -174,7 +175,9 @@ public class CalendarLayout extends VerticalLayout {
 
                     }
 
-                    nodosemana.addComponent(new DiaLayout(this, d, values.get(d)));
+                    DiaLayout dl;
+                    nodosemana.addComponent(dl = new DiaLayout(this, d, values.get(d)));
+                    nodos.put(d, dl);
 
                     d = d.plusDays(1);
                 }
@@ -210,8 +213,223 @@ public class CalendarLayout extends VerticalLayout {
 
     private void refrescarFormulario() {
         layoutFormulario.removeAllComponents();
-        layoutFormulario.addComponent(new Label("Aquí el formulario"));
+
+        layoutFormulario.addComponent(new Label("Options:"));
+
+        layoutFormulario.addComponent(comboOpciones = new ComboBox<>());
+        ListDataProvider<Data> ldp;
+        comboOpciones.setDataProvider(ldp = new ListDataProvider<>(prop.getValue().getList("_options")));
+        comboOpciones.setTextInputAllowed(false);
+/*        comboOpciones.setItemCaptionGenerator(new ItemCaptionGenerator<Data>() {
+            @Override
+            public String apply(Data data) {
+                if (data == null) return null;
+                return "<div class='" + data.get("_css") + "'>" + data.get("_text") + "</div>";
+            }
+        });*/
+/*
+        comboOpciones.setStyleGenerator(new StyleGenerator<Data>() {
+            @Override
+            public String apply(Data data) {
+                if (data == null) return null;
+                return "background-color: red;";
+            }
+        });
+*/
+        //comboOpciones.setCaptionAsHtml(true);
+
+
+        layoutFormulario.addComponent(new Button("Edit", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                Object __id = null;
+                if (comboOpciones.getValue() != null) __id = comboOpciones.getValue().get("__id");
+                edit(__id, null);
+            }
+        }));
+        layoutFormulario.addComponent(new Button("Add", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                edit(null, null);
+            }
+        }));
+        layoutFormulario.addComponent(new Button("Set", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                set(comboOpciones.getValue());
+            }
+        }));
+        layoutFormulario.addComponent(new Button("Unset", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                set(null);
+            }
+        }));
+
+        CheckBox cb;
+        layoutFormulario.addComponent(cb = new CheckBox("Add selections"));
+        cb.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
+            @Override
+            public void valueChange(HasValue.ValueChangeEvent<Boolean> valueChangeEvent) {
+               anadiendo = valueChangeEvent.getValue();
+            }
+        });
+
+        layoutFormulario.addComponent(cb = new CheckBox("Week days selection"));
+        cb.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
+            @Override
+            public void valueChange(HasValue.ValueChangeEvent<Boolean> valueChangeEvent) {
+                diasSemana = valueChangeEvent.getValue();
+            }
+        });
+    }
+
+    private void set(Data value) {
+        Object __id = null;
+        if (value != null) __id = value.get("__id");
+
+        for (DiaLayout d : seleccion) {
+            if (__id != null) {
+                if (d.data == null) {
+                    d.data = new Data("_key", d.fecha, "_value", __id);
+                    d.data.set("_value", __id);
+                }
+            } else {
+                if (d.data != null) {
+                    d.data.set("_value", __id);
+                }
+            }
+            if (d.value != null) d.removeStyleName(d.value.get("_css"));
+            d.value = value;
+            if (d.value != null) d.addStyleName(d.value.get("_css"));
+        }
     }
 
 
+    public void edit(Object __id, LocalDate fecha) {
+        AbstractForm f = field.getDataForm();
+
+        if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
+        else {
+
+            if (__id == null) {
+                MateuUI.openView(new AbstractAddRecordDialog() {
+
+                    @Override
+                    public void addAndClean(Data data) {
+                        System.out.println("***********************field.getNameProperty()=" + field.getNameProperty());
+                        data.set("_nameproperty", field.getNameProperty());
+                        {
+                            List<Data> l = prop.getValue().getList("_options");
+                            l.add(data);
+                            ((ListDataProvider<Data>)comboOpciones.getDataProvider()).getItems().add(data);
+                            data.set("_css", RandomStyle.getCsss().get(l.size() % RandomStyle.getCsss().size()));
+                        }
+                        clear();
+                        set("__id", "" + UUID.randomUUID());
+
+                        if (fecha != null) {
+                            Data dx = null;
+                            if (!values.containsKey(fecha)) {
+                                values.put(fecha, dx = new Data(new Data("_key", fecha)));
+
+                                List<Data> l = prop.getValue().getList("_values");
+                                l.add(dx);
+
+                            } else dx = values.get(fecha);
+                            dx.set("_value", data.get("__id"));
+                        }
+                    }
+
+                    @Override
+                    public AbstractForm createForm() {
+                        return f;
+                    }
+
+                    @Override
+                    public String getTitle() {
+                        return "Add new record";
+                    }
+
+                    @Override
+                    public void build() {
+                    }
+                });
+
+            } else {
+
+                int posx = 0;
+                for (Data d : prop.getValue().getList("_options")) {
+                    if (d.get("__id").equals(__id)) {
+                        break;
+                    }
+                    posx++;
+                }
+
+                int finalPosx = posx;
+                MateuUI.openView(new AbstractListEditorDialog() {
+
+                    @Override
+                    public Data getData(int pos) {
+                        return prop.getValue().getList("_options").get(pos);
+                    }
+
+                    @Override
+                    public void setData(int pos, Data data) {
+                        prop.getValue().getList("_options").set(pos, data);
+                    }
+
+                    @Override
+                    public int getListSize() {
+                        return prop.getValue().getList("_options").size();
+                    }
+
+                    @Override
+                    public int getInitialPos() {
+                        return finalPosx;
+                    }
+
+                    @Override
+                    public Data initializeData() {
+                        return prop.getValue().getList("_options").get(getInitialPos());
+                    }
+
+                    @Override
+                    public void onOk(Data data) {
+                        for (Data d : prop.getValue().getList("_options")) {
+                            if (d.get("__id").equals(data.get("__id"))) {
+                                d.copy(data);
+                                break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public String getTitle() {
+                        return "Edit record";
+                    }
+
+                    @Override
+                    public AbstractForm createForm() {
+                        return f;
+                    }
+
+                    @Override
+                    public void build() {
+
+                    }
+                });
+
+            }
+
+        }
+    }
+
+    public void limpiarSeleccion() {
+        for (DiaLayout l : seleccion) {
+            l.removeStyleName("seleccionado");
+            l.seleccionado = false;
+        }
+        seleccion.clear();
+    }
 }

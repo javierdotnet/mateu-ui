@@ -1173,7 +1173,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
-            //cb.setTextFieldEnabled(false);
+            //comboOpciones.setTextFieldEnabled(false);
 
             cs.add(cb);
 
@@ -1202,7 +1202,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
-            //cb.setTextFieldEnabled(false);
+            //comboOpciones.setTextFieldEnabled(false);
 
             cs.add(cb);
         } else if (field instanceof CheckBoxField) {

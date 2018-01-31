@@ -666,6 +666,25 @@
     padding-top: 6px;
     text-align: center;
 
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+  }
+
+  .dia .v-label {
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+  }
+
+  .dia.v-csslayout-drag-center {
+    background-color: lightgrey;
+  }
+
+  .dia.seleccionado {
+    border: 1px solid blue;
   }
 
   .semana .v-spacing {

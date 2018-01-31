@@ -15305,6 +15305,17 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom: 3px solid black !important;
 }
 
+.quonext .dia {
+	width: 30px;
+	height: 30px;
+	padding-top: 6px;
+	text-align: center;
+}
+
+.quonext .semana .v-spacing {
+	width: 1px;
+}
+
 .quonext .random-0 {
 	background-color: #c2ccbd;
 }

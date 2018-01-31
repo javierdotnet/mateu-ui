@@ -17147,6 +17147,26 @@ div.v-layout.v-horizontal.v-widget {
 	height: 30px;
 	padding-top: 6px;
 	text-align: center;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	-webkit-user-select: none !important;
+	user-select: none !important;
+}
+
+.mateu .dia .v-label {
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	-webkit-user-select: none !important;
+	user-select: none !important;
+}
+
+.mateu .dia.v-csslayout-drag-center {
+	color: red;
+	font-weight: bold;
+}
+
+.mateu .dia.seleccionado {
+	border: 1px solid blue;
 }
 
 .mateu .semana .v-spacing {

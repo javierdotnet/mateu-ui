@@ -411,15 +411,29 @@ public class ValoThemeUI extends UI {
             Label footerText = new Label("");
             footerText.setSizeUndefined();
 
-            Button ok = new Button(d.getOkText(), e -> {
-                List<String> errors = v.getView().getForm().validate();
-                if (errors.size() > 0) {
-                    MateuUI.notifyErrors(errors);
-                } else {
-                    if (d.isCloseOnOk()) subWindow.close();
-                    ((AbstractDialog)view).onOk(v.getView().getForm().getData());
-                }
-            });
+
+            Button ok;
+            if (d instanceof AbstractAddRecordDialog) {
+                ok = new Button("Add record", e -> {
+                    List<String> errors = v.getView().getForm().validate();
+                    if (errors.size() > 0) {
+                        MateuUI.notifyErrors(errors);
+                    } else {
+                        //if (d.isCloseOnOk()) subWindow.close();
+                        ((AbstractAddRecordDialog)view).addAndClean(v.getView().getForm().getData());
+                    }
+                });
+            } else {
+                ok = new Button(d.getOkText(), e -> {
+                    List<String> errors = v.getView().getForm().validate();
+                    if (errors.size() > 0) {
+                        MateuUI.notifyErrors(errors);
+                    } else {
+                        if (d.isCloseOnOk()) subWindow.close();
+                        ((AbstractDialog)view).onOk(v.getView().getForm().getData());
+                    }
+                });
+            }
             ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
             ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
@@ -438,6 +452,7 @@ public class ValoThemeUI extends UI {
                 }
                 footer.addComponent(b);
             }
+
 
             if (d instanceof AbstractListEditorDialog) {
                 AbstractListEditorDialog lv = (AbstractListEditorDialog) d;

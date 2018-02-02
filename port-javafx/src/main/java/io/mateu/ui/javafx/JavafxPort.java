@@ -568,6 +568,16 @@ public class JavafxPort extends Application {
             @Override
             public void open(URL url) {
                 try {
+                    if( Desktop.isDesktopSupported() )
+                    {
+                        new Thread(() -> {
+                            try {
+                                Desktop.getDesktop().browse( url.toURI() );
+                            } catch (IOException | URISyntaxException e1) {
+                                e1.printStackTrace();
+                            }
+                        }).start();
+                    } else
                     try {
                         File f = new File(url.toURI());
                         Desktop.getDesktop().open(f);

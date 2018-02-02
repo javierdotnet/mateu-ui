@@ -11,7 +11,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.dnd.DragSourceExtension;
 import com.vaadin.ui.dnd.DropTargetExtension;
-import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.vaadin.data.DataStore;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -22,15 +22,15 @@ import java.util.Optional;
 public class DiaLayout extends CssLayout {
     private final CalendarLayout calendarLayout;
     public final LocalDate fecha;
-    public Data data;
-    public Data value;
+    public DataStore data;
+    public DataStore value;
     public boolean seleccionado = false;
 
     public DiaLayout(CalendarLayout calendarLayout) {
         this(calendarLayout, null, null);
     }
 
-    public DiaLayout(CalendarLayout calendarLayout, LocalDate fecha, Data dataIn) {
+    public DiaLayout(CalendarLayout calendarLayout, LocalDate fecha, DataStore dataIn) {
         this.calendarLayout = calendarLayout;
         this.fecha = fecha;
         this.data = dataIn;
@@ -49,8 +49,8 @@ public class DiaLayout extends CssLayout {
                     calendarLayout.edit((data != null)?data.get("_value"):null, fecha);
                 } else {
                     Object __id = (data != null)?data.get("_value"):null;
-                    Data found = null;
-                    if (__id != null) for (Data d : ((ListDataProvider<Data>)calendarLayout.comboOpciones.getDataProvider()).getItems()) {
+                    DataStore found = null;
+                    if (__id != null) for (DataStore d : ((ListDataProvider<DataStore>)calendarLayout.comboOpciones.getDataProvider()).getItems()) {
                         if (__id.equals(d.get("__id"))) found = d;
                     }
                     calendarLayout.comboOpciones.setValue(found);

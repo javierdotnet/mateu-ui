@@ -11,6 +11,10 @@ import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.Pair;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -171,7 +175,18 @@ public class ComponentsModule extends AbstractModule {
         }, (MenuEntry) new AbstractMenu("More components") {
             @Override
             public List<MenuEntry> getEntries() {
-                return Arrays.asList((MenuEntry) new AbstractAction("Complex form") {
+                return Arrays.asList((MenuEntry) new AbstractAction("View pdf") {
+                    @Override
+                    public void run() {
+                        try {
+                            MateuUI.getClientSideHelper().open(new URI("file:/home/miguel/quonext/tmp/6fbf01b0-bf45-4067-9c4a-9601fee488e9.pdf").toURL());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, (MenuEntry) new AbstractAction("Complex form") {
                     @Override
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new ComplexFormView());

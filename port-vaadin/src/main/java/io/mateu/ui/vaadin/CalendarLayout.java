@@ -1,5 +1,6 @@
 package io.mateu.ui.vaadin;
 
+import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
@@ -10,9 +11,11 @@ import io.mateu.ui.core.client.views.AbstractAddRecordDialog;
 import io.mateu.ui.core.client.views.AbstractForm;
 import io.mateu.ui.core.client.views.AbstractListEditorDialog;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.vaadin.data.DataStore;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -24,13 +27,13 @@ public class CalendarLayout extends VerticalLayout {
     private final CalendarField field;
     private final CssLayout layoutCalendario;
     private final HorizontalLayout layoutFormulario;
-    public ComboBox<Data> comboOpciones;
-    private final Property<Data> prop;
+    public ComboBox<DataStore> comboOpciones;
+    private final Property<DataStore> prop;
 
 
 
-    Map<LocalDate, Data> values = new HashMap<>();
-    Map<String, Data> options = new HashMap<>();
+    Map<LocalDate, DataStore> values = new HashMap<>();
+    Map<String, DataStore> options = new HashMap<>();
 
     public List<DiaLayout> seleccion = new ArrayList<>();
     public DiaLayout ultimoSeleccionado = null;
@@ -41,7 +44,7 @@ public class CalendarLayout extends VerticalLayout {
     public boolean diasSemana;
     private CssLayout nodoMeses;
 
-    public CalendarLayout(CalendarField field, Property<Data> prop) {
+    public CalendarLayout(CalendarField field, Property<DataStore> prop) {
         this.field = field;
         this.prop = prop;
 
@@ -50,9 +53,9 @@ public class CalendarLayout extends VerticalLayout {
         addComponent(layoutFormulario = new HorizontalLayout());
 
 
-        prop.addListener(new ChangeListener<Data>() {
+        prop.addListener(new ChangeListener<DataStore>() {
             @Override
-            public void changed(ObservableValue<? extends Data> observable, Data oldValue, Data newValue) {
+            public void changed(ObservableValue<? extends DataStore> observable, DataStore oldValue, DataStore newValue) {
                 refrescar();
             }
         });
@@ -72,7 +75,7 @@ public class CalendarLayout extends VerticalLayout {
         layoutCalendario.addComponent(nodoMeses = new CssLayout());
 
 
-        Data data;
+        DataStore data;
         if ((data = prop.getValue()) != null) {
             LocalDate desde = data.getLocalDate("_fromdate");
             LocalDate hasta = data.getLocalDate("_todate");
@@ -86,10 +89,10 @@ public class CalendarLayout extends VerticalLayout {
                 values = new HashMap<>();
                 options = new HashMap<>();
 
-                for (Data x : data.getList("_values")) values.put(x.get("_key"), x);
+                for (DataStore x : data.getObservableListProperty("_values").getValue()) values.put(x.get("_key"), x);
 
                 int pos = 0;
-                for (Data x : data.getList("_options")) {
+                for (DataStore x : data.getObservableListProperty("_options").getValue()) {
                     options.put(x.get("__id"), x);
                     if (!x.containsKey("_css")) x.set("_css", RandomStyle.getCsss().get(pos++ % RandomStyle.getCsss().size()));
                 }
@@ -217,8 +220,8 @@ public class CalendarLayout extends VerticalLayout {
         layoutFormulario.addComponent(new Label("Options:"));
 
         layoutFormulario.addComponent(comboOpciones = new ComboBox<>());
-        ListDataProvider<Data> ldp;
-        comboOpciones.setDataProvider(ldp = new ListDataProvider<>(prop.getValue().getList("_options")));
+        ListDataProvider<DataStore> ldp;
+        comboOpciones.setDataProvider(ldp = new ListDataProvider<>(prop.getValue().getObservableListProperty("_options").getValue()));
         comboOpciones.setTextInputAllowed(false);
 /*        comboOpciones.setItemCaptionGenerator(new ItemCaptionGenerator<Data>() {
             @Override
@@ -284,14 +287,14 @@ public class CalendarLayout extends VerticalLayout {
         });
     }
 
-    private void set(Data value) {
+    private void set(DataStore value) {
         Object __id = null;
         if (value != null) __id = value.get("__id");
 
         for (DiaLayout d : seleccion) {
             if (__id != null) {
                 if (d.data == null) {
-                    d.data = new Data("_key", d.fecha, "_value", __id);
+                    d.data = new DataStore(new Data("_key", d.fecha, "_value", __id));
                     d.data.set("_value", __id);
                 }
             } else {
@@ -317,28 +320,29 @@ public class CalendarLayout extends VerticalLayout {
 
                     @Override
                     public void addAndClean(Data data) {
+                        DataStore ds = new DataStore(data);
                         System.out.println("***********************field.getNameProperty()=" + field.getNameProperty());
-                        data.set("_nameproperty", field.getNameProperty());
+                        if (!Strings.isNullOrEmpty(field.getNameProperty())) ds.set("_nameproperty", field.getNameProperty());
                         {
-                            List<Data> l = prop.getValue().getList("_options");
-                            l.add(data);
+                            ObservableList<DataStore> l = prop.getValue().getObservableListProperty("_options").getValue();
+                            l.add(ds);
                             //((ListDataProvider<Data>)comboOpciones.getDataProvider()).getItems().add(data);
                             comboOpciones.getDataProvider().refreshAll();
-                            data.set("_css", RandomStyle.getCsss().get(l.size() % RandomStyle.getCsss().size()));
+                            ds.set("_css", RandomStyle.getCsss().get(l.size() % RandomStyle.getCsss().size()));
                         }
-                        setData(new Data());
+                        clear();
                         set("__id", "" + UUID.randomUUID());
 
                         if (fecha != null) {
-                            Data dx = null;
+                            DataStore dx = null;
                             if (!values.containsKey(fecha)) {
-                                values.put(fecha, dx = new Data(new Data("_key", fecha)));
+                                values.put(fecha, dx = new DataStore(new Data("_key", fecha)));
 
-                                List<Data> l = prop.getValue().getList("_values");
+                                ObservableList<DataStore> l = prop.getValue().getObservableListProperty("_values").getValue();
                                 l.add(dx);
 
                             } else dx = values.get(fecha);
-                            dx.set("_value", data.get("__id"));
+                            dx.set("_value", ds.get("__id"));
                         }
                     }
 
@@ -360,7 +364,7 @@ public class CalendarLayout extends VerticalLayout {
             } else {
 
                 int posx = 0;
-                for (Data d : prop.getValue().getList("_options")) {
+                for (DataStore d : prop.getValue().getObservableListProperty("_options").getValue()) {
                     if (d.get("__id").equals(__id)) {
                         break;
                     }
@@ -372,17 +376,17 @@ public class CalendarLayout extends VerticalLayout {
 
                     @Override
                     public Data getData(int pos) {
-                        return prop.getValue().getList("_options").get(pos);
+                        return prop.getValue().getObservableListProperty("_options").getValue().get(pos).getData();
                     }
 
                     @Override
                     public void setData(int pos, Data data) {
-                        prop.getValue().getList("_options").set(pos, data);
+                        prop.getValue().getObservableListProperty("_options").getValue().set(pos, new DataStore(data));
                     }
 
                     @Override
                     public int getListSize() {
-                        return prop.getValue().getList("_options").size();
+                        return prop.getValue().getObservableListProperty("_options").getValue().size();
                     }
 
                     @Override
@@ -392,14 +396,14 @@ public class CalendarLayout extends VerticalLayout {
 
                     @Override
                     public Data initializeData() {
-                        return prop.getValue().getList("_options").get(getInitialPos());
+                        return prop.getValue().getObservableListProperty("_options").getValue().get(getInitialPos()).getData();
                     }
 
                     @Override
                     public void onOk(Data data) {
-                        for (Data d : prop.getValue().getList("_options")) {
+                        for (DataStore d : prop.getValue().getObservableListProperty("_options").getValue()) {
                             if (d.get("__id").equals(data.get("__id"))) {
-                                d.copy(data);
+                                d.setData(data);
                                 break;
                             }
                         }

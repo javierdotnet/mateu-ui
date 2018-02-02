@@ -11,12 +11,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
  * Created by miguel on 29/12/16.
  */
-public class DataStore extends ObservableMapWrapper<String, Object> {
+public class DataStore {
 
     private Data data = new Data();
     Map<String, Property> props = new LinkedHashMap<String, Property>();
@@ -52,7 +54,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
 
 
     public DataStore(Data data) {
-        super(new HashMap<String, Object>());
         setData(data);
         set("_selected", false);
         if (!props.containsKey("__id")) set("__id", "" + UUID.randomUUID());
@@ -118,7 +119,6 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
             }
         }
 
-        if (data != null) putAll(data.getProperties());
     }
 
     public Data getData() {
@@ -166,7 +166,9 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         } else {
             try {
                 if (value != null && value instanceof Boolean) {
-                    ((Property)getBooleanProperty(name)).setValue(value);
+                    ((Property) getBooleanProperty(name)).setValue(value);
+                } else if (value != null && value instanceof Data) {
+                     ((Property)getDataProperty(name)).setValue(new DataStore((Data) value));
                 } else {
                     ((Property)getProperty(name)).setValue(value);
                 }
@@ -242,10 +244,10 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         return p;
     }
 
-    public Property<Data> getDataProperty(String id) {
+    public Property<DataStore> getDataProperty(String id) {
         Property p = props.get(id);
         if (p == null) {
-            props.put(id, p = new SimpleObjectProperty<Data>(new Data()));
+            props.put(id, p = new SimpleObjectProperty<DataStore>(new DataStore(null)));
             p.addListener(listenerx);
         }
         return p;
@@ -370,6 +372,24 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
         return p;
     }
 
+    public Property<LocalDate> getLocalDateProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<LocalDate>());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
+
+    public Property<LocalDateTime> getLocalDateTimeProperty(String id) {
+        Property p = props.get(id);
+        if (p == null) {
+            props.put(id, p = new SimpleObjectProperty<LocalDateTime>());
+            p.addListener(listenerx);
+        }
+        return p;
+    }
+
     public void resetIds() {
         for (String n : props.keySet()) {
             if ("_id".equals(n)) props.get(n).setValue(null);
@@ -390,6 +410,24 @@ public class DataStore extends ObservableMapWrapper<String, Object> {
     public void setAll(Data data) {
         if (data != null) {
             for (String k : data.getPropertyNames()) set(k, data.get(k));
+        }
+    }
+
+    public LocalDate getLocalDate(String propertyName) {
+        return getLocalDateProperty(propertyName).getValue();
+    }
+
+    public String getString(String propertyName) {
+        return getStringProperty(propertyName).getValue();
+    }
+
+    public boolean containsKey(String propertyName) {
+        return props.containsKey(propertyName);
+    }
+
+    public void clear() {
+        for (String k : props.keySet()) if (!k.startsWith("_")) {
+            props.get(k).setValue(null);
         }
     }
 }

@@ -1758,17 +1758,27 @@ public class ViewNode extends StackPane {
                 javafx.scene.control.Label tf = new javafx.scene.control.Label();
                 tf.setWrapText(true);
                 tf.setMaxWidth(260);
-                tf.textProperty().bindBidirectional(dataStore.getStringProperty(((AbstractField) c).getId()));
+                tf.textProperty().bindBidirectional(dataStore.getProperty(((AbstractField) c).getId()), new StringConverter<Object>() {
+                    @Override
+                    public String toString(Object object) {
+                        return (object != null)?"" + object:null;
+                    }
+
+                    @Override
+                    public Object fromString(String string) {
+                        return string; // este campo es de solo salida
+                    }
+                });
                 n = tf;
                 n = empaquetar(n, 260);
             } else if (c instanceof ShowEntityField) {
                 javafx.scene.control.Label tf = new javafx.scene.control.Label();
                 tf.setWrapText(true);
                 tf.setMaxWidth(260);
-                tf.textProperty().bindBidirectional(dataStore.getDataProperty(((AbstractField) c).getId()), new StringConverter<DataStore>() {
+                tf.textProperty().bindBidirectional(dataStore.getProperty(((AbstractField) c).getId()), new StringConverter<Object>() {
                     @Override
-                    public String toString(DataStore object) {
-                        if (object != null) return object.get("text");
+                    public String toString(Object object) {
+                        if (object != null) return "" + object;
                         return null;
                     }
 

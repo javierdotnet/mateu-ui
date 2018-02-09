@@ -39,7 +39,7 @@ public class DataStore {
                         }
                         data.set(k, ll);
                     } else if (newValue instanceof DataStore) {
-                        data.set(k, ((DataStore)newValue).getData());
+                        data.set(k, new DataStore(((DataStore)newValue).getData()));
                     } else data.set(k, newValue); // set value in form's data
                 } else data.set(k, newValue); // set value in form's data
                 hasChanged(k, oldValue, newValue);
@@ -145,10 +145,10 @@ public class DataStore {
                         }
                         v = nl;
                     } else if (v instanceof DataStore) {
-                        v = ((DataStore) v).getData();
+                        v = new DataStore(((DataStore) v).getData());
                     } else if (v instanceof Optional) {
                         Object z = ((Optional)v).get();
-                        if (z != null && z instanceof DataStore) v = ((DataStore) z).getData();
+                        if (z != null && z instanceof DataStore) v = new DataStore(((DataStore) z).getData());
                     }
                 }
                 data.set(n, v);

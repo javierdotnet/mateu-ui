@@ -653,6 +653,19 @@ public class ViewLayout extends VerticalLayout implements View {
                 Grid.Column aux;
                 if (col instanceof DataColumn) {
                     aux = table.addColumn((d) -> (d == null || d.getProperty(col.getId()) == null || ((DataStore)d).getProperty(col.getId()).getValue() == null)?null:(col.getStyleGenerator() == null || col.getStyleGenerator().isContentShown())?((DataStore) d.getProperty(col.getId()).getValue()).get("_text"):null).setId("__col_" + pos++).setCaption(col.getLabel());
+                    aux.setStyleGenerator(new StyleGenerator() {
+                        @Override
+                        public String apply(Object value) {
+                            Object vx = null;
+                            if (value instanceof DataStore) vx = ((DataStore) value).get(col.getId());
+                            else if (value instanceof Data) vx = ((Data) value).get(col.getId());
+
+                            if (vx == null) return null;
+                            else if (vx instanceof Data) return ((Data)vx).get("_css");
+                            else if (vx instanceof DataStore) return ((DataStore)vx).get("_css");
+                            else return null;
+                        }
+                    });
                 } else if (col instanceof LinkColumn) {
                     aux = table.addColumn((d) -> (d == null)?null:(col.getStyleGenerator() == null || col.getStyleGenerator().isContentShown())?((((LinkColumn) col).getText() != null)?((LinkColumn) col).getText():d.getProperty(col.getId()).getValue()):null).setId("__col_" + pos++).setCaption(col.getLabel());
                 } else {

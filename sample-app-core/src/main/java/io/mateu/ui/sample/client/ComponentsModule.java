@@ -113,6 +113,11 @@ public class ComponentsModule extends AbstractModule {
                     public void run() {
                         MateuUI.getClientSideHelper().openView(new GridView());
                     }
+                }, (MenuEntry) new AbstractAction("Styled Grid") {
+                    @Override
+                    public void run() {
+                        MateuUI.getClientSideHelper().openView(new StyledGridView());
+                    }
                 }, (MenuEntry) new AbstractAction("Tabs") {
                     @Override
                     public void run() {

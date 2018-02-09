@@ -1,5 +1,6 @@
 package io.mateu.ui.core.shared;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +87,7 @@ public class Jsonizer {
                                     else if ("false".equals(s)) valor = false;
                                     else if ("null".equals(s)) valor = null;
                                     else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
+                                    else if (s.contains("-")) valor = LocalDate.parse(s);
                                     else valor = Integer.parseInt(s);
 
                                 }
@@ -146,6 +148,7 @@ public class Jsonizer {
                                     else if ("false".equals(s)) valor = false;
                                     else if ("null".equals(s)) valor = null;
                                     else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
+                                    else if (s.contains("-")) valor = LocalDate.parse(s);
                                     else valor = Integer.parseInt(s);
 
                                 }
@@ -213,6 +216,7 @@ public class Jsonizer {
                                     else if ("false".equals(s)) valor = false;
                                     else if ("null".equals(s)) valor = null;
                                     else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
+                                    else if (s.contains("-")) valor = LocalDate.parse(s);
                                     else valor = Integer.parseInt(s);
 
                                 }

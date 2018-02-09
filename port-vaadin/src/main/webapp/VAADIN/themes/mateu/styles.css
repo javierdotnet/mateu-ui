@@ -17003,19 +17003,19 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mateu .success {
-	background-color: #dff0d8 !important;
+	background-color: #b2f0ab !important;
 }
 
 .mateu .info {
-	background-color: #d9edf7 !important;
+	background-color: #9df7e8 !important;
 }
 
 .mateu .warning {
-	background-color: #fcf8e3 !important;
+	background-color: #fcfa7c !important;
 }
 
 .mateu .danger {
-	background-color: #f2dede !important;
+	background-color: #f27469 !important;
 }
 
 .mateu .cell-valid {
@@ -17161,8 +17161,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mateu .dia.v-csslayout-drag-center {
-	color: red;
-	font-weight: bold;
+	background-color: lightgrey;
 }
 
 .mateu .dia.seleccionado {

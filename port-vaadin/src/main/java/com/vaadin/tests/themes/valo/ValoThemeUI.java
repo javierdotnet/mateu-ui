@@ -1112,6 +1112,8 @@ public class ValoThemeUI extends UI {
 
         Label e = new Label();
 
+        Image image = new Image();
+
         class MyUploader implements Upload.Receiver, Upload.SucceededListener {
 
             File file;
@@ -1150,7 +1152,7 @@ public class ValoThemeUI extends UI {
 
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 // Show the uploaded file in the image viewer
-                //image.setSource(new FileResource(file));
+                image.setSource(new FileResource(file));
                 System.out.println("uploadSucceeded(" + file.getAbsolutePath() + ")");
 
             }
@@ -1197,6 +1199,8 @@ public class ValoThemeUI extends UI {
         Upload upload = new Upload(null, receiver);
         //upload.setImmediateMode(false);
         upload.addSucceededListener(receiver);
+
+        f.addComponent(image);
 
         f.addComponent(upload);
 

@@ -245,18 +245,6 @@ $valo-menu-background-color: scale-color($v-app-background-color, $lightness: if
         @include transform(translatex(0%));
       }
     }
-
-    @include width-range($max: 500px) {
-      .valo-menu-toggle .v-button-caption {
-        display: none;
-      }
-
-      .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
-        display: inline-block;
-        width: round($v-unit-size / 2);
-        overflow: hidden;
-      }
-    }
   }
 }
 

@@ -14841,16 +14841,6 @@ div.v-layout.v-horizontal.v-widget {
 	transform: translatex(0%);
 }
 
-.quonext .valo-menu-responsive[width-range~="0-500px"] .valo-menu-toggle .v-button-caption {
-	display: none;
-}
-
-.quonext .valo-menu-responsive[width-range~="0-500px"] .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
-	display: inline-block;
-	width: 14px;
-	overflow: hidden;
-}
-
 .quonext .v-app {
 	background: yellow;
 }
@@ -15457,4 +15447,9 @@ div.v-layout.v-horizontal.v-widget {
 
 .quonext .random-30 {
 	background-color: #b57001;
+}
+
+.quonext .cuerpoview {
+	padding: 0px !important;
+	padding-top: 14px !important;
 }

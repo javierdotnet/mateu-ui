@@ -16600,16 +16600,6 @@ div.v-layout.v-horizontal.v-widget {
 	transform: translatex(0%);
 }
 
-.tests-valo-reindeer .valo-menu-responsive[width-range~="0-500px"] .valo-menu-toggle .v-button-caption {
-	display: none;
-}
-
-.tests-valo-reindeer .valo-menu-responsive[width-range~="0-500px"] .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
-	display: inline-block;
-	width: 13px;
-	overflow: hidden;
-}
-
 .tests-valo-reindeer .valothemeui #themeSelect {
 	position: fixed;
 	z-index: 1000;

@@ -14960,16 +14960,6 @@ div.v-layout.v-horizontal.v-widget {
 	transform: translatex(0%);
 }
 
-.mateu .valo-menu-responsive[width-range~="0-500px"] .valo-menu-toggle .v-button-caption {
-	display: none;
-}
-
-.mateu .valo-menu-responsive[width-range~="0-500px"] .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
-	display: inline-block;
-	width: 14px;
-	overflow: hidden;
-}
-
 .mateu .v-ui[width-range~="0-800px"] #themeSelect {
 	top: 28px;
 }
@@ -17294,4 +17284,9 @@ div.v-layout.v-horizontal.v-widget {
 
 .mateu .random-30 {
 	background-color: #b57001;
+}
+
+.mateu .cuerpoview {
+	padding: 0px !important;
+	padding-top: 14px !important;
 }

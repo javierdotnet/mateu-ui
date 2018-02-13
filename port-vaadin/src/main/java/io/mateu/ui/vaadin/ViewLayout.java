@@ -1866,12 +1866,13 @@ public class ViewLayout extends VerticalLayout implements View {
             TextField tf = new TextField();
             tf.setCaption(getLabelText(field));
             //tf.addStyleName("l");
-            if (v != null) {
-                if (((Data) v).get("_selected") == null) {
-                    ((Data) v).set("_selected", "en");
+            DataStore ds = (DataStore) v;
+            if (ds != null) {
+                if (ds.get("_selected") == null) {
+                    ds.set("_selected", "en");
                 }
             }
-            if (v != null && ((Data) v).get("_selected") != null && ((Data)v).get(((Data) v).get("_selected")) != null) tf.setValue(((Data)v).get(((Data) v).get("_selected")));
+            if (ds != null && ds.get("_selected") != null && ds.get(ds.get("_selected")) != null) tf.setValue(ds.get(ds.get("_selected")));
             if (firstField == null) firstField = tf;
 
 
@@ -1879,7 +1880,7 @@ public class ViewLayout extends VerticalLayout implements View {
             lc.setWidth("55px");
             lc.setTextInputAllowed(false);
             lc.setEmptySelectionAllowed(false);
-            if (v != null) lc.setValue(((Data)v).get("_selected"));
+            if (ds != null) lc.setValue(ds.get("_selected"));
             else lc.setValue("en");
 
             HorizontalLayout b = new HorizontalLayout();
@@ -1894,7 +1895,7 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    Data data = (Data) newValue;
+                        DataStore data = (DataStore) newValue;
                     if (data.get("_selected") == null) {
                         data.set("_selected", "en");
                     }
@@ -1906,7 +1907,11 @@ public class ViewLayout extends VerticalLayout implements View {
             tf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
                 @Override
                 public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
-                    Data data = new Data((Data) p.getValue());
+                                DataStore data = new DataStore(((DataStore) p.getValue()).getData());
+                        data.set("__id", UUID.randomUUID().toString());
+                    if (data.get("_selected") == null) {
+                        data.set("_selected", "en");
+                    }
                     data.set(data.get("_selected"), valueChangeEvent.getValue());
                     p.setValue(data);
                 }
@@ -1915,7 +1920,11 @@ public class ViewLayout extends VerticalLayout implements View {
             lc.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
                 @Override
                 public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
-                    Data data = new Data((Data) p.getValue());
+                    DataStore data = new DataStore(((DataStore) p.getValue()).getData());
+                    data.set("__id", UUID.randomUUID().toString());
+                    if (data.get("_selected") == null) {
+                        data.set("_selected", "en");
+                    }
                     data.set("_selected", valueChangeEvent.getValue());
                     p.setValue(data);
                 }
@@ -1926,12 +1935,13 @@ public class ViewLayout extends VerticalLayout implements View {
             TextArea tf = new TextArea();
             tf.setCaption(getLabelText(field));
             //tf.addStyleName("l");
-            if (v != null) {
-                if (((Data) v).get("_selected") == null) {
-                    ((Data) v).set("_selected", "en");
+            DataStore ds = (DataStore) v;
+            if (ds != null) {
+                if (ds.get("_selected") == null) {
+                    ds.set("_selected", "en");
                 }
             }
-            if (v != null && ((Data) v).get("_selected") != null && ((Data)v).get(((Data) v).get("_selected")) != null) tf.setValue(((Data)v).get(((Data) v).get("_selected")));
+            if (ds != null && ds.get("_selected") != null && ds.get(ds.get("_selected")) != null) tf.setValue(ds.get(ds.get("_selected")));
             if (firstField == null) firstField = tf;
 
 
@@ -1939,7 +1949,7 @@ public class ViewLayout extends VerticalLayout implements View {
             lc.setWidth("55px");
             lc.setTextInputAllowed(false);
             lc.setEmptySelectionAllowed(false);
-            if (v != null) lc.setValue(((Data)v).get("_selected"));
+            if (ds != null) lc.setValue(ds.get("_selected"));
             else lc.setValue("en");
 
             HorizontalLayout b = new HorizontalLayout();
@@ -1954,7 +1964,7 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    Data data = (Data) newValue;
+                    DataStore data = (DataStore) newValue;
                     if (data.get("_selected") == null) {
                         data.set("_selected", "en");
                     }
@@ -1966,7 +1976,11 @@ public class ViewLayout extends VerticalLayout implements View {
             tf.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
                 @Override
                 public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
-                    Data data = new Data((Data) p.getValue());
+                    DataStore data = new DataStore(((DataStore) p.getValue()).getData());
+                    data.set("__id", UUID.randomUUID().toString());
+                    if (data.get("_selected") == null) {
+                        data.set("_selected", "en");
+                    }
                     data.set(data.get("_selected"), valueChangeEvent.getValue());
                     p.setValue(data);
                 }
@@ -1975,7 +1989,11 @@ public class ViewLayout extends VerticalLayout implements View {
             lc.addValueChangeListener(new HasValue.ValueChangeListener<String>() {
                 @Override
                 public void valueChange(HasValue.ValueChangeEvent<String> valueChangeEvent) {
-                    Data data = new Data((Data) p.getValue());
+                    DataStore data = new DataStore(((DataStore) p.getValue()).getData());
+                    data.set("__id", UUID.randomUUID().toString());
+                    if (data.get("_selected") == null) {
+                        data.set("_selected", "en");
+                    }
                     data.set("_selected", valueChangeEvent.getValue());
                     p.setValue(data);
                 }

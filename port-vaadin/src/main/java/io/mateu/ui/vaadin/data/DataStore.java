@@ -55,7 +55,6 @@ public class DataStore {
 
     public DataStore(Data data) {
         setData(data);
-        set("_selected", false);
         if (!props.containsKey("__id")) set("__id", "" + UUID.randomUUID());
     }
 

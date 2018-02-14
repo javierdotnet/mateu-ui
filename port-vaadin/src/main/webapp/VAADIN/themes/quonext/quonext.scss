@@ -480,11 +480,11 @@
 
 
   .saveandclose {
-    background-color: lightgreen !important;
+    background-color: darkgreen !important;
   }
 
   .v-menubar-menuitem-saveandclose {
-    background-color: lightgreen !important;
+    background-color: darkgreen !important;
   }
 
   .separador {
@@ -669,5 +669,27 @@
     padding: 0px !important;
     padding-top: 14px !important;
   }
+
+
+
+
+  .v-tabsheet-tabcontainer::before {
+    border-top: none;
+  }
+
+  .v-tabsheet-tabcontainer .v-tabsheet-tabs {
+    position: absolute;
+  }
+
+  .v-tabsheet-tabcontainer table { border-collapse: collapse; position: absolute; right: 20px; top: 18px; }
+  .v-tabsheet-tabcontainer tr { display: block; float: left; }
+  .v-tabsheet-tabcontainer th, td { display: block; }
+
+  .v-tabsheet-tabitem {
+    text-align: right;
+  }
+
+  .v-tabsheet-tabcontainer { display: inline-flex; vertical-align: top;}
+  .v-tabsheet-content { display: inline-flex; }
 }
 

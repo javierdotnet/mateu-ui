@@ -39,7 +39,9 @@ public class Main extends Application {
             app = (App) Class.forName(cn).newInstance();
             System.out.println("app " + app.getName() + " loaded");
 
+
             /*
+
             Iterator<App> apps = ServiceLoader.load(App.class).iterator();
 
             while (apps.hasNext()) {
@@ -52,7 +54,9 @@ public class Main extends Application {
                 }
                 break;
             }
+
             */
+
         }
 
 

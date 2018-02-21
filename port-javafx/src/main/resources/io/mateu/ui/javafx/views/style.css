@@ -420,7 +420,69 @@
 
 
 
+.tituloapp {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
 
+.botonlogin {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.botonlogin:hover {
+    -fx-background-color: #383838;
+}
+
+.sesion .glyph-icon {
+    -fx-fill: red;
+    -fx-font-size: 20px;
+}
+
+
+.menuopcionesperfil {
+    -fx-font-size: 12px;
+    -fx-background-color: #006699;
+    -fx-text-fill: white;
+}
+
+.context-menu {
+    -fx-background-color: #006699;
+    -fx-text-fill: white;
+}
+
+.menu-item .label {
+    -fx-text-fill: yellow;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: white;
+}
+
+
+
+.titulomenu {
+    -fx-background-color: transparent;
+    -fx-text-fill: grey;
+    -fx-font-size: 12px;
+    -fx-pref-width: 500px;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: grey;
+    -fx-padding: 15 5 5 0;
+}
+
+.opcionmenu {
+    -fx-background-color: transparent;
+    -fx-text-fill: lightgrey;
+    -fx-font-size: 12px;
+    -fx-padding: 5 5 0 0;
+}
+
+.opcionmenu:hover {
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
 
 
 

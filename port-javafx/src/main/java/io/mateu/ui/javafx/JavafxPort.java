@@ -9,6 +9,8 @@ import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.app.AppNode;
 import io.mateu.ui.javafx.app.ViewTab;
+import io.mateu.ui.javafx.newlayout.BarraDireccionesNode;
+import io.mateu.ui.javafx.newlayout.VistaActualNode;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -435,7 +437,10 @@ public class JavafxPort extends Application {
                                     }
                                 });
                             }
-                            AppNode.get().getViewsNode().addView(view);
+
+                            //AppNode.get().getViewsNode().addView(view);
+                            BarraDireccionesNode.get().cargar(view.getViewId());
+
                         }
 
                     }
@@ -694,11 +699,17 @@ public class JavafxPort extends Application {
         });
 
         //primaryStage.setFullScreen(true);
-        primaryStage.setWidth(1024);
-        primaryStage.setHeight(800);
+        primaryStage.setWidth(1200);
+        primaryStage.setHeight(900);
+
+        /*
         AppNode appnode;
         primaryStage.setScene(new Scene(appnode = new AppNode()));
+         */
 
+        Scene s;
+        primaryStage.setScene(s = new Scene(new io.mateu.ui.javafx.newlayout.AppNode()));
+        s.getStylesheets().add(getClass().getResource("/io/mateu/ui/javafx/views/style.css").toExternalForm());
 
         primaryStage.show();
 
@@ -707,7 +718,7 @@ public class JavafxPort extends Application {
             hayPartePublica |= a.isPublicAccess();
         }
         if (!hayPartePublica) {
-            appnode.getTopNode().askForLogin();
+            //appnode.getTopNode().askForLogin();
         }
 
     }

@@ -228,8 +228,7 @@ public class ViewNode extends StackPane {
     }
 
     public void build() {
-        getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
+        
         setStyle("-fx-background-color: white;");
 
         bp = new BorderPane();

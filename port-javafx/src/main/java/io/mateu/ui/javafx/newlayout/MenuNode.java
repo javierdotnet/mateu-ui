@@ -1,15 +1,17 @@
 package io.mateu.ui.javafx.newlayout;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.javafx.JavafxPort;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.geometry.Bounds;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -17,11 +19,13 @@ import java.util.List;
 
 public class MenuNode extends VBox {
 
+    private final List<AbstractArea> areas;
+
     public MenuNode(boolean authenticated) {
 
         AbstractArea area = null;
 
-        List<AbstractArea> areas = new ArrayList<>();
+        areas = new ArrayList<>();
         for (AbstractArea a : JavafxPort.getApp().getAreas()) if ((authenticated && !a.isPublicAccess()) || (!authenticated && a.isPublicAccess())) {
             areas.add(a);
         }
@@ -33,21 +37,122 @@ public class MenuNode extends VBox {
         }
 
 
+
+        loadArea(area);
+
+    }
+
+    private void loadArea(AbstractArea area) {
+
+        getChildren().clear();
+
+        if (areas.size() > 1) {
+
+            ContextMenu m = new ContextMenu();
+
+            FontAwesomeIconView iv;
+            Label la;
+            getChildren().add(new HBox(la = new Label(area.getName()), iv = new FontAwesomeIconView(FontAwesomeIcon.ANGLE_LEFT)));
+            la.getStyleClass().add("areaactual");
+            iv.hoverProperty().addListener((z, o, h) -> {
+                if (h) iv.setIcon(FontAwesomeIcon.ANGLE_DOWN);
+                else if (!m.isShowing()) iv.setIcon(FontAwesomeIcon.ANGLE_LEFT);
+            });
+
+            AbstractArea finalArea = area;
+            iv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+
+                    m.getItems().clear();
+
+
+                    m.getStyleClass().add("menuopcionesperfil");
+
+                    for (AbstractArea a : areas) if (!finalArea.equals(a)) {
+                        MenuItem i;
+                        m.getItems().add(i = new MenuItem("Change to " + a.getName()));
+                        i.setOnAction((e) -> {
+                            loadArea(a);
+                        });
+                    }
+
+                    Bounds boundsInScreen = iv.localToScreen(iv.getBoundsInLocal());
+
+                    m.show(iv, boundsInScreen.getMinX(), boundsInScreen.getMaxY());
+
+                    m.showingProperty().addListener((z, o, h) -> {
+                        if (h) iv.setIcon(FontAwesomeIcon.ANGLE_DOWN);
+                        else iv.setIcon(FontAwesomeIcon.ANGLE_LEFT);
+                    });
+
+                }
+            });
+
+        }
+
         if (area != null) for (AbstractModule m : area.getModules()) {
             Label lm;
             getChildren().add(lm = new Label(m.getName()));
             lm.getStyleClass().add("titulomenu");
 
             for (MenuEntry e : m.getMenu()) {
-                Label le;
-                getChildren().add(le = new Label(e.getName()));
-                le.getStyleClass().add("opcionmenu");
-                le.setOnMouseClicked((x) -> {
+                if (e instanceof AbstractMenu) {
+                    ContextMenu mx = new ContextMenu();
+                    Label le;
+                    FontAwesomeIconView iv;
+                    getChildren().add(new HBox(le = new Label(e.getName()), iv = new FontAwesomeIconView(FontAwesomeIcon.ANGLE_LEFT)));
+                    le.getStyleClass().add("opcionmenu");
+                    iv.hoverProperty().addListener((z, o, h) -> {
+                        if (h) iv.setIcon(FontAwesomeIcon.ANGLE_DOWN);
+                        else if (!mx.isShowing()) iv.setIcon(FontAwesomeIcon.ANGLE_LEFT);
+                    });
+
+                    iv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+
+                            mx.getItems().clear();
+
+                            mx.getStyleClass().add("menuopcionesperfil");
+
+                            buildSubmenu(mx, (AbstractMenu) e);
+
+                            Bounds boundsInScreen = iv.localToScreen(iv.getBoundsInLocal());
+
+                            mx.show(iv, boundsInScreen.getMinX(), boundsInScreen.getMaxY());
+
+                            mx.showingProperty().addListener((z, o, h) -> {
+                                if (h) iv.setIcon(FontAwesomeIcon.ANGLE_DOWN);
+                                else iv.setIcon(FontAwesomeIcon.ANGLE_LEFT);
+                            });
+
+                        }
+                    });
+                } else {
+                    Label le;
+                    getChildren().add(le = new Label(e.getName()));
+                    le.getStyleClass().add("opcionmenu");
+                    le.setOnMouseClicked((x) -> {
+                        if (e instanceof AbstractAction) MateuUI.runInUIThread(() ->  ((AbstractAction) e).run());
+                    });
+                }
+            }
+        }
+    }
+
+    private void buildSubmenu(ContextMenu mx, AbstractMenu s) {
+        for (MenuEntry e : s.getEntries()) {
+            if (e instanceof AbstractMenu) {
+
+            } else {
+                MenuItem i;
+                mx.getItems().add(i = new MenuItem(e.getName()));
+                i.setOnAction((z) -> {
                     if (e instanceof AbstractAction) MateuUI.runInUIThread(() ->  ((AbstractAction) e).run());
                 });
             }
         }
-
     }
 
     private void buildMenuBar() {

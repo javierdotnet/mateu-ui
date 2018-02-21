@@ -139,11 +139,6 @@ public class SesionNode extends VBox {
                                 }
                             });
 
-                            Label xxx;
-                            getChildren().add(xxx = new Label("xxxxxxxxxx"));
-                            xxx.setStyle("-fx-text-fill: white;");
-
-
 
                         }
 

@@ -440,6 +440,21 @@
     -fx-font-size: 20px;
 }
 
+.sesion .glyph-icon:hover {
+    -fx-cursor: hand;
+    -fx-font-family: "FontAwesome";
+    -fx-fill: orange;
+}
+
+
+
+.areaactual {
+    -fx-background-color: transparent;
+    -fx-text-fill: grey;
+    -fx-font-size: 14px;
+    -fx-pref-width: 200px;
+    -fx-padding: 3 0 0 0;
+}
 
 .menuopcionesperfil {
     -fx-font-size: 12px;
@@ -476,6 +491,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: lightgrey;
     -fx-font-size: 12px;
+    -fx-pref-width: 500px;
     -fx-padding: 5 5 0 0;
 }
 

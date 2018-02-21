@@ -144,7 +144,25 @@ public class MenuNode extends VBox {
     private void buildSubmenu(ContextMenu mx, AbstractMenu s) {
         for (MenuEntry e : s.getEntries()) {
             if (e instanceof AbstractMenu) {
+                Menu mz = new Menu(e.getName());
+                buildSubmenu(mz, (AbstractMenu) e);
+                mx.getItems().add(mz);
+            } else {
+                MenuItem i;
+                mx.getItems().add(i = new MenuItem(e.getName()));
+                i.setOnAction((z) -> {
+                    if (e instanceof AbstractAction) MateuUI.runInUIThread(() ->  ((AbstractAction) e).run());
+                });
+            }
+        }
+    }
 
+    private void buildSubmenu(Menu mx, AbstractMenu s) {
+        for (MenuEntry e : s.getEntries()) {
+            if (e instanceof AbstractMenu) {
+                Menu mz = new Menu(e.getName());
+                buildSubmenu(mz, (AbstractMenu) e);
+                mx.getItems().add(mz);
             } else {
                 MenuItem i;
                 mx.getItems().add(i = new MenuItem(e.getName()));

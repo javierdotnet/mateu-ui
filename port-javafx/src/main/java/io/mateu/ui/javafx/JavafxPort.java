@@ -754,6 +754,11 @@ public class JavafxPort extends Application {
         }
         if (!hayPartePublica) {
             SesionNode.get().askForLogin();
+        } else {
+            AbstractView h;
+            if ((h = app.getPublicHome()) != null) {
+                BarraDireccionesNode.get().cargar(h.getViewId());
+            }
         }
 
     }

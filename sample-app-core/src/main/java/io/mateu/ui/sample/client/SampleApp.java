@@ -24,6 +24,11 @@ public class SampleApp extends AbstractApplication
 
     @Override
     public AbstractView getPublicHome() {
-        return new SearchFieldView();
+        return new AboutView();
+    }
+
+    @Override
+    public AbstractView getPrivateHome() {
+        return new TextFieldView();
     }
 }

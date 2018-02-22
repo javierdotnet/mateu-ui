@@ -6,6 +6,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.shared.UserData;
 import io.mateu.ui.javafx.JavafxPort;
 import javafx.application.Platform;
@@ -516,6 +517,12 @@ public class SesionNode extends VBox {
                     */
 
                             userDataProperty.setValue(result);
+
+
+                            AbstractView h;
+                            if ((h = JavafxPort.getApp().getPrivateHome()) != null) {
+                                BarraDireccionesNode.get().cargar(h.getViewId());
+                            }
 
 
                             dialog.close();

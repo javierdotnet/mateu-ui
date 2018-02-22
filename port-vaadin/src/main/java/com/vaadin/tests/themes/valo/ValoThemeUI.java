@@ -316,6 +316,12 @@ public class ValoThemeUI extends UI {
             hayPartePublica |= a.isPublicAccess();
         }
         if (!hayPartePublica) openLoginDialog();
+        else {
+            AbstractView h;
+            if ((h = getApp().getPublicHome()) != null) {
+                addView((ValoThemeUI) UI.getCurrent(), h);
+            }
+        }
     }
 
     public View getVaadinView(AbstractView view) {
@@ -899,6 +905,12 @@ public class ValoThemeUI extends UI {
                         VaadinSession.getCurrent().setAttribute("usuario", "admin");
                         subWindow.close();
                         refreshMenu();
+
+                        AbstractView h;
+                        if ((h = getApp().getPrivateHome()) != null) {
+                            addView((ValoThemeUI) UI.getCurrent(), h);
+                        }
+
                     }
                 });
             }

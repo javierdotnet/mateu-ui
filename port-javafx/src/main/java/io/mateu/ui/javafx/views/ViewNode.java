@@ -1717,6 +1717,7 @@ public class ViewNode extends StackPane {
                 p.addListener(new ChangeListener<Pair>() {
                     @Override
                     public void changed(ObservableValue<? extends Pair> observable, Pair oldValue, Pair newValue) {
+                        System.out.println("VALOR HA CAMBIADO!!!!");
                         if (newValue != null) {
                             if (!tf.isFocused()) tf.setText("" + newValue.getValue());
                             l.setText("" + newValue.getText());

@@ -44,4 +44,6 @@ public interface ClientSideHelper {
     void confirm(String text, Runnable onOk);
 
     void open(AbstractWizard wizard);
+
+    void openViewInDialog(AbstractView view);
 }

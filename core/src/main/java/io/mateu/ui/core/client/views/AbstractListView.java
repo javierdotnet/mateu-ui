@@ -72,8 +72,16 @@ public abstract class AbstractListView extends AbstractView implements ListView 
             @Override
             public void run() {
 
-                reset();
-                search();
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        reset();
+                        search();
+
+                    }
+                });
+
 /*
                 MateuUI.run(new Runnable() {
                     @Override

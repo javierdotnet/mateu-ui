@@ -2,18 +2,24 @@ package com.vaadin.tests.themes.valo;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.*;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
+import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractApplication;
 import io.mateu.ui.core.client.app.ClientSideHelper;
 import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.views.AbstractView;
-import io.mateu.ui.core.client.views.AbstractWizard;
+import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
+import io.mateu.ui.vaadin.ViewLayout;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -216,27 +222,49 @@ public class Servlet extends VaadinServlet {
                 // Open it in the UI
                 UI.getCurrent().addWindow(subWindow);
             }
+
+            @Override
+            public void openViewInDialog(AbstractView view) {
+                ViewLayout v = new ViewLayout(view);
+
+                // Create a sub-window and set the content
+                Window subWindow = new Window(view.getTitle());
+
+                HorizontalLayout footer = new HorizontalLayout();
+                footer.setWidth("100%");
+                footer.setSpacing(true);
+                footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+
+                Label footerText = new Label("");
+                footerText.setSizeUndefined();
+
+
+                footer.addComponents(footerText);
+
+                footer.setExpandRatio(footerText, 1);
+
+                v.addComponent(footer);
+
+                subWindow.setContent(v);
+
+                // Center it in the browser window
+                subWindow.center();
+
+                subWindow.setModal(true);
+
+
+                view.addListener(new ViewListener() {
+                    @Override
+                    public void onClose() {
+                        subWindow.close();
+                    }
+                });
+
+                // Open it in the UI
+                UI.getCurrent().addWindow(subWindow);
+            }
         });
 
-
-        if (false && System.getProperty("appname", "Mateu ERP").toLowerCase().contains("quoon")) getService().addSessionInitListener((SessionInitListener) event -> event.getSession().addBootstrapListener(new BootstrapListener() {
-
-            @Override
-            public void modifyBootstrapFragment(
-                    BootstrapFragmentResponse response) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void modifyBootstrapPage(BootstrapPageResponse response) {
-                response.getDocument().head().
-                        getElementsByAttributeValue("rel", "shortcut icon").attr("href", "/com/vaadin/tests/themes/tests-valo-reindeer/Q-sola-favicon.png");
-                response.getDocument().head()
-                        .getElementsByAttributeValue("rel", "icon")
-                        .attr("href", "/com/vaadin/tests/themes/tests-valo-reindeer/Q-sola-favicon.png");
-            }}
-        ));
     }
 }
 

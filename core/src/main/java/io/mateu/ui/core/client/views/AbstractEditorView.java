@@ -17,17 +17,19 @@ public abstract class AbstractEditorView extends AbstractView {
 
     private Object initialId;
     private List<EditorViewListener> editorViewListeners = new ArrayList<>();
+    private boolean usedForRefField;
 
     @Override
     public List<AbstractAction> createActions() {
         List<AbstractAction> actions = new ArrayList<>();
-        actions.add(new AbstractAction("Refresh") {
+
+        if (!usedForRefField) actions.add(new AbstractAction("Refresh") {
             @Override
             public void run() {
                 load();
             }
         });
-        actions.add(new AbstractAction("Reset") {
+        if (!usedForRefField) actions.add(new AbstractAction("Reset") {
             @Override
             public void run() {
                 getForm().setData(initializeData());
@@ -39,25 +41,25 @@ public abstract class AbstractEditorView extends AbstractView {
                 save();
             }
         });
-        actions.add(new AbstractAction("Save and close") {
+        if (!usedForRefField) actions.add(new AbstractAction("Save and close") {
             @Override
             public void run() {
                 saveAndClose();
             }
         });
-        actions.add(new AbstractAction("Save and duplicate") {
+        if (!usedForRefField) actions.add(new AbstractAction("Save and duplicate") {
             @Override
             public void run() {
                 saveAndDuplicate();
             }
         });
-        actions.add(new AbstractAction("Save and reset") {
+        if (!usedForRefField) actions.add(new AbstractAction("Save and reset") {
             @Override
             public void run() {
                 saveAndReset();
             }
         });
-        actions.add(new AbstractAction("Duplicate") {
+        if (!usedForRefField) actions.add(new AbstractAction("Duplicate") {
             @Override
             public void run() {
                 getForm().resetIds();
@@ -232,5 +234,13 @@ public abstract class AbstractEditorView extends AbstractView {
             if (MateuUI.getApp().getUserData() != null) d.set("_user", MateuUI.getApp().getUserData().getLogin());
             save(d, callback);
         }
+    }
+
+    public boolean isUsedForRefField() {
+        return usedForRefField;
+    }
+
+    public void setUsedForRefField(boolean usedForRefField) {
+        this.usedForRefField = usedForRefField;
     }
 }

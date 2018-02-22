@@ -48,9 +48,16 @@ public class VistaActualNode extends StackPane {
                 historial.add(url);
             }
 
-            if (url.startsWith("mui..") || url.startsWith("mdd..")) {
-                AbstractView v;
-                getChildren().add(new ViewNode(v = navigator.get(0).getView(url)));
+            AbstractView v = null;
+
+            for (ViewProvider p : navigator) {
+                v = p.getView(p.getViewName(url));
+                if (v != null) break;
+            }
+
+            if (v != null) {
+
+                getChildren().add(new ViewNode(v));
 
                 v.addListener(new ViewListener() {
                     @Override
@@ -121,7 +128,7 @@ public class VistaActualNode extends StackPane {
         return p;
     }
 
-    private void back() {
+    public void back() {
         if (historial.size() > 0) {
             historial.remove(historial.get(historial.size() - 1));
             BarraDireccionesNode.get().cargar((historial.size() > 0)?historial.get(historial.size() - 1):"");
@@ -129,4 +136,5 @@ public class VistaActualNode extends StackPane {
             BarraDireccionesNode.get().cargar("");
         }
     }
+
 }

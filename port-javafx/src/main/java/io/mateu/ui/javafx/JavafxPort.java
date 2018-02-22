@@ -10,6 +10,7 @@ import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.javafx.app.AppNode;
 import io.mateu.ui.javafx.app.ViewTab;
 import io.mateu.ui.javafx.newlayout.BarraDireccionesNode;
+import io.mateu.ui.javafx.newlayout.SesionNode;
 import io.mateu.ui.javafx.newlayout.VistaActualNode;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.application.Application;
@@ -696,6 +697,40 @@ public class JavafxPort extends Application {
 
                 });
             }
+
+            @Override
+            public void openViewInDialog(AbstractView view) {
+
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Dialog d = new Dialog();
+                        d.setTitle(view.getTitle());
+                        d.setResizable(true);
+
+
+                        StackPane p;
+                        d.getDialogPane().setContent(p = new StackPane(new ViewNode(view)));
+                        p.setPrefWidth(700);
+                        p.setPrefHeight(600);
+
+                        view.addListener(new ViewListener() {
+                            @Override
+                            public void onClose() {
+                                d.setResult(Boolean.TRUE);
+                                d.close();
+                            }
+                        });
+
+
+                        Optional<ButtonType> result = d.showAndWait();
+
+
+                    }
+                });
+
+            }
         });
 
         //primaryStage.setFullScreen(true);
@@ -718,7 +753,7 @@ public class JavafxPort extends Application {
             hayPartePublica |= a.isPublicAccess();
         }
         if (!hayPartePublica) {
-            //appnode.getTopNode().askForLogin();
+            SesionNode.get().askForLogin();
         }
 
     }

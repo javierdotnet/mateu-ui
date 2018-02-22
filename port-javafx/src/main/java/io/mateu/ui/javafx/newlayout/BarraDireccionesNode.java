@@ -17,14 +17,30 @@ public class BarraDireccionesNode extends HBox {
     public BarraDireccionesNode() {
         singleton = this;
         getChildren().add(dir = new TextField());
-        Button b;
-        getChildren().add(b = new Button("Go"));
 
-        b.setOnAction((e) -> {
-            System.out.println("vamos a " + dir.getText());
+        {
+            Button b;
+            getChildren().add(b = new Button("Go"));
 
-            cargar(dir.getText());
-        });
+            b.setOnAction((e) -> {
+                System.out.println("vamos a " + dir.getText());
+
+                cargar(dir.getText());
+            });
+        }
+
+        {
+            Button b;
+            getChildren().add(b = new Button("Back"));
+
+            b.setOnAction((e) -> {
+
+                System.out.println("back");
+
+                MateuUI.runInUIThread(() -> VistaActualNode.get().back());
+            });
+        }
+
 
         dir.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override

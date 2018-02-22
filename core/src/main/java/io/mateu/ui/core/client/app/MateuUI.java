@@ -2,6 +2,7 @@ package io.mateu.ui.core.client.app;
 
 import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
+import io.mateu.ui.core.client.views.AbstractEditorView;
 import io.mateu.ui.core.client.views.AbstractWizard;
 import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.client.views.AbstractView;
@@ -116,5 +117,9 @@ public class MateuUI {
 
     public static void confirm(String text, Runnable onOk) {
         getClientSideHelper().confirm(text, onOk);
+    }
+
+    public static void openViewInDialog(AbstractView view) {
+        getClientSideHelper().openViewInDialog(view);
     }
 }

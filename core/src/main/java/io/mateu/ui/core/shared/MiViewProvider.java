@@ -30,24 +30,27 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
             if (!Strings.isNullOrEmpty(viewName)) {
 
-                if (viewName.startsWith("mui..")) viewName = viewName.replaceFirst("mui\\.\\.", "");
+                if (viewName.startsWith("mui..")) {
+                    viewName = viewName.replaceFirst("mui\\.\\.", "");
 
-                if (viewName.contains("$")) {
-                    Class<?> cl = Class.forName(viewName);
-                    Constructor<?> c = cl.getDeclaredConstructors()[0];
-                    c.setAccessible(true);
-                    view = (AbstractView) c.newInstance(cl.getEnclosingClass().newInstance());
-                } else {
-                    view = (AbstractView) Class.forName(viewName).newInstance();
-                }
+                    if (viewName.contains("$")) {
+                        Class<?> cl = Class.forName(viewName);
+                        Constructor<?> c = cl.getDeclaredConstructors()[0];
+                        c.setAccessible(true);
+                        view = (AbstractView) c.newInstance(cl.getEnclosingClass().newInstance());
+                    } else {
+                        view = (AbstractView) Class.forName(viewName).newInstance();
+                    }
 
-                if (view instanceof AbstractCRUDView) {
-                    ((AbstractCRUDView) view).addListener(new CRUDListener() {
-                        @Override
-                        public void openEditor(AbstractEditorView e) {
-                            MateuUI.openView(e);
-                        }
-                    });
+                    if (view instanceof AbstractCRUDView) {
+                        ((AbstractCRUDView) view).addListener(new CRUDListener() {
+                            @Override
+                            public void openEditor(AbstractEditorView e) {
+                                MateuUI.openView(e);
+                            }
+                        });
+                    }
+
                 }
 
             }

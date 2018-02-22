@@ -58,6 +58,10 @@ public class Pair extends Data {
     public boolean equals(Object obj) {
         boolean ok = obj == null && get("value") == null;
         ok |= obj != null && obj instanceof Pair && ((get("value") == null && ((Pair)obj).get("value") == null) || (get("value") != null && get("value").equals(((Pair)obj).get("value"))));
+        if (ok) {
+            String txt = ((Pair)obj).getText();
+            if (get("text") != null) ok &= getText().equals(txt);
+        }
         return ok;
     }
 }

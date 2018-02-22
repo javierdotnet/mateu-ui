@@ -42,7 +42,8 @@ public abstract class SelectByIdField extends TextField {
 
     public void createNew() {
         AbstractEditorView editor = getEditor();
-        MateuUI.openView(editor.addEditorViewListener(new EditorViewListener() {
+        editor.setUsedForRefField(true);
+        MateuUI.openViewInDialog(editor.addEditorViewListener(new EditorViewListener() {
             @Override
             public void onLoad() {
 
@@ -80,7 +81,8 @@ public abstract class SelectByIdField extends TextField {
 
     public void edit(Object id) {
         AbstractEditorView editor = getEditor().setInitialId(id);
-        MateuUI.openView(editor.addEditorViewListener(new EditorViewListener() {
+        editor.setUsedForRefField(true);
+        MateuUI.openViewInDialog(editor.addEditorViewListener(new EditorViewListener() {
             @Override
             public void onLoad() {
 
@@ -100,7 +102,12 @@ public abstract class SelectByIdField extends TextField {
             public void onSuccessSave(Data result) {
                 System.out.println("******ONSUCESS*****");
                 getForm().set(getId(), getPair(result));
-                editor.close();
+                MateuUI.runInUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        editor.close();
+                    }
+                });
             }
 
             @Override

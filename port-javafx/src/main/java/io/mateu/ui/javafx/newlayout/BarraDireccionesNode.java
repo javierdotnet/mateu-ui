@@ -16,18 +16,6 @@ public class BarraDireccionesNode extends HBox {
 
     public BarraDireccionesNode() {
         singleton = this;
-        getChildren().add(dir = new TextField());
-
-        {
-            Button b;
-            getChildren().add(b = new Button("Go"));
-
-            b.setOnAction((e) -> {
-                System.out.println("vamos a " + dir.getText());
-
-                cargar(dir.getText());
-            });
-        }
 
         {
             Button b;
@@ -38,6 +26,20 @@ public class BarraDireccionesNode extends HBox {
                 System.out.println("back");
 
                 MateuUI.runInUIThread(() -> VistaActualNode.get().back());
+            });
+        }
+
+
+        getChildren().add(dir = new TextField());
+
+        {
+            Button b;
+            getChildren().add(b = new Button("Go"));
+
+            b.setOnAction((e) -> {
+                System.out.println("vamos a " + dir.getText());
+
+                cargar(dir.getText());
             });
         }
 

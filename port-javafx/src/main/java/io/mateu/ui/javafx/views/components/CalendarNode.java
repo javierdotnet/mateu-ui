@@ -240,7 +240,8 @@ public class CalendarNode extends VBox {
         nodoFormulario.getChildren().add(h = new HBox(10));
         h.getChildren().add(new Text("Options:"));
 
-        h.getChildren().add(cb = new ComboBox<DataStore>(dataProperty.getValue().getObservableListProperty("_options").getValue()));
+        h.getChildren().add(cb = new ComboBox<DataStore>());
+        if (dataProperty.getValue() != null) cb.setItems(dataProperty.getValue().getObservableListProperty("_options").getValue());
         cb.setCellFactory((c) -> new ListCell<DataStore>() {
             @Override
             protected void updateItem(DataStore item, boolean empty) {

@@ -19,7 +19,7 @@ public class AllFieldsView extends AbstractView {
     public Data initializeData() {
         return new Data("f9", "link", "f5", new Pair("2", "V2"), "f10", new Pair("2", "V2")
                 , "f21", "Hello!", "f23", "http://www.elpais.es"
-        , "f24", "<b>This is html!</b>", "f2", new Date(), "f20", "https://blogamericanuestra.files.wordpress.com/2016/04/che-guevara.jpg");
+        , "f24", "<b>This is html!</b>", "f20", "https://blogamericanuestra.files.wordpress.com/2016/04/che-guevara.jpg");
     }
 
     @Override

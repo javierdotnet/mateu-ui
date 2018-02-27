@@ -104,6 +104,9 @@ public class CalendarNode extends VBox {
             LocalDate desde = data.getLocalDateProperty("_fromdate").getValue();
             LocalDate hasta = data.getLocalDateProperty("_todate").getValue();
 
+            if (desde == null) desde = LocalDate.now();
+            if (hasta == null) hasta = desde.plusYears(1);
+
             LocalDate d = LocalDate.of(desde.getYear(), desde.getMonth(), 1);
             LocalDate l = LocalDate.of(hasta.getYear(), hasta.getMonth(), 1).plusMonths(1).minusDays(1);
 
@@ -111,7 +114,9 @@ public class CalendarNode extends VBox {
             values = new HashMap<>();
             options = new HashMap<>();
 
-            for (DataStore x : data.getObservableListProperty("_values").getValue()) values.put(x.getPure("_key"), x);
+            ObservableList<DataStore> lvs = data.getObservableListProperty("_values").getValue();
+
+            for (DataStore x : lvs) values.put(x.getPure("_key"), x);
 
             int pos = 0;
             for (DataStore x : data.getObservableListProperty("_options").getValue()) {
@@ -198,7 +203,11 @@ public class CalendarNode extends VBox {
 
                 }
 
-                nodosemana.getChildren().add(new NodoDia(this, d, values.get(d)));
+                DataStore v = values.get(d);
+                if (v == null) {
+                    lvs.add(v = new DataStore(new Data("__id", UUID.randomUUID().toString(), "_key", LocalDate.from(d), "_value", null)));
+                }
+                nodosemana.getChildren().add(new NodoDia(this, d, v));
 
                 d = d.plusDays(1);
             }

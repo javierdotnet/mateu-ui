@@ -80,6 +80,9 @@ public class CalendarLayout extends VerticalLayout {
             LocalDate desde = data.getLocalDate("_fromdate");
             LocalDate hasta = data.getLocalDate("_todate");
 
+            if (desde == null) desde = LocalDate.now();
+            if (hasta == null) hasta = desde.plusYears(1);
+
             if (desde != null && hasta != null) {
 
                 LocalDate d = LocalDate.of(desde.getYear(), desde.getMonth(), 1);
@@ -89,7 +92,9 @@ public class CalendarLayout extends VerticalLayout {
                 values = new HashMap<>();
                 options = new HashMap<>();
 
-                for (DataStore x : data.getObservableListProperty("_values").getValue()) values.put(x.get("_key"), x);
+                ObservableList<DataStore> lvs = data.getObservableListProperty("_values").getValue();
+
+                for (DataStore x : lvs) values.put(x.get("_key"), x);
 
                 int pos = 0;
                 for (DataStore x : data.getObservableListProperty("_options").getValue()) {
@@ -179,7 +184,11 @@ public class CalendarLayout extends VerticalLayout {
                     }
 
                     DiaLayout dl;
-                    nodosemana.addComponent(dl = new DiaLayout(this, d, values.get(d)));
+                    DataStore v = values.get(d);
+                    if (v == null) {
+                        lvs.add(v = new DataStore(new Data("__id", UUID.randomUUID().toString(), "_key", LocalDate.from(d), "_value", null)));
+                    }
+                    nodosemana.addComponent(dl = new DiaLayout(this, d, v));
                     nodos.put(d, dl);
 
                     d = d.plusDays(1);

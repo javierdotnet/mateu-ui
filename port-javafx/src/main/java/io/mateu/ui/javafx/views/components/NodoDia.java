@@ -33,6 +33,9 @@ public class NodoDia extends StackPane {
 
     public NodoDia(CalendarNode calendarNode, LocalDate d, DataStore data) {
 
+        System.out.println("NodoDia(" + d + ", " + data + ")");
+
+
         this.data = data;
         this.value = (data != null)?(calendarNode.options.get(data.get("_value"))):null;
         this.calendarNode = calendarNode;
@@ -278,8 +281,10 @@ public class NodoDia extends StackPane {
     }
 
     public void set(DataStore value) {
+        System.out.println("NodoDia.set(" + value + ")");
         unset();
         if (data == null) {
+            System.out.println("data == null");
             data = new DataStore(new Data("__id", UUID.randomUUID().toString()));
             calendarNode.values.put(fecha, data);
             calendarNode.dataProperty.getValue().getObservableListProperty("_values").getValue().add(data);

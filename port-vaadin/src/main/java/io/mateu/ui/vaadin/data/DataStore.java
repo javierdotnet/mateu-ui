@@ -144,10 +144,10 @@ public class DataStore {
                         }
                         v = nl;
                     } else if (v instanceof DataStore) {
-                        v = new DataStore(((DataStore) v).getData());
+                        v = ((DataStore) v).getData();
                     } else if (v instanceof Optional) {
                         Object z = ((Optional)v).get();
-                        if (z != null && z instanceof DataStore) v = new DataStore(((DataStore) z).getData());
+                        if (z != null && z instanceof DataStore) v = ((DataStore) z).getData();
                     }
                 }
                 data.set(n, v);

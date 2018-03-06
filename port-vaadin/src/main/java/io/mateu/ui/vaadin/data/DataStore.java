@@ -168,6 +168,8 @@ public class DataStore {
                     ((Property) getBooleanProperty(name)).setValue(value);
                 } else if (value != null && value instanceof Pair) {
                     ((Property)getProperty(name)).setValue(value);
+                } else if (value != null && value instanceof FileLocator) {
+                    ((Property)getProperty(name)).setValue(value);
                 } else if (value != null && value instanceof Data) {
                      ((Property)getDataProperty(name)).setValue(new DataStore((Data) value));
                 } else {

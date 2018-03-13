@@ -30,6 +30,8 @@ public class VistaActualNode extends StackPane {
 
         ServiceLoader<ViewProvider> sl = ServiceLoader.load(ViewProvider.class);
 
+        setPrefWidth(3000);
+
         for (ViewProvider p : sl) navigator.add(p);
     }
 

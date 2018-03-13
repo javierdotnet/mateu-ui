@@ -2,6 +2,7 @@ package io.mateu.ui.javafx.data;
 
 import io.mateu.ui.core.shared.*;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

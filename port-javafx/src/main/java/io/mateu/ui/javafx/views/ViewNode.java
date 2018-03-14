@@ -1837,8 +1837,30 @@ public class ViewNode extends StackPane {
                     }
                 });
 
-                cmb.valueProperty().bindBidirectional(dataStore.getPairProperty(((AbstractField)c).getId()));
                 n = cmb;
+
+                cmb.setEditable(true);
+
+                Property<Pair> prop = dataStore.getPairProperty(((AbstractField) c).getId());
+
+                cmb.valueProperty().addListener(new ChangeListener<Object>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+                        if (newValue != null) {
+                            System.out.println("newValue = " + newValue + " (" + newValue.getClass().getName() + ")");
+                            if (newValue instanceof Pair) prop.setValue((Pair) newValue);
+                        } else {
+                            System.out.println("newValue = null");
+                        }
+                    }
+                });
+
+                prop.addListener(new ChangeListener<Pair>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Pair> observable, Pair oldValue, Pair newValue) {
+                        cmb.setValue(newValue);
+                    }
+                });
 
                 ((SqlAutocompleteField)c).call(new io.mateu.ui.core.client.app.Callback<Object[][]>() {
                     @Override
@@ -1859,7 +1881,6 @@ public class ViewNode extends StackPane {
 
                 ObservableList<Pair> data = cmb.getItems();
 
-                cmb.setEditable(true);
                 cmb.getEditor().focusedProperty().addListener(observable -> {
                     if (cmb.getSelectionModel().getSelectedIndex() < 0) {
                         cmb.getEditor().setText(null);

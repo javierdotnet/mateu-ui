@@ -741,7 +741,6 @@ public class ViewNode extends StackPane {
 
                 Property<Pair> prop = dataStore.getPairProperty(((AbstractField) c).getId());
 
-
                 cmb.valueProperty().addListener(new ChangeListener<Object>() {
                     @Override
                     public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {

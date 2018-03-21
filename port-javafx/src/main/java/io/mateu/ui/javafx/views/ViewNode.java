@@ -19,6 +19,7 @@ import io.mateu.ui.javafx.data.ViewNodeDataStore;
 import io.mateu.ui.javafx.views.components.CalendarNode;
 import io.mateu.ui.javafx.views.components.GridNode;
 import io.mateu.ui.javafx.views.components.TreeGridNode;
+import io.mateu.ui.sample.client.EditorView;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -255,7 +256,7 @@ public class ViewNode extends StackPane {
         title.getStyleClass().add("title");
         title.textProperty().bind(dataStore.getStringProperty("_title"));
 
-        {
+        if (!(view instanceof AbstractEditorView)) {
             HBox badgesPane;
             h.getChildren().add(badgesPane = new HBox(2));
 
@@ -309,7 +310,7 @@ public class ViewNode extends StackPane {
         componentsCotainer.getChildren().add(h);
 
         //links
-        {
+        if (!(view instanceof AbstractEditorView)) {
             HBox linksPane;
             componentsCotainer.getChildren().add(linksPane = new HBox(2));
 
@@ -569,7 +570,7 @@ public class ViewNode extends StackPane {
 
         //build(sp, pane, view.getForm(), ((AbstractListView) view).getMaxFieldsInHeader());
         ListView lv = (ListView) view;
-        build(validationSupport, sp, pane, lv.getForm(), lv.getMaxFieldsInHeader(), true);
+        pane.getChildren().addAll(build(validationSupport, sp, pane, lv.getForm(), lv.getMaxFieldsInHeader(), true));
 
         dialog.getDialogPane().setContent(sp);
         dialog.getDialogPane().setMaxWidth(600);
@@ -593,13 +594,18 @@ public class ViewNode extends StackPane {
     }
 
     private void build(ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField) {
-        build(new ValidationSupport(), scrollPane, overallContainer, form, fromField, false);
+        List<Pane> panels = build(new ValidationSupport(), scrollPane, overallContainer, form, fromField, false);
+
+        if (view instanceof AbstractEditorView) {
+            overallContainer.getChildren().addAll(new EditorNode(this, panels));
+        } else {
+            overallContainer.getChildren().addAll(panels);
+        }
     }
 
-    private void build(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField, boolean inToolBar) {
+    private List<Pane> build(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, FieldContainer form, int fromField, boolean inToolBar) {
 
         List<Pane> panels = new ArrayList<>();
-        panels.add(new VBox(10));
 
         Node lastNode = null;
         int pos = 0;
@@ -609,11 +615,12 @@ public class ViewNode extends StackPane {
             Node n = null;
             if (!(c instanceof AbstractField) || posField >= fromField) {
 
-                    if (posField == 0 || c instanceof Separator || (c instanceof  AbstractField && (((AbstractField)c).isBeginingOfLine()))) {
-                        FlowPane fp;
-                        panels.add(fp = new FlowPane(20, 10));
-                    }
-                    n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
+                if (posField == 0 || c instanceof Separator || (c instanceof  AbstractField && (((AbstractField)c).isBeginingOfLine()))) {
+                    FlowPane fp;
+                    panels.add(fp = new FlowPane(20, 20));
+                }
+
+                n = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), c, form.isLastFieldMaximized() && pos++ == cs.size() - 1, false);
 
             }
             if (n != null) lastNode = n;
@@ -621,13 +628,13 @@ public class ViewNode extends StackPane {
         }
 
         if (view instanceof ListView && !inToolBar) {
+            if (panels.size() == 0) panels.add(new VBox(10));
             ListView lv = (ListView) view;
             lastNode = addComponent(validationSupport, scrollPane, overallContainer, panels.get(panels.size() - 1), new GridField("_data", lv.getColumns()).setPaginated(true).setExpandable(false).setFullWidth(true), true, false, false);
         }
 
 
-        overallContainer.getChildren().addAll(panels);
-
+        return panels;
     }
 
     private Node addComponent(ValidationSupport validationSupport, ScrollPane scrollPane, Pane overallContainer, Pane container, Component c, boolean maximize, boolean inToolBar) {
@@ -677,13 +684,13 @@ public class ViewNode extends StackPane {
                 tp.getTabs().add(tc);
 
 
-                ScrollPane sp = new ScrollPane(componentsCotainer = new VBox());
+                ScrollPane sp = new ScrollPane(componentsCotainer = new VBox(20));
                 componentsCotainer.setPadding(new Insets(10, 20, 10, 20));
 
                 //tc.setContent(sp);
                 tc.setContent(componentsCotainer);
 
-                build(validationSupport, sp, componentsCotainer, t, 0, false);
+                componentsCotainer.getChildren().addAll(build(validationSupport, sp, componentsCotainer, t, 0, false));
 
             }
 

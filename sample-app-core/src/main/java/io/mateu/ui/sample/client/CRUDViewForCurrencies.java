@@ -51,8 +51,8 @@ public class CRUDViewForCurrencies extends AbstractCRUDView {
             @Override
             public void build() {
                 add(new PKField("id", "Code"))
-                        .add(new TextField("name", "Name"))
-                        .add(new IntegerField("decimals", "Decimals"))
+                        .add(new TextField("name", "Name").setBeginingOfLine(true))
+                        .add(new IntegerField("decimals", "Decimals").setBeginingOfLine(true))
                         ;
             }
         };

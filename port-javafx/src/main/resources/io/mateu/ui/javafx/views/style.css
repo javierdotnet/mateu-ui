@@ -504,6 +504,56 @@
 
 
 
+.filaeditor {
+    -fx-border-insets: 20 30 0 0;
+}
+
+
+
+.editortab {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-font-size: 12px;
+    -fx-pref-width: 500px;
+    -fx-padding: 3 10 3 10;
+    -fx-alignment: center-right;
+    -fx-border-width: 0 5 0 0;
+    -fx-border-color: transparent;
+}
+
+.editortab:hover {
+    -fx-text-fill: darkgrey;
+    -fx-cursor: hand;
+}
+
+
+.editortab.seleccionado {
+    -fx-border-color: blue;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+}
+
+.izdaeditor {
+    -fx-border-color: black;
+    -fx-border-width: 0 1 0 0;
+}
+
+.izdaeditorresumen {
+    -fx-alignment: center-right;
+}
+
+.izdaeditorlinks {
+    -fx-alignment: center-right;
+}
+
+.contenidoeditor {
+    -fx-padding: 0 25 10 25;
+}
+
+
+
+
+
 
 
 

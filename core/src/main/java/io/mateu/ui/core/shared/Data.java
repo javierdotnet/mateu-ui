@@ -241,6 +241,10 @@ public class Data implements Serializable, DataContainer {
         return new Jsonizer().toJson(this);
     }
 
+    public String toJson() {
+        return new Jsonizer().toJson(this);
+    }
+
     public void setAll(Data data) {
         if (data != null) {
             for (String k : data.getPropertyNames()) {

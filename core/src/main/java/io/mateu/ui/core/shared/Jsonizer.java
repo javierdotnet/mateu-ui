@@ -1,5 +1,7 @@
 package io.mateu.ui.core.shared;
 
+import com.google.common.collect.Lists;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import static io.mateu.ui.core.shared.Jsonizer.ESTADO.*;
 public class Jsonizer {
 
     enum ESTADO {
-        INITIAL, INSIDEDATA, INSIDELIST, INSIDEKEY, INSIDEVALUE, INSIDESTRING, ESCAPED, INSIDEPAIRLIST, INSIDEPAIRLISTVALUE, INSIDEPAIRLISTTEXT
+        INITIAL, INSIDEDATA, INSIDELIST, INSIDELISTELEMENT, INSIDEKEY, INSIDEVALUE, INSIDESTRING, ESCAPED, INSIDEPAIRLIST, INSIDEPAIRLISTVALUE, INSIDEPAIRLISTTEXT
     }
 
     private boolean debug = false;
@@ -25,6 +27,8 @@ public class Jsonizer {
     List<String> pilaClaves = new ArrayList<>();
     Object objetoEnCurso = null;
     StringBuffer lineaActual = new StringBuffer();
+    Object valorPendiente = null;
+    Pair parActual = null;
 
     public Object parseJson(String json) {
 
@@ -36,6 +40,24 @@ public class Jsonizer {
             if (debug) System.out.println("leido: " + json.substring(0, pos) + ", estadoActual: " + estadoActual);
 
             char c = json.charAt(pos);
+
+
+            if (c != ',') {
+                if (estadoActual == INSIDEDATA) {
+                    setEstado(INSIDEKEY, null);
+                }
+
+                if (estadoActual == INSIDELIST) {
+                    setEstado(INSIDELISTELEMENT, null);
+                }
+
+                if (estadoActual == INSIDEPAIRLIST) {
+                    setEstado((parActual == null)?INSIDEPAIRLISTVALUE:INSIDEPAIRLISTTEXT, null);
+                }
+            }
+
+
+
             if (estadoActual == ESCAPED) { // solo sucede cuando estamos dentro de un string
 
                 lineaActual.append(c); // lo añadimos al string
@@ -95,13 +117,14 @@ public class Jsonizer {
 
                         lineaActual = new StringBuffer();
 
+                       back();
                        setEstado(INSIDEVALUE, null);
 
                     } break;
 
                     case ',': {
 
-                        acumular();
+                        if (estadoActual == INSIDEVALUE || estadoActual == INSIDELISTELEMENT || estadoActual == INSIDEPAIRLISTVALUE || estadoActual == INSIDEPAIRLISTTEXT) acumular();
 
                     } break;
 
@@ -134,7 +157,7 @@ public class Jsonizer {
 
     private void acumular() {
 
-        if (estadoActual == INSIDEVALUE) {
+        if (estadoActual == INSIDEVALUE || estadoActual == INSIDELISTELEMENT || estadoActual == INSIDEPAIRLISTVALUE || estadoActual == INSIDEPAIRLISTTEXT) {
 
             Object valor = extractValue();
 
@@ -154,17 +177,10 @@ public class Jsonizer {
 
         acumular();
 
-        if (estadoActual == INSIDEKEY) {
-
-            Object valor = objetoEnCurso;
-
-            objetoEnCurso = desempilar();
-
-            addValor(valor);
-
-        }
-
         back();
+
+        valorPendiente = objetoEnCurso;
+        objetoEnCurso = desempilar();
     }
 
     /**
@@ -176,13 +192,19 @@ public class Jsonizer {
 
         if (estadoActual == INSIDEPAIRLISTVALUE) {
 
-            Pair p;
-            ((PairList) objetoEnCurso).getValues().add(p = new Pair());
+            Pair p = new Pair();
             p.setValue(valor);
+
+            parActual = p;
+
+            ((PairList) objetoEnCurso).getValues().add(p);
 
         } else if (estadoActual == INSIDEPAIRLISTTEXT) {
 
-            ((PairList) objetoEnCurso).getValues().get(((PairList) objetoEnCurso).getValues().size() - 1).setText("" + valor);
+            Pair p = parActual;
+            p.setText("" + valor);
+
+            parActual = null;
 
         } else if (estadoActual == INSIDEVALUE) {
             String pn = pilaClaves.remove(pilaClaves.size() - 1);
@@ -197,7 +219,7 @@ public class Jsonizer {
             } else {
                 ((Data) objetoEnCurso).set(pn, valor);
             }
-        } else if (estadoActual == INSIDELIST) {
+        } else if (estadoActual == INSIDELISTELEMENT) {
             ((List) objetoEnCurso).add(valor);
         }
 
@@ -223,25 +245,31 @@ public class Jsonizer {
      * @return
      */
     private Object extractValue() {
-        Object valor = null;
+        Object valor = valorPendiente;
 
-        String s = lineaActual.toString();
+        if (valor == null) {
 
-        if (s.length() > 0) {
+            String s = lineaActual.toString();
 
-            valor = s;
-            if (s.length() > 1 && s.startsWith("\"")) valor = s.substring(1, s.length() - 1);
-            else if (s.contains(".")) valor = Double.parseDouble(s);
-            else if ("true".equals(s)) valor = true;
-            else if ("false".equals(s)) valor = false;
-            else if ("null".equals(s)) valor = null;
-            else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
-            else if (s.contains("-")) valor = LocalDate.parse(s);
-            else valor = Integer.parseInt(s);
+            if (s.length() > 0) {
 
+                valor = s;
+                if (s.length() > 1 && s.startsWith("\"")) valor = s.substring(1, s.length() - 1);
+                else if (s.contains(".")) valor = Double.parseDouble(s);
+                else if ("true".equals(s)) valor = true;
+                else if ("false".equals(s)) valor = false;
+                else if ("null".equals(s)) valor = null;
+                else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
+                else if (s.contains("-")) valor = LocalDate.parse(s);
+                else valor = Integer.parseInt(s);
+
+            }
+
+            lineaActual = new StringBuffer();
         }
 
-        lineaActual = new StringBuffer();
+
+        valorPendiente = null;
 
         return valor;
     }
@@ -263,16 +291,6 @@ public class Jsonizer {
         if (nuevoObjetoEnCurso != null) {
             if (objetoEnCurso != null) pilaObjetos.add(objetoEnCurso);
             objetoEnCurso = nuevoObjetoEnCurso;
-        }
-
-        if (estadoActual == INSIDEDATA) {
-            setEstado(INSIDEKEY, null);
-        }
-        if (estadoActual == INSIDELIST) {
-            setEstado(INSIDEVALUE, null);
-        }
-        if (estadoActual == INSIDEPAIRLIST) {
-            setEstado(INSIDEPAIRLISTVALUE, null);
         }
 
     }
@@ -386,7 +404,13 @@ public class Jsonizer {
     public static void main(String[] args) {
 
         //Data d = new Data("a", 1221, "b", "iws{qw\"qq}hwi", "c", new Data("a", 1, "b", 2), "d", new Pair(23, "veititres")); //, "e", new PairList()
-        Data d = new Data("a", 1221, "b", "iws{qw\"qq}hwi", "c", new Data("a", 1, "b", 2), "d", new Pair(23, "veititres")); //, "e", new PairList()
+        //Data d = new Data("a", 1221, "b", "iws{qw\"qq}hwi", "c", new Data("a", 1, "b", 2), "d", new Pair(23, "veititres"), "l", Lists.newArrayList(new Data("a", 1, "b", 2), new Data("a", 1, "b", 2))); //, "e", new PairList()
+
+        //Data d = new Data("a", 1221, "l", Lists.newArrayList(new Data("a", 1, "b", 2), new Data("a", 1, "b", 2))); //, "e", new PairList()
+
+        //Data d = new Data("a", 1221, "e", new PairList());
+
+        Data d = new Data("a", 1221, "e", new PairList(1, "uno", "2", "dos"));
 
         System.out.println(d.toJson());
 

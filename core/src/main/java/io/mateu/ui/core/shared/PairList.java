@@ -18,6 +18,15 @@ public class PairList {
 
     }
 
+    public PairList(Object... args) {
+        int pos = 0;
+        Object x = null;
+        for (Object o : args) {
+            if (pos++ % 2 == 0) x = o;
+            else values.add(new Pair(x, (String) o));
+        }
+    }
+
 
     public List<Pair> getValues() {
         return values;

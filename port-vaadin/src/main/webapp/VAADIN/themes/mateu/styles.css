@@ -17290,3 +17290,28 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0px !important;
 	padding-top: 14px !important;
 }
+
+.mateu .divIndicadorAreaActual {
+	padding-left: 0px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.mateu .divIndicadorAreaActual .v-label {
+	font-weight: bold;
+}
+
+.mateu .divRestoAreas {
+	padding-left: 0px;
+	padding-top: 10px;
+	border-top: 1px solid whitesmoke;
+	margin-top: 20px;
+}
+
+.mateu .divRestoAreas .labelotrasareas {
+	font-weight: bold;
+}
+
+.mateu .divRestoAreas .linkotrasareas {
+	padding-left: 0px;
+}

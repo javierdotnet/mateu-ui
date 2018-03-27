@@ -68,7 +68,8 @@ public class ValoThemeUI extends UI {
     private ViewDisplay trueViewDisplay;
     private static int fileId = 0;
     private Resource foto;
-    private VerticalLayout divSelectorArea;
+    private VerticalLayout divIndicadorAreaActual;
+    private VerticalLayout divRestoAreas;
 
     public void search(AbstractListView lv, int page) {
         //miguel: buscar
@@ -623,48 +624,7 @@ public class ValoThemeUI extends UI {
         menu.addComponent(menuItemsLayout);
 
 
-                /*
-
-        // cambio temas
-
-
-        List<Pair> temas = Lists.newArrayList(new Pair("quonext", "Quonext"), new Pair("tests-valo-reindeer", "Valo"));
-
-        ComboBox<Pair> combo = new ComboBox<>();
-        combo.setItems(temas);
-        combo.setEmptySelectionAllowed(false);
-        combo.setTextInputAllowed(false);
-        combo.setScrollToSelectedItem(true);
-        combo.addStyleName("selectortema");
-// Use the name property for item captions
-        combo.setItemCaptionGenerator(Pair::getText);
-
-
-
-        if (!Strings.isNullOrEmpty(getTheme())) {
-            for (Pair p : temas) if (getTheme().equals(p.getValue())) combo.setSelectedItem(p);
-        }
-
-        combo.addValueChangeListener(new HasValue.ValueChangeListener<Pair>() {
-            @Override
-            public void valueChange(HasValue.ValueChangeEvent<Pair> valueChangeEvent) {
-                if (valueChangeEvent.getValue() != null) {
-
-                    setTheme((String) valueChangeEvent.getValue().getValue());
-                }
-            }
-        });
-
-        menu.addComponent(combo);
-
-        // fin cambio temas
-
-
-*/
-
         refreshMenu();
-
-        //if (label != null) label.setValue(label.getValue() + " <span class=\"valo-menu-badge\">" + count + "</span>");
 
         return menu;
     }
@@ -754,8 +714,9 @@ public class ValoThemeUI extends UI {
             });
 
 
-            divSelectorArea = new VerticalLayout();
-            divSelectorArea.setSpacing(false);
+            divIndicadorAreaActual = new VerticalLayout();
+            divIndicadorAreaActual.setSpacing(false);
+            divIndicadorAreaActual.addStyleName("divIndicadorAreaActual");
 
             List<Pair> areas = new ArrayList<>();
             if (getApp().getAreas().size() > 1) {
@@ -771,35 +732,30 @@ public class ValoThemeUI extends UI {
                 }
             }
 
-            if (areas.size() > 0) {
+            divRestoAreas = new VerticalLayout();
+            Label lx;
+            divRestoAreas.addComponent(lx = new Label("Other available areas:"));
+            lx.addStyleName("labelotrasareas");
+            divRestoAreas.setSpacing(false);
+            divRestoAreas.addStyleName("divRestoAreas");
 
-                divSelectorArea.addComponent(new Label("Area:"));
-                divSelectorArea.addStyleName("divSelectorArea");
+            if (getApp().getAreas().size() > 1) {
 
-                ComboBox<Pair> combo = new ComboBox<>();
-                combo.setItems(areas);
-                combo.setEmptySelectionAllowed(false);
-                combo.setTextInputAllowed(false);
-                combo.setScrollToSelectedItem(true);
-// Use the name property for item captions
-                combo.setItemCaptionGenerator(Pair::getText);
-                if (areas.size() > 0) combo.setSelectedItem(areas.get(0));
+                divIndicadorAreaActual.addComponent(new Label("You are at " + ((getArea() != null)?getArea().getName():"--")));
 
-                combo.addValueChangeListener(new HasValue.ValueChangeListener<Pair>() {
-                    @Override
-                    public void valueChange(HasValue.ValueChangeEvent<Pair> valueChangeEvent) {
-                        if (valueChangeEvent.getValue() != null) {
-
-                            AbstractArea a = (AbstractArea) valueChangeEvent.getValue().getValue();
-
-                            setArea(a);
-
-                            refreshMenu(areas, a);
+                for (AbstractArea x : getApp().getAreas()) if (!x.equals(getArea())) {
+                    Button b;
+                    divRestoAreas.addComponent(b = new Button(x.getName(), new ClickListener() {
+                        @Override
+                        public void buttonClick(ClickEvent clickEvent) {
+                            setArea(x);
+                            refreshMenu(areas, x);
                         }
-                    }
-                });
+                    }));
+                    b.addStyleName(ValoTheme.BUTTON_LINK);
+                    b.addStyleName("linkotrasareas");
+                }
 
-                divSelectorArea.addComponent(combo);
 
             }
 
@@ -1275,7 +1231,7 @@ public class ValoThemeUI extends UI {
 
         menuItemsLayout.removeAllComponents();
 
-        if (areas.size() > 1) menuItemsLayout.addComponent(divSelectorArea);
+        if (areas.size() > 1) menuItemsLayout.addComponent(divIndicadorAreaActual);
 
         Label label = null;
 
@@ -1295,6 +1251,8 @@ public class ValoThemeUI extends UI {
 
             }
         }
+
+        if (areas.size() > 1) menuItemsLayout.addComponent(divRestoAreas);
     }
 
     private void setArea(AbstractArea a) {

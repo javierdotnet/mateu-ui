@@ -7,5 +7,7 @@ import io.mateu.ui.core.shared.Data;
  */
 public interface ActionOnRow {
 
-    public void run(Data data);
+    boolean isModifierPressed();
+
+    void run(Data data);
 }

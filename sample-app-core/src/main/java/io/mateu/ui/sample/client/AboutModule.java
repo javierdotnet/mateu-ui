@@ -20,7 +20,7 @@ public class AboutModule extends AbstractModule {
 
             @Override
             public void run() {
-                MateuUI.getClientSideHelper().openView(new AboutView());
+                MateuUI.getClientSideHelper().openView(new AboutView(), isModifierPressed());
             }
         });
 

@@ -76,57 +76,57 @@ public class ComponentsModule extends AbstractModule {
                 }, (MenuEntry) new AbstractAction("TextField") {
                      @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new TextFieldView());
+                        MateuUI.getClientSideHelper().openView(new TextFieldView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Multilanguage") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new MultilanguageView());
+                        MateuUI.getClientSideHelper().openView(new MultilanguageView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("ComboBoxField") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new ComboBoxFieldView());
+                        MateuUI.getClientSideHelper().openView(new ComboBoxFieldView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("ListSelectionField") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new ListSelectionFieldView());
+                        MateuUI.getClientSideHelper().openView(new ListSelectionFieldView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Property listener") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new PropertyListenerView());
+                        MateuUI.getClientSideHelper().openView(new PropertyListenerView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Search field") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new SearchFieldView());
+                        MateuUI.getClientSideHelper().openView(new SearchFieldView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Data viewer") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new DataViewerView());
+                        MateuUI.getClientSideHelper().openView(new DataViewerView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Grid") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new GridView());
+                        MateuUI.getClientSideHelper().openView(new GridView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Styled Grid") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new StyledGridView());
+                        MateuUI.getClientSideHelper().openView(new StyledGridView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Tabs") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new TabsView());
+                        MateuUI.getClientSideHelper().openView(new TabsView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("File field") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new FileFieldView());
+                        MateuUI.getClientSideHelper().openView(new FileFieldView(), isModifierPressed());
                     }
                 });
             }
@@ -184,7 +184,7 @@ public class ComponentsModule extends AbstractModule {
                     @Override
                     public void run() {
                         try {
-                            MateuUI.getClientSideHelper().open(new URI("file:/home/miguel/quonext/tmp/6fbf01b0-bf45-4067-9c4a-9601fee488e9.pdf").toURL());
+                            MateuUI.getClientSideHelper().open(new URI("file:/home/miguel/quonext/tmp/6fbf01b0-bf45-4067-9c4a-9601fee488e9.pdf").toURL(), isModifierPressed());
                         } catch (MalformedURLException e) {
                             e.printStackTrace();
                         } catch (URISyntaxException e) {
@@ -194,12 +194,12 @@ public class ComponentsModule extends AbstractModule {
                 }, (MenuEntry) new AbstractAction("Complex form") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new ComplexFormView());
+                        MateuUI.getClientSideHelper().openView(new ComplexFormView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Nested dialogs") {
                     @Override
                     public void run() {
-                        MateuUI.getClientSideHelper().openView(new NestedDialogsView());
+                        MateuUI.getClientSideHelper().openView(new NestedDialogsView(), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Dialog") {
                     @Override
@@ -222,7 +222,7 @@ public class ComponentsModule extends AbstractModule {
                                         .add(new TextField("field2", "Label for textfield").setUnmodifiable(true))
                                         ;
                             }
-                        });
+                        }, isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Wizard") {
                     @Override
@@ -302,7 +302,7 @@ public class ComponentsModule extends AbstractModule {
                             public void build() {
                                 add(new TextField("f3", "Field 3"));
                             }
-                        }));
+                        }), isModifierPressed());
                     }
                 }, (MenuEntry) new AbstractAction("Wizard 2") {
                     @Override
@@ -438,7 +438,7 @@ public class ComponentsModule extends AbstractModule {
 
                                 }
                             }
-                        });
+                        }, isModifierPressed());
                     }
                 });
             }

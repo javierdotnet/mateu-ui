@@ -56,9 +56,11 @@ public class Servlet extends VaadinServlet {
             public BaseServiceAsync baseServiceImpl = new BaseServiceClientSideImpl();
 
             @Override
-            public void openView(AbstractView view) {
+            public void openView(AbstractView view, boolean inNewTab) {
                 System.out.println("openView(" + view.getClass().getName() + ")");
-                ValoThemeUI.addView((ValoThemeUI) UI.getCurrent(), view);
+                String vid = view.getViewId();
+                Page.getCurrent().open("#!" + vid, (inNewTab)?"_blank":Page.getCurrent().getWindowName());
+                //ValoThemeUI.addView((ValoThemeUI) UI.getCurrent(), view, inNewTab);
                 //views.addView(view);
             }
 
@@ -165,9 +167,9 @@ public class Servlet extends VaadinServlet {
             }
 
             @Override
-            public void open(URL url) {
+            public void open(URL url, boolean inNewTab) {
                 System.out.println("open(" + url + ")");
-                Page.getCurrent().open(url.toString(), url.toString());
+                Page.getCurrent().open(url.toString(), (inNewTab)?"_blank":url.toString());
             }
 
             @Override
@@ -214,7 +216,7 @@ public class Servlet extends VaadinServlet {
             }
 
             @Override
-            public void open(AbstractWizard wizard) {
+            public void open(AbstractWizard wizard, boolean inNewTab) {
 
                 // Create a sub-window and set the content
                 WizardWindow subWindow = new WizardWindow(wizard);

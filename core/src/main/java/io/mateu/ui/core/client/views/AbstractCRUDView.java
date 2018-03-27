@@ -34,7 +34,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         if (canCreate()) as.add(new AbstractAction("New") {
             @Override
             public void run() {
-               openNew();
+               openNew(false);
             }
         });
         if (canDelete()) as.add(new AbstractAction("Delete") {
@@ -59,9 +59,9 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         return as;
     }
 
-    public void openNew() {
+    public void openNew(boolean inNewTab) {
         try {
-            openEditor(getNewEditorView());
+            openEditor(getNewEditorView(), inNewTab);
         } catch (Throwable e) {
             MateuUI.notifyError(e.getMessage());
         }
@@ -73,24 +73,24 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
         if (isIdColumnNeeded()) cols.add(new LinkColumn("_id", "Id", 100) {
             @Override
             public void run(Data data) {
-                open(getId(), data);
+                open(getId(), data, isModifierPressed());
             }
         });
         cols.addAll(createExtraColumns());
         return cols;
     }
 
-    public void open(String propertyId, Data data) {
+    public void open(String propertyId, Data data, boolean inNewTab) {
         try {
-            openEditor(getNewEditorView().setInitialId(data.get(propertyId)));
+            openEditor(getNewEditorView().setInitialId(data.get(propertyId)), inNewTab);
         } catch (Throwable e) {
             MateuUI.notifyError(e.getMessage());
         }
     }
 
-    public void open(Object id) {
+    public void open(Object id, boolean inNewTab) {
         try {
-            openEditor(getNewEditorView().setInitialId(id));
+            openEditor(getNewEditorView().setInitialId(id), inNewTab);
         } catch (Throwable e) {
             MateuUI.notifyError(e.getMessage());
         }
@@ -100,7 +100,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
 
     public abstract void delete(List<Data> selection, AsyncCallback<Void> callback);
 
-    public void openEditor(AbstractEditorView e) {
+    public void openEditor(AbstractEditorView e, boolean inNewTab) {
         e.addEditorViewListener(new EditorViewListener() {
             @Override
             public void onLoad() {
@@ -130,7 +130,7 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
 
             }
         });
-        for (CRUDListener l : listeners) l.openEditor(e);
+        for (CRUDListener l : listeners) l.openEditor(e, inNewTab);
     }
 
     public AbstractCRUDView addListener(CRUDListener l) {

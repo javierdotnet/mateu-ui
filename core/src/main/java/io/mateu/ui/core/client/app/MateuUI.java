@@ -51,11 +51,15 @@ public class MateuUI {
         getClientSideHelper().run(runnable);
     }
 
-    public static void openView(AbstractView view) {
-        getClientSideHelper().openView(view);
+    public static void openView(AbstractView view, boolean inNewTab) {
+        getClientSideHelper().openView(view, inNewTab);
     }
 
-    public static void openView(AbstractView parentView, AbstractView view) {
+    public static void openView(AbstractView view) {
+        openView(view, false);
+    }
+
+    public static void openView(AbstractView parentView, AbstractView view, boolean inNewTab) {
         getClientSideHelper().openView(parentView, view);
     }
 
@@ -102,9 +106,9 @@ public class MateuUI {
         getClientSideHelper().notifyDone(msg);
     }
 
-    public static void open(URL url) { getClientSideHelper().open(url); }
+    public static void open(URL url, boolean inNewTab) { getClientSideHelper().open(url, inNewTab); }
 
-    public static void open(AbstractWizard wizard) { getClientSideHelper().open(wizard); }
+    public static void open(AbstractWizard wizard, boolean inNewTab) { getClientSideHelper().open(wizard, inNewTab); }
 
     public static boolean hasPermission(int permissionId) {
         boolean ok = false;

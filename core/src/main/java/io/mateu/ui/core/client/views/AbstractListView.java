@@ -110,7 +110,7 @@ public abstract class AbstractListView extends AbstractView implements ListView 
                 MateuUI.getBaseService().dump(p, new Callback<URL>() {
                     @Override
                     public void onSuccess(URL result) {
-                        MateuUI.open(result);
+                        MateuUI.open(result, false);
                     }
                 });
             }
@@ -126,7 +126,7 @@ public abstract class AbstractListView extends AbstractView implements ListView 
                 MateuUI.getBaseService().dump(p, new Callback<URL>() {
                     @Override
                     public void onSuccess(URL result) {
-                        MateuUI.open(result);
+                        MateuUI.open(result, false);
                     }
                 });
             }

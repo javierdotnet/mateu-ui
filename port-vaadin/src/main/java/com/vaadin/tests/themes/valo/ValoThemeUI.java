@@ -25,7 +25,6 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.*;
 import com.vaadin.server.*;
-import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -33,8 +32,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.App;
-import io.mateu.ui.core.client.BaseServiceAsync;
-import io.mateu.ui.core.client.BaseServiceClientSideImpl;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.*;
@@ -46,13 +43,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -216,6 +210,17 @@ public class ValoThemeUI extends UI {
         String f = Page.getCurrent().getUriFragment();
         if (f == null || f.equals("")) {
             //navigator.navigateTo("common");
+            boolean hayPartePublica = false;
+            for (AbstractArea a : getApp().getAreas()) {
+                hayPartePublica |= a.isPublicAccess();
+            }
+            if (!hayPartePublica) openLoginDialog();
+            else {
+                AbstractView h;
+                if ((h = getApp().getPublicHome()) != null) {
+                    addView((ValoThemeUI) UI.getCurrent(), h);
+                }
+            }
         }
 
         navigator.setErrorView(HomeView.class);
@@ -311,17 +316,6 @@ public class ValoThemeUI extends UI {
             }
         });
 
-        boolean hayPartePublica = false;
-        for (AbstractArea a : getApp().getAreas()) {
-            hayPartePublica |= a.isPublicAccess();
-        }
-        if (!hayPartePublica) openLoginDialog();
-        else {
-            AbstractView h;
-            if ((h = getApp().getPublicHome()) != null) {
-                addView((ValoThemeUI) UI.getCurrent(), h);
-            }
-        }
     }
 
     public View getVaadinView(AbstractView view) {
@@ -333,15 +327,6 @@ public class ValoThemeUI extends UI {
             if (view != null) {
 
                 v = new ViewLayout(view);
-
-                if (view instanceof AbstractCRUDView) {
-                    ((AbstractCRUDView)view).addListener(new CRUDListener() {
-                        @Override
-                        public void openEditor(AbstractEditorView e) {
-                            MateuUI.openView(e);
-                        }
-                    });
-                }
 
                 if (view instanceof AbstractEditorView) {
 
@@ -1389,7 +1374,7 @@ public class ValoThemeUI extends UI {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     //navigator.navigateTo(item.getKey());
-                    ((AbstractAction)e).run();
+                    ((AbstractAction)e).setModifierPressed(event.isAltKey() || event.isCtrlKey()).run();
                 }
             });
             b.setCaption(b.getCaption()

@@ -13,7 +13,7 @@ import java.util.List;
  * Created by miguel on 9/8/16.
  */
 public interface ClientSideHelper {
-    public void openView(AbstractView abstractView);
+    public void openView(AbstractView abstractView, boolean inNewTab);
     public Data getNewDataContainer();
 
     public <T> T create(java.lang.Class<?> serviceInterface);
@@ -39,11 +39,11 @@ public interface ClientSideHelper {
 
     void notifyDone(String msg);
 
-    void open(URL url);
+    void open(URL url, boolean inNewTab);
 
     void confirm(String text, Runnable onOk);
 
-    void open(AbstractWizard wizard);
+    void open(AbstractWizard wizard, boolean inNewTab);
 
     void openViewInDialog(AbstractView view);
 }

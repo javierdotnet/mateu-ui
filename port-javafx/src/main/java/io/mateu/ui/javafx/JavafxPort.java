@@ -7,11 +7,9 @@ import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.components.fields.DataViewerField;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.javafx.app.AppNode;
 import io.mateu.ui.javafx.app.ViewTab;
 import io.mateu.ui.javafx.newlayout.BarraDireccionesNode;
 import io.mateu.ui.javafx.newlayout.SesionNode;
-import io.mateu.ui.javafx.newlayout.VistaActualNode;
 import io.mateu.ui.javafx.views.ViewNode;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -114,7 +112,7 @@ public class JavafxPort extends Application {
             public BaseServiceAsync baseServiceImpl = new BaseServiceClientSideImpl();
 
             @Override
-            public void openView(AbstractView view) {
+            public void openView(AbstractView view, boolean inNewTab) {
                 MateuUI.runInUIThread(new Runnable() {
                     @Override
                     public void run() {
@@ -135,7 +133,7 @@ public class JavafxPort extends Application {
                                 tcrud.setClosable(false);
                                 ((CRUDDialog)view).getCrud().addListener(new CRUDListener() {
                                     @Override
-                                    public void openEditor(AbstractEditorView view) {
+                                    public void openEditor(AbstractEditorView view, boolean inNewTab) {
 
                                         ViewTab t;
 
@@ -430,14 +428,6 @@ public class JavafxPort extends Application {
                             }
 
                         } else {
-                            if (view instanceof AbstractCRUDView) {
-                                ((AbstractCRUDView)view).addListener(new CRUDListener() {
-                                    @Override
-                                    public void openEditor(AbstractEditorView e) {
-                                        MateuUI.openView(e);
-                                    }
-                                });
-                            }
 
                             //AppNode.get().getViewsNode().addView(view);
                             BarraDireccionesNode.get().cargar(view.getViewId());
@@ -535,7 +525,7 @@ public class JavafxPort extends Application {
 
             @Override
             public void openView(AbstractView parentView, AbstractView view) {
-                openView(view);
+                openView(view, false);
             }
 
             @Override
@@ -572,7 +562,7 @@ public class JavafxPort extends Application {
             }
 
             @Override
-            public void open(URL url) {
+            public void open(URL url, boolean inNewTab) {
                 try {
                     if( Desktop.isDesktopSupported() )
                     {
@@ -684,7 +674,7 @@ public class JavafxPort extends Application {
             }
 
             @Override
-            public void open(AbstractWizard wizard) {
+            public void open(AbstractWizard wizard, boolean inNewTab) {
                 MateuUI.runInUIThread(new Runnable() {
                     @Override
                     public void run() {

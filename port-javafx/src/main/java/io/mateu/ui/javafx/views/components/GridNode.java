@@ -463,6 +463,12 @@ public class GridNode extends VBox {
                     return string;
                 }
             }, new ActionOnRow() {
+
+                @Override
+                public boolean isModifierPressed() {
+                    return false;
+                }
+
                 @Override
                 public void run(Data data) {
                     AbstractForm f = g.getDataForm();

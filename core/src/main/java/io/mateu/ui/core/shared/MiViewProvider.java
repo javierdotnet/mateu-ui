@@ -45,8 +45,8 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                     if (view instanceof AbstractCRUDView) {
                         ((AbstractCRUDView) view).addListener(new CRUDListener() {
                             @Override
-                            public void openEditor(AbstractEditorView e) {
-                                MateuUI.openView(e);
+                            public void openEditor(AbstractEditorView e, boolean inNewTab) {
+                                MateuUI.openView(e, inNewTab);
                             }
                         });
                     }

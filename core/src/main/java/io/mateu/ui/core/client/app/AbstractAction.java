@@ -7,6 +7,7 @@ public abstract class AbstractAction implements MenuEntry, Runnable {
 
     private String name;
     private boolean callOnEnterKeyPressed = false;
+    private boolean modifierPressed;
 
 
     public AbstractAction(String name) {
@@ -30,5 +31,14 @@ public abstract class AbstractAction implements MenuEntry, Runnable {
     public AbstractAction setCallOnEnterKeyPressed(boolean callOnEnterKeyPressed) {
         this.callOnEnterKeyPressed = callOnEnterKeyPressed;
         return this;
+    }
+
+    public AbstractAction setModifierPressed(boolean modifierPressed) {
+        this.modifierPressed = modifierPressed;
+        return this;
+    }
+
+    public boolean isModifierPressed() {
+        return modifierPressed;
     }
 }

@@ -258,7 +258,7 @@ public class ViewLayout extends VerticalLayout implements View {
                             l.addClickListener(new Button.ClickListener() {
                                 @Override
                                 public void buttonClick(Button.ClickEvent clickEvent) {
-                                    ((AbstractAction) x.get("_action")).run();
+                                    ((AbstractAction) x.get("_action")).setModifierPressed(clickEvent.isAltKey() || clickEvent.isCtrlKey()).run();
                                 }
                             });
                             links.addComponent(l);
@@ -277,7 +277,7 @@ public class ViewLayout extends VerticalLayout implements View {
                             l.addClickListener(new Button.ClickListener() {
                                 @Override
                                 public void buttonClick(Button.ClickEvent clickEvent) {
-                                    ((AbstractAction) x.get("_action")).run();
+                                    ((AbstractAction) x.get("_action")).setModifierPressed(clickEvent.isAltKey() || clickEvent.isCtrlKey()).run();
                                 }
                             });
                             links.addComponent(l);
@@ -744,7 +744,7 @@ public class ViewLayout extends VerticalLayout implements View {
                         public void click(ClickableRenderer.RendererClickEvent e) {
                             DataStore v = ((DataStore) e.getItem()).get(col.getId());
                             List<DataStore> l = (List<DataStore>) p.getValue();
-                            ((DataColumn) col).run(v.getData());
+                            ((DataColumn) col).setModifierPressed(e.isAltKey() || e.isCtrlKey()).run(v.getData());
                         }
 
 
@@ -754,7 +754,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     colx = table.getColumn("__col_" + pos).setRenderer(new ButtonRenderer(new ClickableRenderer.RendererClickListener() {
                         @Override
                         public void click(ClickableRenderer.RendererClickEvent e) {
-                            ((LinkColumn) col).run(((DataStore) e.getItem()).getData());
+                            ((LinkColumn) col).setModifierPressed(e.isAltKey() || e.isCtrlKey()).run(((DataStore) e.getItem()).getData());
                         }
                     }));
 

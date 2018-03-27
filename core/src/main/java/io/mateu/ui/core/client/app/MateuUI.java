@@ -106,6 +106,8 @@ public class MateuUI {
         getClientSideHelper().notifyDone(msg);
     }
 
+    public static void open(URL url) { getClientSideHelper().open(url, false); }
+
     public static void open(URL url, boolean inNewTab) { getClientSideHelper().open(url, inNewTab); }
 
     public static void open(AbstractWizard wizard, boolean inNewTab) { getClientSideHelper().open(wizard, inNewTab); }

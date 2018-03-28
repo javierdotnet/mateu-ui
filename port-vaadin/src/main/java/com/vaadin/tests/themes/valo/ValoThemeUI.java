@@ -208,6 +208,7 @@ public class ValoThemeUI extends UI {
         //navigator.addView("common", CommonParts.class);
 
         String f = Page.getCurrent().getUriFragment();
+        System.out.println("Page.getCurrent().getUriFragment()=" + f);
         if (f == null || f.equals("")) {
             //navigator.navigateTo("common");
             boolean hayPartePublica = false;
@@ -631,12 +632,10 @@ public class ValoThemeUI extends UI {
         return menu;
     }
 
-    private void refreshMenu() {
-
+    private void refreshSettings() {
         VaadinSession s = VaadinSession.getCurrent();
 
         settings.removeItems();
-        menuItemsLayout.removeAllComponents();
 
         if (s.getAttribute("usuario") == null) {
 
@@ -654,30 +653,6 @@ public class ValoThemeUI extends UI {
                 });
             }
 
-
-            Label label = null;
-            int count = -1;
-            for (AbstractArea a : getApp().getAreas()) {
-
-                boolean isPublic = a.isPublicAccess();
-
-                if (!getApp().isAuthenticationNeeded() || isPublic) {
-                    label = new Label(a.getName(), ContentMode.HTML);
-                    label.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
-                    label.addStyleName(ValoTheme.LABEL_H4);
-                    label.setSizeUndefined();
-                    menuItemsLayout.addComponent(label);
-                    for (AbstractModule m : a.getModules()) {
-                        for (MenuEntry e : m.getMenu()) {
-
-                            addMenu(e);
-
-                        }
-                    }
-
-                }
-
-            }
         } else {
 
             System.out.println("***** AUTENTICADO. USUARIO=" + s.getAttribute("usuario"));
@@ -713,6 +688,7 @@ public class ValoThemeUI extends UI {
                     clearViews();
                     getApp().setArea(null);
                     getApp().setPosicion(null);
+                    refreshSettings();
                     refreshMenu();
                     AbstractView h;
                     if ((h = getApp().getPublicHome()) != null) {
@@ -720,6 +696,47 @@ public class ValoThemeUI extends UI {
                     } else navigator.navigateTo("");
                 }
             });
+
+        }
+
+
+    }
+
+    private void refreshMenu() {
+
+        VaadinSession s = VaadinSession.getCurrent();
+        menuItemsLayout.removeAllComponents();
+
+        if (s.getAttribute("usuario") == null) {
+
+            System.out.println("***** NO AUTENTICADO.");
+
+            Label label = null;
+            int count = -1;
+            for (AbstractArea a : getApp().getAreas()) {
+
+                boolean isPublic = a.isPublicAccess();
+
+                if (!getApp().isAuthenticationNeeded() || isPublic) {
+                    label = new Label(a.getName(), ContentMode.HTML);
+                    label.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
+                    label.addStyleName(ValoTheme.LABEL_H4);
+                    label.setSizeUndefined();
+                    menuItemsLayout.addComponent(label);
+                    for (AbstractModule m : a.getModules()) {
+                        for (MenuEntry e : m.getMenu()) {
+
+                            addMenu(e);
+
+                        }
+                    }
+
+                }
+
+            }
+        } else {
+
+            System.out.println("***** AUTENTICADO. USUARIO=" + s.getAttribute("usuario"));
 
 
             divIndicadorAreaActual = new VerticalLayout();
@@ -849,6 +866,7 @@ public class ValoThemeUI extends UI {
                         subWindow.close();
                         getApp().setArea(null);
                         getApp().setPosicion(null);
+                        refreshSettings();
                         refreshMenu();
 
                         AbstractView h;

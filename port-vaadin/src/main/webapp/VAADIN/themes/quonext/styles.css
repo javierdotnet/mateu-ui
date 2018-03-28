@@ -15453,3 +15453,59 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 0px !important;
 	padding-top: 14px !important;
 }
+
+.quonext .divIndicadorAreaActual {
+	padding-left: 0px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.quonext .divIndicadorAreaActual .v-label {
+	font-weight: bold;
+}
+
+.quonext .divRestoAreas {
+	padding-left: 0px;
+	padding-top: 30px;
+	margin-top: 20px;
+}
+
+.quonext .divRestoAreas .labelotrasareas {
+	font-weight: bold;
+}
+
+.quonext .divRestoAreas .linkotrasareas {
+	padding-left: 0px;
+}
+
+.quonext .listaopcionesmenu {
+	padding: 0px;
+	padding-right: 30px;
+}
+
+.quonext .submenu {
+	padding: 0px;
+}
+
+.quonext .contenedorsubmenu {
+	padding: 0px;
+	padding-left: 10px;
+}
+
+.quonext .titulosubmenuprincipal {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.quonext .titulosubmenu {
+	font-weight: bold;
+}
+
+.quonext .accionsubmenu {
+	font-weight: bold;
+	color: #001c32;
+}
+
+.quonext .accionsubmenu:hover {
+	color: #6b6b6b;
+}

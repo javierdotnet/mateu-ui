@@ -718,22 +718,21 @@ public class ValoThemeUI extends UI {
             divIndicadorAreaActual.addStyleName("divIndicadorAreaActual");
 
             List<Pair> areas = new ArrayList<>();
-            if (getApp().getAreas().size() > 1) {
-                for (AbstractArea a : getApp().getAreas()) {
+            for (AbstractArea a : getApp().getAreas()) {
+                boolean isPublic = a.isPublicAccess();
 
-                    boolean isPublic = a.isPublicAccess();
+                if (!isPublic) {
 
-                    if (!isPublic) {
+                    areas.add(new Pair(a, a.getName()));
 
-                        areas.add(new Pair(a, a.getName()));
-
-                        if (getArea() == null) {
-                            setArea(a);
-                        }
-
+                    if (getArea() == null) {
+                        setArea(a);
                     }
+
                 }
             }
+
+            if (getArea() == null && getApp().getAreas().size() > 0) setArea(getApp().getAreas().get(0));
 
             divRestoAreas = new VerticalLayout();
             Label lx;
@@ -742,7 +741,7 @@ public class ValoThemeUI extends UI {
             divRestoAreas.setSpacing(false);
             divRestoAreas.addStyleName("divRestoAreas");
 
-            if (getApp().getAreas().size() > 1) {
+            if (areas.size() > 1) {
 
                 divIndicadorAreaActual.addComponent(new Label("You are at " + ((getArea() != null)?getArea().getName():"--")));
 

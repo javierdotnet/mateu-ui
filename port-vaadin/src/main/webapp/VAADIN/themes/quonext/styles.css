@@ -15478,6 +15478,10 @@ div.v-layout.v-horizontal.v-widget {
 	padding-left: 0px;
 }
 
+.quonext .posicionactual {
+	color: #d18100;
+}
+
 .quonext .listaopcionesmenu {
 	padding: 0px;
 	padding-right: 30px;

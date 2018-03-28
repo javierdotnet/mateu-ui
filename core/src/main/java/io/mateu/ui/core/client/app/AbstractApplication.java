@@ -23,6 +23,8 @@ public abstract class AbstractApplication implements App {
     private Map<MenuEntry, String> menuIds = null;
     private Map<String, MenuEntry> menuIdsReverse = null;
     List<AbstractArea> areas = null;
+    private AbstractArea area;
+    private MenuEntry posicion;
 
     public abstract String getName();
 
@@ -141,5 +143,21 @@ public abstract class AbstractApplication implements App {
 
     public void askForTranslation(String text, String fromLanguage, String toLanguage) {
 
+    }
+
+    public AbstractArea getArea() {
+        return area;
+    }
+
+    public void setArea(AbstractArea area) {
+        this.area = area;
+    }
+
+    public MenuEntry getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(MenuEntry posicion) {
+        this.posicion = posicion;
     }
 }

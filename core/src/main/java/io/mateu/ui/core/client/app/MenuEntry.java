@@ -5,8 +5,9 @@ package io.mateu.ui.core.client.app;
  */
 public interface MenuEntry {
 
-    public String getName();
+    String getName();
 
-    public void setId(String id);
+    void setId(String id);
 
+    String getId();
 }

@@ -3,6 +3,7 @@ package io.mateu.ui.core.shared;
 import com.google.auto.service.AutoService;
 import com.google.common.base.Strings;
 import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.app.MenuEntry;
 import io.mateu.ui.core.client.views.*;
 
 import java.lang.reflect.Constructor;
@@ -14,7 +15,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
     @Override
     public String getViewName(String viewAndParameters) {
         System.out.println("MiViewProvider.getViewName(" + viewAndParameters + ")");
-        if (viewAndParameters != null && !viewAndParameters.startsWith("mui..")) return null;
+        if (viewAndParameters != null && !(viewAndParameters.startsWith("mui..") || viewAndParameters.startsWith("menu.."))) return null;
         String p = viewAndParameters;
         if (p.contains("?")) p = p.substring(0, p.indexOf("?"));
         if (p.contains("/")) p = p.substring(0, p.indexOf("/"));
@@ -51,6 +52,10 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                         });
                     }
 
+                } else if (viewName.startsWith("menu..")) {
+                    String menuId = viewName.substring("menu..".length());
+                    MenuEntry e = MateuUI.getApp().getMenu(menuId);
+                    view = new MenuView(e.getName(), menuId);
                 }
 
             }

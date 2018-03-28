@@ -17303,8 +17303,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .mateu .divRestoAreas {
 	padding-left: 0px;
-	padding-top: 10px;
-	border-top: 1px solid whitesmoke;
+	padding-top: 30px;
 	margin-top: 20px;
 }
 
@@ -17314,4 +17313,36 @@ div.v-layout.v-horizontal.v-widget {
 
 .mateu .divRestoAreas .linkotrasareas {
 	padding-left: 0px;
+}
+
+.mateu .listaopcionesmenu {
+	padding: 0px;
+	padding-right: 30px;
+}
+
+.mateu .submenu {
+	padding: 0px;
+}
+
+.mateu .contenedorsubmenu {
+	padding: 0px;
+	padding-left: 10px;
+}
+
+.mateu .titulosubmenuprincipal {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.mateu .titulosubmenu {
+	font-weight: bold;
+}
+
+.mateu .accionsubmenu {
+	font-weight: bold;
+	color: #001c32;
+}
+
+.mateu .accionsubmenu:hover {
+	color: #6b6b6b;
 }

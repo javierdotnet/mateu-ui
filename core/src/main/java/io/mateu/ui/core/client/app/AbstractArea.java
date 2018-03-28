@@ -2,14 +2,17 @@ package io.mateu.ui.core.client.app;
 
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by miguel on 9/8/16.
  */
 public abstract class AbstractArea {
 
+    private String id = UUID.randomUUID().toString();
     private boolean publicAccess = false;
     private String name;
+    private List<AbstractModule> modules;
 
     public AbstractArea(String name) {
         this.name = name;
@@ -23,7 +26,12 @@ public abstract class AbstractArea {
         return name;
     }
 
-    public abstract List<AbstractModule> getModules();
+    public List<AbstractModule> getModules() {
+        if (modules == null) modules = buildModules();
+        return modules;
+    }
+
+    public abstract List<AbstractModule> buildModules();
 
     public boolean isPublicAccess() {
         return publicAccess;
@@ -31,5 +39,18 @@ public abstract class AbstractArea {
 
     public void setPublicAccess(boolean publicAccess) {
         this.publicAccess = publicAccess;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 }

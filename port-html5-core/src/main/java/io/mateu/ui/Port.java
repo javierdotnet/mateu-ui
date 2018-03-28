@@ -7,7 +7,6 @@ import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.client.views.AbstractWizard;
-import io.mateu.ui.core.shared.AsyncFactory;
 import io.mateu.ui.core.shared.Data;
 
 import java.net.URL;
@@ -41,7 +40,7 @@ public class Port {
         MateuUI.setClientSideHelper(new ClientSideHelper() {
 
             @Override
-            public void openView(AbstractView v) {
+            public void openView(AbstractView v, boolean inNewTab) {
                 StringBuffer h = new StringBuffer();
                 Map<String, JQueryEventHandler> listeners = new HashMap<>();
 
@@ -122,7 +121,7 @@ public class Port {
             }
 
             @Override
-            public void open(URL url) {
+            public void open(URL url, boolean inNewTab) {
 
             }
 
@@ -132,7 +131,12 @@ public class Port {
             }
 
             @Override
-            public void open(AbstractWizard wizard) {
+            public void open(AbstractWizard wizard, boolean inNewTab) {
+
+            }
+
+            @Override
+            public void openViewInDialog(AbstractView view) {
 
             }
         });
@@ -191,7 +195,7 @@ public class Port {
         StringBuffer h = new StringBuffer();
         h.append("<ul>");
         int pos = 0;
-        for (AbstractModule m : a.getModules()) for (MenuEntry e : m.getMenu()) {
+        for (AbstractModule m : a.buildModules()) for (MenuEntry e : m.buildMenu()) {
             pos = appendMenu(pos, h, e);
         }
         h.append("</ul>");
@@ -199,7 +203,7 @@ public class Port {
         JQuery.by("#left-menu").html(h.toString());
 
         pos = 0;
-        for (AbstractModule m : a.getModules()) for (MenuEntry e : m.getMenu()) {
+        for (AbstractModule m : a.buildModules()) for (MenuEntry e : m.buildMenu()) {
             pos = activateMenu(pos, e);
         }
     }

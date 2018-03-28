@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.Files;
 import com.vaadin.annotations.*;
-import com.vaadin.data.HasValue;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.*;
@@ -125,10 +124,10 @@ public class ValoThemeUI extends UI {
                     }
 
                     @Override
-                    public List<AbstractArea> getAreas() {
+                    public List<AbstractArea> buildAreas() {
                         return Lists.newArrayList(new AbstractArea("Area 1") {
                             @Override
-                            public List<AbstractModule> getModules() {
+                            public List<AbstractModule> buildModules() {
                                 return Lists.newArrayList(new AbstractModule() {
                                     @Override
                                     public String getName() {
@@ -136,7 +135,7 @@ public class ValoThemeUI extends UI {
                                     }
 
                                     @Override
-                                    public List<MenuEntry> getMenu() {
+                                    public List<MenuEntry> buildMenu() {
                                         return Lists.newArrayList(
                                                 new AbstractAction("Opción 1") {
                                                     @Override
@@ -728,6 +727,10 @@ public class ValoThemeUI extends UI {
 
                         areas.add(new Pair(a, a.getName()));
 
+                        if (getArea() == null) {
+                            setArea(a);
+                        }
+
                     }
                 }
             }
@@ -749,7 +752,7 @@ public class ValoThemeUI extends UI {
                         @Override
                         public void buttonClick(ClickEvent clickEvent) {
                             setArea(x);
-                            refreshMenu(areas, x);
+                            refreshMenu();
                         }
                     }));
                     b.addStyleName(ValoTheme.BUTTON_LINK);
@@ -759,17 +762,8 @@ public class ValoThemeUI extends UI {
 
             }
 
-            for (AbstractArea a : getApp().getAreas()) {
+            if (getArea() != null) refreshMenu(areas, getArea());
 
-                boolean isPublic = a.isPublicAccess();
-
-                if (!isPublic) {
-
-                    refreshMenu(areas, a);
-
-                    break;
-                }
-            }
         }
 
     }
@@ -1288,42 +1282,19 @@ public class ValoThemeUI extends UI {
     private void addMenu(MenuEntry e) {
 
         if (e instanceof AbstractMenu) {
-            //for (MenuEntry ee : ((AbstractMenu)e).getEntries()) addMenu(ee); // antes, menú plano sin submenús
-
-
-            MenuBar b = new MenuBar();
-            MenuBar.MenuItem dropdown = b.addItem(e.getName(), null);
-            //dropdown = b.addItem("", null);
-            /*
-            dropdown.addItem("Another Action", null);
-            dropdown.addItem("Secondary Action", null);
-            dropdown.addSeparator();
-            dropdown.addItem("Last Action", null);
-*/
-
-            //b.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
-
-            //b.addStyleName("user-menu");
-
-            for (MenuEntry ee : ((AbstractMenu)e).getEntries()) addItem(dropdown, ee);
-
-
-            //b.setIcon(testIcon.get());
-            //b.setPrimaryStyleName("submenu");
-            b.addStyleName("submenu");
+            Button b = new Button(e.getName(), new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    MateuUI.openView(new MenuView(e.getName(), getApp().getMenuLocator(e)), event.isAltKey() || event.isCtrlKey());
+                }
+            });
+            b.setCaption(b.getCaption()
+                    + " <span class=\"valo-menu-badge\">" + ((AbstractMenu) e).getEntries().size() + "</span>"
+            );
             b.setCaptionAsHtml(true);
-
-            HorizontalLayout div = new HorizontalLayout();
-            div.setSpacing(false);
-            //div.addStyleName("divsubmenu");
-            Label l = new Label();
-            //l.setIcon(testIcon.get());  // sin iconos en el menú
-            //l.addStyleName("iconosubmenu");
-            div.addComponent(l);
-            div.addComponent(b);
-
-            menuItemsLayout.addComponent(div);
-
+            b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+            //b.setIcon(testIcon.get());  // sin iconos en el menú
+            menuItemsLayout.addComponent(b);
         }
 
         if (e instanceof AbstractAction) {

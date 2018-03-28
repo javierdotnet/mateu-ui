@@ -812,8 +812,7 @@
 
   .divRestoAreas {
     padding-left: 0px;
-    padding-top: 10px;
-    border-top: 1px solid whitesmoke;
+    padding-top: 30px;
     margin-top: 20px;
   }
 
@@ -825,6 +824,41 @@
     padding-left: 0px;
   }
 
+
+
+
+
+  .listaopcionesmenu {
+    padding: 0px;
+    padding-right: 30px;
+  }
+
+  .submenu {
+    padding: 0px;
+  }
+
+  .contenedorsubmenu {
+    padding: 0px;
+    padding-left: 10px;
+  }
+
+  .titulosubmenuprincipal {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .titulosubmenu {
+    font-weight: bold;
+  }
+
+  .accionsubmenu {
+    font-weight: bold;
+    color: #001c32;
+  }
+
+  .accionsubmenu:hover {
+    color: #6b6b6b;
+  }
 /*
 
 

@@ -14,7 +14,7 @@ public class AdminArea extends AbstractArea {
     public AdminArea() {
         super("Admin");
     }
-    public List<AbstractModule> getModules() {
+    public List<AbstractModule> buildModules() {
         return Arrays.asList((AbstractModule) new AdminModule());
     }
 }

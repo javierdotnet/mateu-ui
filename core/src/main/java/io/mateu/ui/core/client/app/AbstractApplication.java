@@ -4,7 +4,9 @@ import io.mateu.ui.App;
 import io.mateu.ui.core.client.views.AbstractView;
 import io.mateu.ui.core.shared.UserData;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by miguel on 8/8/16.
@@ -18,6 +20,9 @@ public abstract class AbstractApplication implements App {
     private UserData userData;
     private String baseUrl;
     private String port;
+    private Map<MenuEntry, String> menuIds = null;
+    private Map<String, MenuEntry> menuIdsReverse = null;
+    List<AbstractArea> areas = null;
 
     public abstract String getName();
 
@@ -28,7 +33,7 @@ public abstract class AbstractApplication implements App {
             if (!a.isPublicAccess()) {
                 hasPrivateContent = true;
             }
-            if (!hasPrivateContent) for (AbstractModule m : a.getModules()) {
+            if (!hasPrivateContent) for (AbstractModule m : a.buildModules()) {
                 if (!a.isPublicAccess()) {
                     hasPrivateContent = true;
                     break;
@@ -40,11 +45,60 @@ public abstract class AbstractApplication implements App {
 
     }
 
+    public String getMenuLocator(MenuEntry menu) {
+        if (menuIds == null) buildMenuIds();
+        return menuIds.get(menu);
+    }
+
+    private void buildMenuIds() {
+        menuIds = new HashMap<>();
+        menuIdsReverse = new HashMap<>();
+
+        for (AbstractArea a : areas) {
+            for (AbstractModule m : a.getModules()) {
+                for (MenuEntry e : m.getMenu()) {
+                    addMenuId(e);
+                }
+            }
+        }
+
+    }
+
+    private void addMenuId(MenuEntry e) {
+        String id = "" + menuIds.size();
+        e.setId(id);
+        menuIds.put(e, id);
+        menuIdsReverse.put(id, e);
+        if (e instanceof AbstractMenu) {
+            AbstractMenu m = (AbstractMenu) e;
+            for (MenuEntry x : m.getEntries()) {
+                addMenuId(x);
+            }
+        }
+    }
+
+    public MenuEntry getMenu(String locator) {
+        if (menuIdsReverse == null) buildMenuIds();
+        return menuIdsReverse.get(locator);
+    }
+
     public boolean isSignUpSupported() {
         return false;
     }
 
-    public abstract List<AbstractArea> getAreas();
+    public List<AbstractArea> getAreas() {
+        if (areas == null) {
+            areas = buildAreas();
+            int pos = 0;
+            for (AbstractArea a : areas) {
+                a.setId("" + pos++);
+            }
+            buildMenuIds();
+        }
+        return areas;
+    }
+
+    public abstract List<AbstractArea> buildAreas();
 
     public void setUserData(UserData userData) {
         this.userData = userData;

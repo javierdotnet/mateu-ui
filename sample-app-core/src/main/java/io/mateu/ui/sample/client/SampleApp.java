@@ -26,7 +26,7 @@ public class SampleApp extends AbstractApplication
         return "Sample Application";
     }
 
-    public List<AbstractArea> getAreas() {
+    public List<AbstractArea> buildAreas() {
         return Arrays.asList(new AboutArea(), new ComponentsArea(), new AdminArea(), new CommunicationArea());
     }
 

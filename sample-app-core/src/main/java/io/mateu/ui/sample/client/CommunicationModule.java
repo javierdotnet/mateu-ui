@@ -26,7 +26,7 @@ public class CommunicationModule extends AbstractModule {
     }
 
     @Override
-    public List<MenuEntry> getMenu() {
+    public List<MenuEntry> buildMenu() {
 
 
         //TestDate.x();

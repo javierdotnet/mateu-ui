@@ -15,7 +15,7 @@ public class ComponentsArea extends AbstractArea {
         super("Components");
     }
 
-    public List<AbstractModule> getModules() {
+    public List<AbstractModule> buildModules() {
         return Arrays.asList((AbstractModule) new ComponentsModule());
     }
 

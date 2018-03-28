@@ -14,7 +14,7 @@ public class AboutModule extends AbstractModule {
         return "About";
     }
 
-    public List<MenuEntry> getMenu() {
+    public List<MenuEntry> buildMenu() {
         List<MenuEntry> l = new ArrayList<>();
         l.add(new AbstractAction("About us") {
 

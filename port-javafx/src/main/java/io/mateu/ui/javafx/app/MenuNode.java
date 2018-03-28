@@ -18,7 +18,7 @@ public class MenuNode extends VBox {
 
         getChildren().clear();
 
-        modules.stream().forEach(m -> m.getMenu().forEach(a -> addMenuEntry(a)));
+        modules.stream().forEach(m -> m.buildMenu().forEach(a -> addMenuEntry(a)));
 
 
     }

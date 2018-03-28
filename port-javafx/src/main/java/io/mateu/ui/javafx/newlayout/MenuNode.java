@@ -181,7 +181,7 @@ public class MenuNode extends VBox {
 
         bar.getMenus().clear();
 
-        for (AbstractArea a : JavafxPort.getApp().getAreas()) {
+        for (AbstractArea a : JavafxPort.getApp().buildAreas()) {
 
             boolean isPublic = a.isPublicAccess();
             if (!JavafxPort.getApp().isAuthenticationNeeded() || (isPublic && JavafxPort.getApp().getUserData() == null) || (!isPublic && JavafxPort.getApp().getUserData() != null)) {
@@ -190,7 +190,7 @@ public class MenuNode extends VBox {
 
                     Menu m = new Menu(a.getName());
 
-                    for (AbstractModule mod : a.getModules()) {
+                    for (AbstractModule mod : a.buildModules()) {
                         buildMenu(m, mod);
                     }
 
@@ -198,7 +198,7 @@ public class MenuNode extends VBox {
 
                 } else {
 
-                    for (AbstractModule mod : a.getModules()) {
+                    for (AbstractModule mod : a.buildModules()) {
                         buildMenu(bar, mod);
                     }
 

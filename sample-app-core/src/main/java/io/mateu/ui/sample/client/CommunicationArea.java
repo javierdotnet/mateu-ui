@@ -16,7 +16,7 @@ public class CommunicationArea extends AbstractArea {
     }
 
     @Override
-    public List<AbstractModule> getModules() {
+    public List<AbstractModule> buildModules() {
         return Arrays.asList((AbstractModule) new CommunicationModule());
     }
 }

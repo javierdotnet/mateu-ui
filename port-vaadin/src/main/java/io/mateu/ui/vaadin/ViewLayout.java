@@ -28,7 +28,9 @@ import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.AbstractMenu;
 import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.app.MenuEntry;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
 import io.mateu.ui.core.client.components.fields.*;
@@ -439,6 +441,9 @@ public class ViewLayout extends VerticalLayout implements View {
             } else if (c instanceof Tabs && ((Tabs) c).isFullWidth()) {
                 if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);
+            } else if (c instanceof MenuField) {
+                if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
+                add(layout, (AbstractField) c);
             } else {
                 if (row == null || (c instanceof AbstractField && ((AbstractField)c).isBeginingOfLine()) || c instanceof Tabs) {
                     row = new HorizontalLayout();
@@ -614,6 +619,15 @@ public class ViewLayout extends VerticalLayout implements View {
             cs.add(l = new Label(((Separator) field).getText()));
             l.addStyleName("separador");
 
+        } else if (field instanceof  MenuField) {
+            MenuField mf = (MenuField) field;
+
+            CssLayout contenedor;
+            cs.add(contenedor = new CssLayout());
+            contenedor.setWidth("100%");
+            for (MenuEntry e : mf.getMenu().getEntries()) {
+                addMenuEntry(contenedor, e);
+            }
         } else if (field instanceof CalendarField) {
             CalendarField f = (CalendarField) field;
 
@@ -2348,6 +2362,55 @@ public class ViewLayout extends VerticalLayout implements View {
 
 
         return cs;
+    }
+
+    private void addMenuEntry(Layout contenedor, MenuEntry e) {
+
+        VerticalLayout l;
+        contenedor.addComponent(l = new VerticalLayout());
+        l.addStyleName("listaopcionesmenu");
+        l.setWidthUndefined();
+
+        Component c = null;
+
+        if (e instanceof AbstractMenu) {
+            VerticalLayout lx;
+            c = lx = new VerticalLayout();
+            lx.addStyleName("submenu");
+            lx.setWidthUndefined();
+            Label lab;
+            lx.addComponent(lab = new Label(e.getName()));
+            lab.addStyleName((contenedor instanceof CssLayout)?"titulosubmenuprincipal":"titulosubmenu");
+
+            VerticalLayout lz;
+            lx.addComponent(lz = new VerticalLayout());
+            lz.addStyleName("contenedorsubmenu");
+            lz.setWidthUndefined();
+
+            for (MenuEntry ez : ((AbstractMenu) e).getEntries()) {
+                addMenuEntry(lz, ez);
+            }
+
+        } else if (e instanceof AbstractAction) {
+            Button b = new Button(e.getName(), new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    //navigator.navigateTo(item.getKey());
+                    ((AbstractAction)e).setModifierPressed(event.isAltKey() || event.isCtrlKey()).run();
+                }
+            });
+            b.setCaption(b.getCaption()
+                    //        + " <span class=\"valo-menu-badge\">123</span>"
+            );
+            b.setCaptionAsHtml(true);
+            b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+            b.addStyleName("accionsubmenu");
+            //b.setIcon(testIcon.get());  // sin iconos en el menú
+            c = b;
+        }
+
+        l.addComponent(c);
+
     }
 
     private String getLabelText(AbstractField field) {

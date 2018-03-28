@@ -1,11 +1,14 @@
 package io.mateu.ui.core.client.app;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by miguel on 9/8/16.
  */
 public abstract class AbstractMenu implements MenuEntry {
+
+    private String id = UUID.randomUUID().toString();
 
     private String name;
 
@@ -19,4 +22,17 @@ public abstract class AbstractMenu implements MenuEntry {
 
     public abstract List<MenuEntry> getEntries();
 
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

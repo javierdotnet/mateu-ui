@@ -18,7 +18,7 @@ public class AdminModule extends AbstractModule {
     }
 
     @Override
-    public List<MenuEntry> getMenu() {
+    public List<MenuEntry> buildMenu() {
         return Arrays.asList((MenuEntry) new AbstractAction("My profile") {
             @Override
             public void run() {

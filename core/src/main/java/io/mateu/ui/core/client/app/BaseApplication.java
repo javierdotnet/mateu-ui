@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class BaseApplication extends AbstractApplication {
 
     @Override
-    public List<AbstractArea> getAreas() {
+    public List<AbstractArea> buildAreas() {
         return Lists.newArrayList(new AbstractArea("Menu") {
 
             @Override
@@ -19,7 +19,7 @@ public abstract class BaseApplication extends AbstractApplication {
             }
 
             @Override
-            public List<AbstractModule> getModules() {
+            public List<AbstractModule> buildModules() {
                 return Lists.newArrayList(new AbstractModule() {
 
                     @Override
@@ -28,7 +28,7 @@ public abstract class BaseApplication extends AbstractApplication {
                     }
 
                     @Override
-                    public List<MenuEntry> getMenu() {
+                    public List<MenuEntry> buildMenu() {
                         return BaseApplication.this.getMenu();
                     }
                 });

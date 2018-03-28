@@ -27,7 +27,7 @@ public class ComponentsModule extends AbstractModule {
         return "Components";
     }
 
-    public List<MenuEntry> getMenu() {
+    public List<MenuEntry> buildMenu() {
         return Arrays.asList((MenuEntry) new AbstractMenu("Views") {
 
             @Override

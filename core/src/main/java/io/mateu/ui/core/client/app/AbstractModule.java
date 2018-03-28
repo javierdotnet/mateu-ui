@@ -7,8 +7,15 @@ import java.util.List;
  */
 public abstract class AbstractModule {
 
+    private List<MenuEntry> menu;
+
     public abstract String getName();
 
-    public abstract List<MenuEntry> getMenu();
+    public List<MenuEntry> getMenu() {
+        if (menu == null) menu = buildMenu();
+        return menu;
+    }
+
+    public abstract List<MenuEntry> buildMenu();
 
 }

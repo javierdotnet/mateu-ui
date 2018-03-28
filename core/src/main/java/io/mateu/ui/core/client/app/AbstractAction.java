@@ -1,5 +1,7 @@
 package io.mateu.ui.core.client.app;
 
+import java.util.UUID;
+
 /**
  * Created by miguel on 8/8/16.
  */
@@ -8,6 +10,7 @@ public abstract class AbstractAction implements MenuEntry, Runnable {
     private String name;
     private boolean callOnEnterKeyPressed = false;
     private boolean modifierPressed;
+    private String id = UUID.randomUUID().toString();
 
 
     public AbstractAction(String name) {
@@ -40,5 +43,19 @@ public abstract class AbstractAction implements MenuEntry, Runnable {
 
     public boolean isModifierPressed() {
         return modifierPressed;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 }

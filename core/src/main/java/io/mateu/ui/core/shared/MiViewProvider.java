@@ -2,6 +2,7 @@ package io.mateu.ui.core.shared;
 
 import com.google.auto.service.AutoService;
 import com.google.common.base.Strings;
+import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.app.MenuEntry;
 import io.mateu.ui.core.client.views.*;
@@ -52,22 +53,50 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                 if (vn.startsWith("mui..")) {
                     vn = vn.replaceFirst("mui\\.\\.", "");
 
+
+                    Object o = null;
+
                     if (vn.contains("$")) {
-                        Class<?> cl = Class.forName(vn);
-                        Constructor<?> c = cl.getDeclaredConstructors()[0];
-                        c.setAccessible(true);
-                        view = (AbstractView) c.newInstance(cl.getEnclosingClass().newInstance());
+                        if (vn.split("\\$").length == 2) {
+                            Class<?> cl = Class.forName(vn);
+                            Constructor<?> c = cl.getDeclaredConstructors()[0];
+                            c.setAccessible(true);
+                            o = c.newInstance(cl.getEnclosingClass().newInstance());
+                        } else if (vn.split("\\$").length == 3) {
+                            Class<?> cl = Class.forName(vn);
+                            Constructor<?> c = cl.getDeclaredConstructors()[0];
+                            c.setAccessible(true);
+                            Constructor<?> c2 = cl.getEnclosingClass().getDeclaredConstructors()[0];
+                            c2.setAccessible(true);
+                            Object[] params = new Object[c2.getParameterCount()];
+                            params[0] = cl.getEnclosingClass().getEnclosingClass().newInstance();
+                            o = c.newInstance(c2.newInstance(params));
+                        } else {
+                            return null;
+                        }
                     } else {
-                        view = (AbstractView) Class.forName(vn).newInstance();
+                        o = Class.forName(vn).newInstance();
                     }
 
-                    if (view instanceof AbstractCRUDView) {
-                        ((AbstractCRUDView) view).addListener(new CRUDListener() {
-                            @Override
-                            public void openEditor(AbstractEditorView e, boolean inNewTab) {
-                                MateuUI.openView(e, inNewTab);
-                            }
-                        });
+                    if (o instanceof AbstractAction) {
+
+                        ((AbstractAction) o).run();
+
+                    } else if (o instanceof AbstractView) {
+
+                        view = (AbstractView) o;
+
+                        if (view instanceof AbstractCRUDView) {
+                            ((AbstractCRUDView) view).addListener(new CRUDListener() {
+                                @Override
+                                public void openEditor(AbstractEditorView e, boolean inNewTab) {
+                                    MateuUI.openView(e, inNewTab);
+                                }
+                            });
+                        }
+
+                    } else {
+                        return null;
                     }
 
                 } else if (vn.startsWith("menu..")) {

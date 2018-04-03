@@ -58,12 +58,21 @@ public class Servlet extends VaadinServlet {
             @Override
             public void openView(AbstractView view, boolean inNewTab) {
                 System.out.println("openView(" + view.getClass().getName() + ")");
-                String viewId = view.getViewId();
 
-                if (MateuUI.getApp().getPosicion() != null) viewId = "pos" + MateuUI.getApp().getPosicion().getId() + ".." + viewId;
-                if (MateuUI.getApp().getArea() != null) viewId = "area" + MateuUI.getApp().getArea().getId() + ".." + viewId;
+                if (view instanceof AbstractDialog) {
 
-                Page.getCurrent().open("#!" + viewId, (inNewTab)?"_blank":Page.getCurrent().getWindowName());
+                    ValoThemeUI.addView((ValoThemeUI) UI.getCurrent(), view);
+
+
+                } else {
+                    String viewId = view.getViewId();
+
+                    if (MateuUI.getApp().getPosicion() != null) viewId = "pos" + MateuUI.getApp().getPosicion().getId() + ".." + viewId;
+                    if (MateuUI.getApp().getArea() != null) viewId = "area" + MateuUI.getApp().getArea().getId() + ".." + viewId;
+
+                    Page.getCurrent().open("#!" + viewId, (inNewTab)?"_blank":Page.getCurrent().getWindowName());
+                }
+
             }
 
             @Override

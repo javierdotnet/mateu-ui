@@ -558,37 +558,6 @@ public class ValoThemeUI extends UI {
         return ((ValoThemeUI) getCurrent()).testMode;
     }
 
-    Component buildTestMenu() {
-        CssLayout menu = new CssLayout();
-        menu.addStyleName(ValoTheme.MENU_PART_LARGE_ICONS);
-
-        Label logo = new Label("Va");
-        logo.setSizeUndefined();
-        logo.setPrimaryStyleName(ValoTheme.MENU_LOGO);
-        menu.addComponent(logo);
-
-        Button b = new Button(
-                "Reference <span class=\"valo-menu-badge\">3</span>");
-        b.setIcon(FontAwesome.TH_LIST);
-        b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-        b.addStyleName("selected");
-        b.setHtmlContentAllowed(true);
-        menu.addComponent(b);
-
-        b = new Button("API");
-        b.setIcon(FontAwesome.BOOK);
-        b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-        menu.addComponent(b);
-
-        b = new Button("Examples <span class=\"valo-menu-badge\">12</span>");
-        b.setIcon(FontAwesome.TABLE);
-        b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-        b.setHtmlContentAllowed(true);
-        menu.addComponent(b);
-
-        return menu;
-    }
-
     CssLayout buildMenu(VaadinRequest request) {
 
         HorizontalLayout top = new HorizontalLayout();

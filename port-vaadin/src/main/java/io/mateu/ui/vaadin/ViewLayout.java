@@ -2180,8 +2180,6 @@ public class ViewLayout extends VerticalLayout implements View {
 
         } else if (field instanceof SqlComboBoxField) {
 
-
-
             SqlComboBoxField rf = (SqlComboBoxField) field;
 
             List<Pair> valores = new ArrayList<>();
@@ -2191,7 +2189,7 @@ public class ViewLayout extends VerticalLayout implements View {
             og.addStyleName("l");
             if (firstField == null) firstField = og;
 
-            og.setTextInputAllowed(false);
+            //og.setTextInputAllowed(false);
 
             ListDataProvider<Pair> ldp;
             og.setDataProvider(ldp = new ListDataProvider<>(valores));

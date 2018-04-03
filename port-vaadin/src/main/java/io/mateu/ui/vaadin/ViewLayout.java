@@ -3,6 +3,7 @@ package io.mateu.ui.vaadin;
 import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.event.selection.SelectionListener;
@@ -40,6 +41,7 @@ import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.*;
+import io.mateu.ui.sample.client.EditorView;
 import io.mateu.ui.vaadin.data.DataStore;
 import io.mateu.ui.vaadin.data.ViewNodeDataStore;
 import javafx.beans.property.Property;
@@ -424,9 +426,6 @@ public class ViewLayout extends VerticalLayout implements View {
 
         layout.addStyleName("cuerpoview");
 
-
-        HorizontalLayout row = null;
-
         /*
         FormLayout row = new FormLayout();
         row.setWidth("100%");
@@ -434,7 +433,89 @@ public class ViewLayout extends VerticalLayout implements View {
         addComponent(row);
         */
 
-        for (io.mateu.ui.core.client.components.Component c : fields.getComponentsSequence()) {
+
+
+        // nos aseguramos de que el primer objeto es un contenedor de pestañas que lo contiene todo
+        if (view instanceof AbstractEditorView) {
+            Tabs tabs = null;
+
+            if (fields.getComponentsSequence().size() == 1 && (fields.getComponentsSequence().get(0) instanceof Tabs))
+                tabs = (Tabs) fields.getComponentsSequence().get(0);
+            else {
+                tabs = new Tabs("_tabssecciones");
+                Tab tab;
+                tabs.add(tab = new Tab(fields.getForm(), "Info"));
+                for (io.mateu.ui.core.client.components.Component c : fields.getComponentsSequence()) {
+                    tab.add(c);
+                }
+            }
+
+
+            HorizontalLayout todo;
+            layout.addComponent(todo = new HorizontalLayout());
+            layout.addStyleName("editor_todo");
+            VerticalLayout izda;
+            todo.addComponent(izda = new VerticalLayout());
+            izda.addStyleName("editor_izda");
+            VerticalLayout dcha;
+            todo.addComponent(dcha = new VerticalLayout());
+            dcha.addStyleName("editor_dcha");
+
+            VerticalLayout pestanyas;
+            izda.addComponent(pestanyas = new VerticalLayout());
+            pestanyas.addStyleName("editor_pestanyas");
+            VerticalLayout totales;
+            izda.addComponent(totales = new VerticalLayout());
+            totales.addStyleName("editor_totales");
+            VerticalLayout links;
+            izda.addComponent(links = new VerticalLayout());
+            links.addStyleName("editor_links");
+
+            Map<Tab, Layout> contenidos = new HashMap<>();
+            for (Tab t : tabs.getTabs()) {
+                VerticalLayout l;
+                contenidos.put(t, l = new VerticalLayout());
+                addComponents(l, t.getComponentsSequence());
+            }
+
+            Map<Tab, Layout> botones = new HashMap<>();
+            for (Tab t : tabs.getTabs()) {
+                HorizontalLayout z;
+                pestanyas.addComponent(z = new HorizontalLayout());
+                z.addStyleName("editor_linkpestanya");
+                Label b;
+                z.addComponent(b = new Label(t.getCaption()));
+                botones.put(t, z);
+                z.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+                    @Override
+                    public void layoutClick(LayoutEvents.LayoutClickEvent layoutClickEvent) {
+                        selectTab(t, dcha, contenidos, botones);
+                    }
+                });
+            }
+
+            if (tabs.getTabs().size() > 0) selectTab(tabs.getTabs().get(0), dcha, contenidos, botones);
+
+
+        } else addComponents(layout, fields.getComponentsSequence());
+
+    }
+
+    private void selectTab(Tab t, Layout donde, Map<Tab, Layout> contenidos, Map<Tab, Layout> botones) {
+        donde.removeAllComponents();
+        donde.addComponent(contenidos.get(t));
+        for (Tab tx : botones.keySet()) {
+            Layout b = botones.get(tx);
+            b.removeStyleName("editor_linkpestanya_seleccionado");
+            if (tx.equals(t)) b.addStyleName("editor_linkpestanya_seleccionado");
+        }
+    }
+
+    public void addComponents(Layout layout, List<io.mateu.ui.core.client.components.Component> cseq) {
+
+        HorizontalLayout row = null;
+
+        for (io.mateu.ui.core.client.components.Component c : cseq) {
             if (c instanceof GridField && (((GridField) c).isFullWidth() || ((GridField) c).getColumns().size() > 4)) {
                 if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);

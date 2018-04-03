@@ -739,6 +739,55 @@
   }
 
 
+
+
+
+
+
+
+
+
+
+
+  .editor_dcha {
+    padding: 0px;
+  }
+
+  .editor_izda {
+    border-right: 1px solid darkgrey;
+    padding: 0px;
+    width: 190px;
+    margin-top: 28px;
+  }
+
+  .v-slot-editor_pestanyas {
+    text-align: right;
+  }
+
+  .editor_pestanyas {
+    padding: 0px;
+    text-align: right;
+  }
+
+
+
+  .editor_linkpestanya {
+    font-weight: bold;
+    color: #001c32;
+    border-right: 5px solid transparent;
+    border-radius: 0;
+    text-align: right;
+    padding-right: 11px;
+  }
+
+  .editor_linkpestanya:hover {
+    color: #6b6b6b;
+  }
+
+  .editor_linkpestanya_seleccionado {
+    border-right-color: #d18100;
+  }
+
   /*
 
 

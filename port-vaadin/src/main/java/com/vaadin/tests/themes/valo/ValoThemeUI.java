@@ -224,6 +224,8 @@ public class ValoThemeUI extends UI {
             }
         }
 
+        refreshSettings();
+
         navigator.setErrorView(HomeView.class);
 
         navigator.addViewChangeListener(new ViewChangeListener() {

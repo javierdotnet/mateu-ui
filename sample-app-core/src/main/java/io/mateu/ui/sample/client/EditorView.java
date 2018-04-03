@@ -1,5 +1,7 @@
 package io.mateu.ui.sample.client;
 
+import io.mateu.ui.core.client.components.Tab;
+import io.mateu.ui.core.client.components.Tabs;
 import io.mateu.ui.core.client.components.fields.TextField;
 import io.mateu.ui.core.client.views.AbstractEditorView;
 import io.mateu.ui.core.client.views.AbstractForm;
@@ -29,10 +31,14 @@ public class EditorView extends AbstractEditorView {
 
     @Override
     public void build() {
-        add(new TextField("f1", "Field1"))
+        add(new Tabs("_xxx").add(new Tab(getForm(), "General").add(new TextField("f1", "Field1"))
                 .add(new TextField("_title", "_title"))
-                .add(new TextField("_subtitle", "_subtitle"))
-                ;
+                .add(new TextField("_subtitle", "_subtitle")))
+
+                .add(new Tab(getForm(), "Other").add(new TextField("f1", "Field1"))
+                        .add(new TextField("f2", "f2"))
+                        .add(new TextField("f3", "f3")))
+        );
     }
 
     @Override

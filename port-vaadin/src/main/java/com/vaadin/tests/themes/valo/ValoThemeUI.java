@@ -1184,7 +1184,9 @@ public class ValoThemeUI extends UI {
                             getApp().getUserData().setPhoto(loc.getUrl());
                             foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):new ClassResource("profile-pic-300px.jpg");
                             subWindow.close();
-                            refreshMenu();
+
+                            refreshSettings();
+
                         }
                     });
 

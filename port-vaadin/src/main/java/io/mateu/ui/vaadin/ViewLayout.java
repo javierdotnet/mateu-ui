@@ -231,7 +231,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     @Override
                     public void onChanged(Change<? extends DataStore> c) {
                         badges.removeAllComponents();
-                        if (pb.getValue() != null) for (DataStore x : pb.getValue()) {
+                        if (pb.getValue() != null) for (DataStore x : pb.getValue()) if (x != null) {
                             Label l = new Label("" + x.get("_value"));
                             l.addStyleName("valo-badge-style");
                             l.addStyleName("superbadge");
@@ -275,7 +275,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     @Override
                     public void onChanged(Change<? extends DataStore> c) {
                         links.removeAllComponents();
-                        if (pb.getValue() != null) for (DataStore x : pb.getValue()) {
+                        if (pb.getValue() != null) for (DataStore x : pb.getValue()) if (x != null) {
                             Button l = new Button("" + x.get("_caption"));
                             l.addStyleName(ValoTheme.BUTTON_LINK);
                             l.addClickListener(new Button.ClickListener() {
@@ -436,7 +436,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
 
         // nos aseguramos de que el primer objeto es un contenedor de pestañas que lo contiene todo
-        if (view instanceof AbstractEditorView) {
+        if (view instanceof AbstractEditorView && fields instanceof AbstractForm) {
             Tabs tabs = null;
 
             if (fields.getComponentsSequence().size() == 1 && (fields.getComponentsSequence().get(0) instanceof Tabs))

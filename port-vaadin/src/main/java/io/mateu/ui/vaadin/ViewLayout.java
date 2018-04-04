@@ -41,7 +41,6 @@ import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.*;
-import io.mateu.ui.sample.client.EditorView;
 import io.mateu.ui.vaadin.data.DataStore;
 import io.mateu.ui.vaadin.data.ViewNodeDataStore;
 import javafx.beans.property.Property;

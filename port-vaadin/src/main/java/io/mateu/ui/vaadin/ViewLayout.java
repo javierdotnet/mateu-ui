@@ -255,7 +255,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     @Override
                     public void changed(ObservableValue<? extends ObservableList<DataStore>> observable, ObservableList<DataStore> oldValue, ObservableList<DataStore> newValue) {
                         links.removeAllComponents();
-                        if (newValue != null) for (DataStore x : newValue) {
+                        if (newValue != null) for (DataStore x : newValue) if (x != null) {
                             Button l = new Button("" + x.get("_caption"));
                             l.addStyleName(ValoTheme.BUTTON_LINK);
                             l.addClickListener(new Button.ClickListener() {

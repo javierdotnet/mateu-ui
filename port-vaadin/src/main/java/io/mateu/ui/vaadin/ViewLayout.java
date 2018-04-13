@@ -735,7 +735,11 @@ public class ViewLayout extends VerticalLayout implements View {
 
             ListDataProvider<DataStore> ldp;
             table.setDataProvider(ldp = new ListDataProvider<DataStore>(new ArrayList<>()));
-            ldp.getItems().addAll(p.getValue());
+            if (p.getValue() != null) {
+                for (Object x : p.getValue()) if (x != null) {
+                    ldp.getItems().add((DataStore) x);
+                }
+            }
 
             //System.out.println("*********************** g.getColumns().size()=" + g.getColumns().size());
 

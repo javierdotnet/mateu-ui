@@ -88,6 +88,14 @@ public class DataStore {
                         List ll = new ArrayList();
                         for (Object y : (List) v)
                         {
+                            if (y == null) {
+                                try {
+                                    throw new Exception();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
                             if (y instanceof Pair) {
                                 ll.add(new DataStore((Pair)y));
                             } else if (y instanceof Data) {

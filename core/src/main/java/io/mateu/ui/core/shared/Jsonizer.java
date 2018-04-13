@@ -42,22 +42,6 @@ public class Jsonizer {
             char c = json.charAt(pos);
 
 
-            if (c != ',') {
-                if (estadoActual == INSIDEDATA) {
-                    setEstado(INSIDEKEY, null);
-                }
-
-                if (estadoActual == INSIDELIST) {
-                    setEstado(INSIDELISTELEMENT, null);
-                }
-
-                if (estadoActual == INSIDEPAIRLIST) {
-                    setEstado((parActual == null)?INSIDEPAIRLISTVALUE:INSIDEPAIRLISTTEXT, null);
-                }
-            }
-
-
-
             if (estadoActual == ESCAPED) { // solo sucede cuando estamos dentro de un string
 
                 lineaActual.append(c); // lo añadimos al string
@@ -80,6 +64,21 @@ public class Jsonizer {
                 }
 
             } else {
+
+                if (c != ',' && c != ' ' && c != '\t' && c != '\n') {
+                    if (estadoActual == INSIDEDATA) {
+                        setEstado(INSIDEKEY, null);
+                    }
+
+                    if (estadoActual == INSIDELIST && c != ']') {
+                        setEstado(INSIDELISTELEMENT, null);
+                    }
+
+                    if (estadoActual == INSIDEPAIRLIST && c != '!') {
+                        setEstado((parActual == null)?INSIDEPAIRLISTVALUE:INSIDEPAIRLISTTEXT, null);
+                    }
+                }
+
 
                 switch (c) {
                     case ' ': case '\t':case '\n': {} break; // si no estamos dentro de un string estos caracteres se ignoran
@@ -165,7 +164,7 @@ public class Jsonizer {
 
         }
 
-        back();
+        if (estadoActual != INSIDELIST && estadoActual != INSIDEPAIRLIST) back();
 
     }
 
@@ -403,14 +402,16 @@ public class Jsonizer {
 
     public static void main(String[] args) {
 
-        //Data d = new Data("a", 1221, "b", "iws{qw\"qq}hwi", "c", new Data("a", 1, "b", 2), "d", new Pair(23, "veititres")); //, "e", new PairList()
+        Data d = new Data("a", 1221, "b", "iws{qw\"qq}hwi", "c", new Data("a", 1, "b", 2), "d", new Pair(23, "veititres")); //, "e", new PairList()
         //Data d = new Data("a", 1221, "b", "iws{qw\"qq}hwi", "c", new Data("a", 1, "b", 2), "d", new Pair(23, "veititres"), "l", Lists.newArrayList(new Data("a", 1, "b", 2), new Data("a", 1, "b", 2))); //, "e", new PairList()
 
         //Data d = new Data("a", 1221, "l", Lists.newArrayList(new Data("a", 1, "b", 2), new Data("a", 1, "b", 2))); //, "e", new PairList()
 
         //Data d = new Data("a", 1221, "e", new PairList());
 
-        Data d = new Data("a", 1221, "e", new PairList(1, "uno", "2", "dos"));
+        //Data d = new Data("a", 1221, "e", new PairList(1, "uno", "2", "dos"));
+
+        //Data d = new Data("l", new ArrayList<>()); //, "e", new PairList()
 
         System.out.println(d.toJson());
 

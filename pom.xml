@@ -25,6 +25,7 @@
         <module>port-html5-aux</module>
         -->
         <module>teavm-plugin</module>
+        <module>vaadin-widgets</module>
     </modules>
 
 

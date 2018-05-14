@@ -601,11 +601,38 @@ public class DateTimeService {
 
         Date date;
 
-        if ("h".equalsIgnoreCase(dateString)) {
+        if ("h".equalsIgnoreCase(dateString) || "t".equalsIgnoreCase(dateString)) {
+
+
+            //todo: recordar fechas especiales, para conversión inversa
 
             date = new Date();
 
+
+
         } else {
+
+            //todo: tener en cuenta los locales
+            boolean inverso = false;
+            String z = formatString.toLowerCase();
+            if (formatString.indexOf("M") < formatString.indexOf("d")) inverso = true;
+
+            if (dateString.length() == 2) { // siempre es el día del mes actual
+                date = DateTimeFormat.getFormat((inverso)?"YYYYMMdd":"ddMMYYYY").parse((inverso)?"201805" + dateString:dateString + "052018");
+            }
+
+            if (dateString.length() == 4) { // dia y mes del año actual
+
+            }
+
+            if (dateString.length() == 6) { // dia, mes y año del año 20xx
+
+            }
+
+            if (dateString.length() == 8) { // dia mes y año sin separadores
+
+            }
+
 
             if (lenient) {
                 date = format.parse(dateString);

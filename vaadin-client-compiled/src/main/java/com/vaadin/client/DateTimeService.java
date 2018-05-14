@@ -599,7 +599,7 @@ public class DateTimeService {
          */
         dateString = parseMonthName(dateString, formatString);
 
-        Date date;
+        Date date = null;
 
         if ("h".equalsIgnoreCase(dateString) || "t".equalsIgnoreCase(dateString)) {
 
@@ -615,29 +615,43 @@ public class DateTimeService {
             //todo: tener en cuenta los locales
             boolean inverso = false;
             String z = formatString.toLowerCase();
-            if (formatString.indexOf("M") < formatString.indexOf("d")) inverso = true;
+            if (z.indexOf("m") < z.indexOf("d")) inverso = true;
 
-            if (dateString.length() == 2) { // siempre es el día del mes actual
-                date = DateTimeFormat.getFormat((inverso)?"YYYYMMdd":"ddMMYYYY").parse((inverso)?"201805" + dateString:dateString + "052018");
-            }
+            Date h = new Date();
 
-            if (dateString.length() == 4) { // dia y mes del año actual
-
-            }
-
-            if (dateString.length() == 6) { // dia, mes y año del año 20xx
-
-            }
-
-            if (dateString.length() == 8) { // dia mes y año sin separadores
-
-            }
-
-
-            if (lenient) {
-                date = format.parse(dateString);
+            if (dateString == null) {
             } else {
-                date = format.parseStrict(dateString);
+                if (dateString.contains(" ")) {
+                    String hourString = dateString.split(" ")[1].replaceAll(":", "");
+                    dateString = dateString.split(" ")[0];
+                    if (dateString.length() == 2) { // siempre es el día del mes actual
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMddHHMM":"ddMMyyyyHHMM").parse((inverso)?"" + (1900 + h.getYear()) + ((h.getMonth() <= 10)?"0":"") + (h.getMonth() + 1) + dateString + hourString:dateString + ((h.getMonth() <= 10)?"0":"") + (h.getMonth() + 1) + (1900 + h.getYear()) + hourString);
+                    } else if (dateString.length() == 4) { // dia y mes del año actual
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMddHHMM":"ddMMyyyyHHMM").parse((inverso)?"" + (1900 + h.getYear()) + dateString + hourString:dateString + (1900 + h.getYear()) + hourString);
+                    } else if (dateString.length() == 6) { // dia, mes y año del año 20xx
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMddHHMM":"ddMMyyyyHHMM").parse((inverso)?"20" + dateString + hourString:dateString.substring(0, 4) + "20" + dateString.substring(4) + hourString);
+                    } else if (dateString.length() == 8) { // dia mes y año sin separadores
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMddHHMM":"ddMMyyyyHHMM").parse((inverso)?dateString + hourString:dateString + hourString);
+                    } else if (lenient) {
+                        date = format.parse(dateString + " " + hourString);
+                    } else {
+                        date = format.parseStrict(dateString + " " + hourString);
+                    }
+                } else {
+                    if (dateString.length() == 2) { // siempre es el día del mes actual
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMdd":"ddMMyyyy").parse((inverso)?"" + (1900 + h.getYear()) + ((h.getMonth() <= 10)?"0":"") + (h.getMonth() + 1) + dateString:dateString + ((h.getMonth() <= 10)?"0":"") + (h.getMonth() + 1) + (1900 + h.getYear()));
+                    } else if (dateString.length() == 4) { // dia y mes del año actual
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMdd":"ddMMyyyy").parse((inverso)?"" + (1900 + h.getYear()) + dateString:dateString + (1900 + h.getYear()));
+                    } else if (dateString.length() == 6) { // dia, mes y año del año 20xx
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMdd":"ddMMyyyy").parse((inverso)?"20" + dateString:dateString.substring(0, 4) + "20" + dateString.substring(4));
+                    } else if (dateString.length() == 8) { // dia mes y año sin separadores
+                        date = DateTimeFormat.getFormat((inverso)?"yyyyMMdd":"ddMMyyyy").parse((inverso)?dateString:dateString);
+                    } else if (lenient) {
+                        date = format.parse(dateString);
+                    } else {
+                        date = format.parseStrict(dateString);
+                    }
+                }
             }
 
         }

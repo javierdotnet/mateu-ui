@@ -36,10 +36,16 @@ public class MyUI extends UI {
 
         date.setTextFieldEnabled(true); // solo para deshabilitar el campo de texto asociado
 
-        date.setResolution(DateResolution.MONTH);
+        //date.setResolution(DateResolution.MONTH);
 
 
         date.setCaption("Type a date here:");
+
+
+
+        final DateTimeField dateTime = new DateTimeField();
+
+
 
         Button button = new Button("Click Me");
         button.addClickListener(e -> {
@@ -47,7 +53,7 @@ public class MyUI extends UI {
                     + ", it works!"));
         });
         
-        layout.addComponents(name, date, button);
+        layout.addComponents(name, date, dateTime,  button);
         
         setContent(layout);
     }

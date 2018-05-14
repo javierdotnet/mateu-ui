@@ -18,9 +18,7 @@
         <module>port-vaadin</module>
         <module>sample-app-core</module>
         <module>vaadin-widgets</module>
-        <module>test-vaadin-app</module>
         <module>vaadin-test-app</module>
-        <module>vaadin-client-override</module>
         <module>vaadin-client-compiled</module>
     </modules>
 

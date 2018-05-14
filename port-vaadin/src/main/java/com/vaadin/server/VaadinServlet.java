@@ -764,7 +764,9 @@ public class VaadinServlet extends HttpServlet implements Constants {
      * @return
      */
     public static String getDefaultTheme() {
-        return DEFAULT_THEME_NAME;
+        //MIGUEL: no era posible personalizar el tema de inicio sin reescribir esta clase
+        return System.getProperty("theme", "mateu");
+        //return DEFAULT_THEME_NAME;
     }
 
     /**

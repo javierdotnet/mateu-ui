@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2016 Vaadin Ltd.
+ * Copyright 2000-2018 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -578,7 +578,7 @@ public class VaadinServlet extends HttpServlet implements Constants {
                 SystemMessages systemMessages = getService().getSystemMessages(
                         ServletPortletHelper.findLocale(null, null, request),
                         request);
-                getService().writeStringResponse(response,
+                getService().writeUncachedStringResponse(response,
                         JsonConstants.JSON_CONTENT_TYPE,
                         VaadinService.createCriticalNotificationJSON(
                                 systemMessages.getCookiesDisabledCaption(),
@@ -625,7 +625,7 @@ public class VaadinServlet extends HttpServlet implements Constants {
         if (ServletPortletHelper.isUIDLRequest(request)) {
             String output = VaadinService.createCriticalNotificationJSON(
                     caption, message, details, url);
-            getService().writeStringResponse(response,
+            getService().writeUncachedStringResponse(response,
                     JsonConstants.JSON_CONTENT_TYPE, output);
         } else {
             // Create an HTML reponse with the error
@@ -649,7 +649,7 @@ public class VaadinServlet extends HttpServlet implements Constants {
             if (url != null) {
                 output += "</a>";
             }
-            getService().writeStringResponse(response,
+            getService().writeUncachedStringResponse(response,
                     ApplicationConstants.CONTENT_TYPE_TEXT_HTML_UTF_8, output);
         }
     }
@@ -764,8 +764,7 @@ public class VaadinServlet extends HttpServlet implements Constants {
      * @return
      */
     public static String getDefaultTheme() {
-        return System.getProperty("theme", "mateu");
-        // return DEFAULT_THEME_NAME;
+        return DEFAULT_THEME_NAME;
     }
 
     /**

@@ -53,6 +53,12 @@
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
+
+		<repository>
+			<id>mateu-central</id>
+			<url>http://nexus.mateu.io/repository/mateu-central</url>
+		</repository>
+
 	</repositories>
 
 	<dependencyManagement>
@@ -180,5 +186,23 @@
 			</pluginRepositories>
 		</profile>
 	</profiles>
+
+
+
+
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>mateu-central</id>
+			<url>http://nexus.mateu.io/repository/mateu-central/</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>true</uniqueVersion>
+			<id>mateu-central</id>
+			<url>http://nexus.mateu.io/repository/mateu-central/</url>
+			<layout>default</layout>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>

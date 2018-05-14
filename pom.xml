@@ -17,14 +17,6 @@
         <module>port-javafx</module>
         <module>port-vaadin</module>
         <module>sample-app-core</module>
-        <module>port-polymer</module>
-        <!--
-        comento por el tema de las localdate
-        <module>port-html5</module>
-        <module>port-html5-core</module>
-        <module>port-html5-aux</module>
-        -->
-        <module>teavm-plugin</module>
         <module>vaadin-widgets</module>
     </modules>
 

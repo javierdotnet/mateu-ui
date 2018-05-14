@@ -712,6 +712,7 @@ public class ViewLayout extends VerticalLayout implements View {
             CalendarField f = (CalendarField) field;
 
             cs.add(new CalendarLayout(f, dataStore.getDataProperty(f.getId())));
+            cs.add(new CalendarLayout(f, dataStore.getDataProperty(f.getId())));
 
         } else if (field instanceof GridField) {
 

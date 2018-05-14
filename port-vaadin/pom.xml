@@ -80,8 +80,9 @@
 			<artifactId>vaadin-push</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.vaadin</groupId>
+			<groupId>io.mateu.ui</groupId>
 			<artifactId>vaadin-client-compiled</artifactId>
+			<version>8.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>

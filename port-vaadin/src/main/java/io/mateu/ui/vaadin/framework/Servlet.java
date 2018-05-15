@@ -1,34 +1,31 @@
-package com.vaadin.tests.themes.valo;
+package io.mateu.ui.vaadin.framework;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.*;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.BaseServiceClientSideImpl;
-import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractApplication;
+import io.mateu.ui.core.client.app.AbstractArea;
 import io.mateu.ui.core.client.app.ClientSideHelper;
-import io.mateu.ui.core.client.app.MateuUI;
+import io.mateu.ui.core.client.app.MenuEntry;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.vaadin.ViewLayout;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import io.mateu.ui.core.shared.MiViewProvider;
+import io.mateu.ui.vaadin.components.ViewLayout;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(value = "/*", asyncSupported = true, loadOnStartup = 1000)
 //@WebServlet(urlPatterns = {"/admin/*", "/VAADIN/*"}, asyncSupported = true, loadOnStartup = 1000)
-@VaadinServletConfiguration(productionMode = false, ui = ValoThemeUI.class)
+@VaadinServletConfiguration(productionMode = false, ui = MyUI.class)
 public class Servlet extends VaadinServlet {
 
 
@@ -49,9 +46,9 @@ public class Servlet extends VaadinServlet {
         super.servletInitialized();
 
         getService().addSessionInitListener(
-                new ValoThemeSessionInitListener());
+                new ThemeSessionInitListener());
 
-        MateuUI.setClientSideHelper(new ClientSideHelper() {
+        io.mateu.ui.core.client.app.MateuUI.setClientSideHelper(new ClientSideHelper() {
 
             public BaseServiceAsync baseServiceImpl = new BaseServiceClientSideImpl();
 
@@ -61,16 +58,30 @@ public class Servlet extends VaadinServlet {
 
                 if (view instanceof AbstractDialog) {
 
-                    ValoThemeUI.addView((ValoThemeUI) UI.getCurrent(), view);
-
+                    MyUI.addView((MyUI) UI.getCurrent(), view);
 
                 } else {
+
+                    MyUI ui = (MyUI) UI.getCurrent();
+
+                    view.setArea(ui.getAreaActual());
+                    view.setMenu(ui.getMenuActual());
+
                     String viewId = view.getViewId();
 
-                    if (MateuUI.getApp().getPosicion() != null) viewId = "pos" + MateuUI.getApp().getPosicion().getId() + ".." + viewId;
-                    if (MateuUI.getApp().getArea() != null) viewId = "area" + MateuUI.getApp().getArea().getId() + ".." + viewId;
+                    String u = "";
+                    if (view.getArea() != null) {
+                        if (!"".equals(u)) u += "/";
+                        u += view.getArea().getId();
+                    }
+                    if (view.getMenu() != null) {
+                        if (!"".equals(u)) u += "/";
+                        u += view.getMenu().getId();
+                    }
+                    if (!"".equals(u)) u += "/";
+                    u += view.getViewId();
 
-                    Page.getCurrent().open("#!" + viewId, (inNewTab)?"_blank":Page.getCurrent().getWindowName());
+                    Page.getCurrent().open("#!" + u, (inNewTab)?"_blank":Page.getCurrent().getWindowName());
                 }
 
             }
@@ -149,7 +160,7 @@ public class Servlet extends VaadinServlet {
 
             @Override
             public AbstractApplication getApp() {
-                return ((ValoThemeUI)UI.getCurrent()).getApp();
+                return ((MyUI)UI.getCurrent()).getApp();
             }
 
             @Override

@@ -1,4 +1,4 @@
-package com.vaadin.tests.themes.valo;
+package io.mateu.ui.vaadin.framework;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
@@ -8,9 +8,8 @@ import io.mateu.ui.core.client.app.Callback;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.Data;
-import io.mateu.ui.vaadin.ViewLayout;
+import io.mateu.ui.vaadin.components.ViewLayout;
 import io.mateu.ui.vaadin.data.DataStore;
-import io.mateu.ui.vaadin.data.ViewNodeDataStore;
 
 import java.util.ArrayList;
 import java.util.List;

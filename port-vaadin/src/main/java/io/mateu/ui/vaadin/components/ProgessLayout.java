@@ -1,4 +1,4 @@
-package io.mateu.ui.vaadin;
+package io.mateu.ui.vaadin.components;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;

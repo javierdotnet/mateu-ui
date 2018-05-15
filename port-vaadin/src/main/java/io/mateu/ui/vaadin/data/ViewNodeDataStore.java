@@ -1,7 +1,7 @@
 package io.mateu.ui.vaadin.data;
 
 import io.mateu.ui.core.client.data.ChangeListener;
-import io.mateu.ui.vaadin.ViewLayout;
+import io.mateu.ui.vaadin.components.ViewLayout;
 
 /**
  * Created by miguel on 30/12/16.

@@ -1,4 +1,4 @@
-package io.mateu.ui.vaadin;
+package io.mateu.ui.vaadin.components;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;

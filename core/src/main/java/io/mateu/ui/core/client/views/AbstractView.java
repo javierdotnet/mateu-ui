@@ -2,6 +2,8 @@ package io.mateu.ui.core.client.views;
 
 import com.google.common.io.BaseEncoding;
 import io.mateu.ui.core.client.app.AbstractAction;
+import io.mateu.ui.core.client.app.AbstractArea;
+import io.mateu.ui.core.client.app.MenuEntry;
 import io.mateu.ui.core.client.components.Component;
 import io.mateu.ui.core.client.data.ChangeListener;
 import io.mateu.ui.core.shared.Data;
@@ -15,10 +17,28 @@ import java.util.List;
  */
 public abstract class AbstractView {
 
+    private AbstractArea area;
+    private MenuEntry menu;
     private AbstractForm form;
     private List<AbstractAction> actions;
     private List<AbstractAction> links;
     private List<ViewListener> listeners = new ArrayList<>();
+
+    public AbstractArea getArea() {
+        return area;
+    }
+
+    public void setArea(AbstractArea area) {
+        this.area = area;
+    }
+
+    public MenuEntry getMenu() {
+        return menu;
+    }
+
+    public void setMenu(MenuEntry menu) {
+        this.menu = menu;
+    }
 
     public abstract String getTitle();
 
@@ -88,7 +108,7 @@ public abstract class AbstractView {
     }
 
     public String getViewIdBase() {
-        return "mui.." + getClass().getName();
+        return "mui/" + getClass().getName();
     }
 
     public Data initializeData() {

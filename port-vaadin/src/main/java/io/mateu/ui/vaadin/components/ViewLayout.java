@@ -1,4 +1,4 @@
-package io.mateu.ui.vaadin;
+package io.mateu.ui.vaadin.components;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
@@ -11,13 +11,13 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.tests.themes.valo.ValoThemeUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -28,10 +28,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import io.mateu.ui.core.client.app.AbstractAction;
-import io.mateu.ui.core.client.app.AbstractMenu;
-import io.mateu.ui.core.client.app.MateuUI;
-import io.mateu.ui.core.client.app.MenuEntry;
+import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.components.*;
 import io.mateu.ui.core.client.components.fields.AbstractField;
 import io.mateu.ui.core.client.components.fields.*;
@@ -43,6 +40,7 @@ import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.vaadin.data.DataStore;
 import io.mateu.ui.vaadin.data.ViewNodeDataStore;
+import io.mateu.ui.vaadin.framework.MyUI;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -72,6 +70,26 @@ public class ViewLayout extends VerticalLayout implements View {
     private int fileId = 0;
 
     private AbstractComponent firstField;
+
+
+    private AbstractArea area;
+    private MenuEntry menu;
+
+    public AbstractArea getArea() {
+        return area;
+    }
+
+    public void setArea(AbstractArea area) {
+        this.area = area;
+    }
+
+    public MenuEntry getMenu() {
+        return menu;
+    }
+
+    public void setMenu(MenuEntry menu) {
+        this.menu = menu;
+    }
 
     public AbstractView getView() {
         return view;
@@ -126,7 +144,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 ViewLayout.this.dataStore.set("_title", t);
 
                 if (firstField != null && firstField instanceof com.vaadin.ui.AbstractField) {
-                    MateuUI.runInUIThread(new Runnable() {
+                    io.mateu.ui.core.client.app.MateuUI.runInUIThread(new Runnable() {
                         @Override
                         public void run() {
                             ((com.vaadin.ui.AbstractField)firstField).focus();
@@ -172,7 +190,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 this.dataStore.getProperty("_id").addListener(new ChangeListener<Object>() {
                     @Override
                     public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-                        MateuUI.runInUIThread(new Runnable() {
+                        io.mateu.ui.core.client.app.MateuUI.runInUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 String t = view.getTitle();
@@ -342,7 +360,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
 
         if (firstField != null && firstField instanceof com.vaadin.ui.AbstractField) {
-            MateuUI.runInUIThread(new Runnable() {
+            io.mateu.ui.core.client.app.MateuUI.runInUIThread(new Runnable() {
                 @Override
                 public void run() {
                     ((com.vaadin.ui.AbstractField)firstField).focus();
@@ -402,7 +420,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
                 @Override
                 public void onSearch() {
-                    ((ValoThemeUI)UI.getCurrent()).search(lv, (Integer) lv.get("_data_currentpageindex"));
+                    ((MyUI)UI.getCurrent()).search(lv, (Integer) lv.get("_data_currentpageindex"));
                 }
 
                 @Override
@@ -699,6 +717,41 @@ public class ViewLayout extends VerticalLayout implements View {
             cs.add(l = new Label(((Separator) field).getText()));
             l.addStyleName("separador");
 
+        } else if (field instanceof  ChangeAreaField) {
+            ChangeAreaField mf = (ChangeAreaField) field;
+
+            CssLayout contenedor;
+            cs.add(contenedor = new CssLayout());
+            contenedor.setWidth("100%");
+
+
+            VerticalLayout l;
+            contenedor.addComponent(l = new VerticalLayout());
+            l.addStyleName("listaopcionesmenu");
+            l.setWidthUndefined();
+
+            for (AbstractArea a : io.mateu.ui.core.client.app.MateuUI.getApp().getAreas()) {
+
+
+                Component c = null;
+
+                Button b = new Button(a.getName(), new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        MyUI ui = (MyUI) UI.getCurrent();
+                        Page.getCurrent().open("#!" + io.mateu.ui.core.client.app.MateuUI.getApp().getAreaId(a) + "/areahome", (event.isAltKey() || event.isCtrlKey())?"_blank":Page.getCurrent().getWindowName());
+                    }
+                });
+
+                b.setCaptionAsHtml(true);
+                b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+                b.addStyleName("accionsubmenu");
+                //b.setIcon(testIcon.get());  // sin iconos en el menú
+                c = b;
+
+                l.addComponent(c);
+            }
+
         } else if (field instanceof  MenuField) {
             MenuField mf = (MenuField) field;
 
@@ -889,9 +942,9 @@ public class ViewLayout extends VerticalLayout implements View {
                     public void click(ClickableRenderer.RendererClickEvent e) {
                         AbstractForm f = g.getDataForm();
 
-                        if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
+                        if (f == null) io.mateu.ui.core.client.app.MateuUI.alert("getDataForm() methd must return some value in GridField");
                         else {
-                            MateuUI.openView(new AbstractListEditorDialog() {
+                            io.mateu.ui.core.client.app.MateuUI.openView(new AbstractListEditorDialog() {
 
                                 DataStore ds = (DataStore) e.getItem();
 
@@ -1001,9 +1054,9 @@ public class ViewLayout extends VerticalLayout implements View {
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         AbstractForm f = g.getDataForm();
 
-                        if (f == null) MateuUI.alert("getDataForm() methd must return some value in GridField");
+                        if (f == null) io.mateu.ui.core.client.app.MateuUI.alert("getDataForm() methd must return some value in GridField");
                         else {
-                            MateuUI.openView(new AbstractDialog() {
+                            io.mateu.ui.core.client.app.MateuUI.openView(new AbstractDialog() {
 
                                 @Override
                                 public boolean isCloseOnOk() {
@@ -1021,7 +1074,7 @@ public class ViewLayout extends VerticalLayout implements View {
                                     ds.set("__id", "" + UUID.randomUUID());
                                     p.getValue().add(ds); // añadimos solo al modelo, que luego añadirá al grid al dispararse el evento onchange
                                     setData(initializeData());
-                                    MateuUI.notifyInfo("Record added");
+                                    io.mateu.ui.core.client.app.MateuUI.notifyInfo("Record added");
                                 }
 
                                 @Override
@@ -1137,7 +1190,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 Button.ClickListener cl = new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        MateuUI.runInUIThread(new Runnable() {
+                        io.mateu.ui.core.client.app.MateuUI.runInUIThread(new Runnable() {
                             @Override
                             public void run() {
                                 view.set("_data_currentpageindex", clickEvent.getButton().getData());

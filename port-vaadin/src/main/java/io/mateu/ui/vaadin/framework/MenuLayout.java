@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.tests.themes.valo;
+package io.mateu.ui.vaadin.framework;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
@@ -26,13 +26,13 @@ import com.vaadin.ui.themes.ValoTheme;
  * @since
  * @author Vaadin Ltd
  */
-public class ValoMenuLayout extends HorizontalLayout {
+public class MenuLayout extends HorizontalLayout {
 
     CssLayout contentArea = new CssLayout();
 
     CssLayout menuArea = new CssLayout();
 
-    public ValoMenuLayout() {
+    public MenuLayout() {
         setSizeFull();
 
         menuArea.setPrimaryStyleName(ValoTheme.MENU_ROOT);

@@ -1,4 +1,4 @@
-package io.mateu.ui.vaadin;
+package io.mateu.ui.vaadin.components;
 
 import com.google.common.collect.Lists;
 import com.vaadin.data.provider.ListDataProvider;
@@ -8,7 +8,6 @@ import com.vaadin.shared.ui.dnd.EffectAllowed;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.dnd.DragSourceExtension;
 import com.vaadin.ui.dnd.DropTargetExtension;
 import io.mateu.ui.vaadin.data.DataStore;

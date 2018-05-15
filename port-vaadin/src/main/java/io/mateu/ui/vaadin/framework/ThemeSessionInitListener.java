@@ -1,4 +1,4 @@
-package com.vaadin.tests.themes.valo;
+package io.mateu.ui.vaadin.framework;
 
 import org.jsoup.nodes.Element;
 
@@ -13,7 +13,11 @@ import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 
-public class ValoThemeSessionInitListener implements SessionInitListener {
+/**
+ * clase para alterar el html de la página
+ *
+ */
+public class ThemeSessionInitListener implements SessionInitListener {
 
     @Override
     public void sessionInit(final SessionInitEvent event)
@@ -43,7 +47,7 @@ public class ValoThemeSessionInitListener implements SessionInitListener {
                         .attr("content", "black");
 
                 /*
-                String appId = event.getService().getMainDivId(event.getSession(), event.getRequest(), ValoThemeUI.class);
+                String appId = event.getService().getMainDivId(event.getSession(), event.getRequest(), MyUI.class);
 
                 String tema = System.getProperty("theme", "mateu");
 

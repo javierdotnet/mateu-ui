@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.tests.themes.valo;
+package io.mateu.ui.vaadin.framework;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -35,8 +35,8 @@ import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.*;
 import io.mateu.ui.core.shared.*;
 import io.mateu.ui.core.shared.ViewProvider;
-import io.mateu.ui.vaadin.HomeView;
-import io.mateu.ui.vaadin.ViewLayout;
+import io.mateu.ui.vaadin.components.HomeView;
+import io.mateu.ui.vaadin.components.ViewLayout;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -49,7 +49,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.Map.Entry;
 
 
 //@Theme("tests-valo-reindeer")
@@ -59,16 +58,16 @@ import java.util.Map.Entry;
 @StyleSheet({"css/font-awesome.min.css"})
 //@Push
 @PreserveOnRefresh
-public class ValoThemeUI extends UI {
+public class MyUI extends UI {
 
-    private boolean testMode = false;
-    public Map<String, Integer> viewsIdsInNavigator;
-    public int contViews;
-    private ViewDisplay trueViewDisplay;
     private static int fileId = 0;
     private Resource foto;
+    private static Resource sinfoto;
     private VerticalLayout divIndicadorAreaActual;
-    private VerticalLayout divRestoAreas;
+
+    static {
+         sinfoto = new ClassResource("profile-pic-300px.jpg");
+    }
 
     public void search(AbstractListView lv, int page) {
         //miguel: buscar
@@ -78,27 +77,65 @@ public class ValoThemeUI extends UI {
     }
 
     private TestIcon testIcon = new TestIcon(100);
-    ValoMenuLayout root = new ValoMenuLayout();
+    MenuLayout root = new MenuLayout();
     ComponentContainer viewDisplay = root.getContentContainer();
     CssLayout menu = new CssLayout();
     VerticalLayout menuItemsLayout = new VerticalLayout();
+    Map<MenuEntry, Button> botonesMenu = new HashMap<>();
 
     {
         menu.addStyleName("testMenu");
         menuItemsLayout.setSpacing(false);
     }
-    private Navigator navigator;
-    private LinkedHashMap<String, String> menuItems = new LinkedHashMap<String, String>();
+    public Navigator navigator;
     private MenuBar settings;
 
+    private AbstractArea areaActual;
+    private MenuEntry menuActual;
+
+    public AbstractArea getAreaActual() {
+        return areaActual;
+    }
+
+    public void setAreaActual(AbstractArea areaActual) {
+        this.areaActual = areaActual;
+    }
+
+    public MenuEntry getMenuActual() {
+        return menuActual;
+    }
+
+    public void setMenuActual(MenuEntry menuActual) {
+        this.menuActual = menuActual;
+        for (MenuEntry e : botonesMenu.keySet()) {
+            Button b = botonesMenu.get(e);
+            if (menuActual == null || !(menuActual.equals(e) || getApp().getPath(menuActual).contains(e))) b.removeStyleName("posicionactual");
+            if (menuActual != null && (menuActual.equals(e) || getApp().getPath(menuActual).contains(e))) b.addStyleName("posicionactual");
+        }
+    }
+
+    public ComponentContainer getViewDisplay() {
+        return viewDisplay;
+    }
+
+    /**
+     * por aquí entramos. se llama al inicio, cuando refrescamos la página (si no está anotado @preserveonrefresh) o la abrimos en otra pestaña
+     * @param request
+     */
     @Override
     protected void init(VaadinRequest request) {
 
+        /*
+        inicializamos la configuración del tooltip para las ayudas
+         */
         TooltipConfiguration ttc = super.getTooltipConfiguration();
         ttc.setOpenDelay(200);
         ttc.setQuickOpenDelay(300);
         ttc.setQuickOpenTimeout(300);
 
+        /*
+        si no tenemos la app en la sesión, entonces la buscamos utilizando SPI y la metemos en la sesión
+         */
         if (getApp() == null) {
             Iterator<App> apps = ServiceLoader.load(App.class).iterator();
 
@@ -140,7 +177,7 @@ public class ValoThemeUI extends UI {
                                                 new AbstractAction("Opción 1") {
                                                     @Override
                                                     public void run() {
-                                                        MateuUI.alert("hola!");
+                                                        io.mateu.ui.core.client.app.MateuUI.alert("hola!");
                                                     }
                                                 }
                                         );
@@ -157,39 +194,46 @@ public class ValoThemeUI extends UI {
             getApp().setBaseUrl(u);
         }
 
-        viewsIdsInNavigator = new HashMap<>();
-        menuItems = new LinkedHashMap<String, String>();
-        contViews = 0;
 
 
-
-        if (request.getParameter("test") != null) {
-            testMode = true;
-
-            if (browserCantRenderFontsConsistently()) {
-                getPage().getStyles().add(
-                        ".v-app.v-app.v-app {font-family: Sans-Serif;}");
-            }
-        }
-
+        /*
+        corregimos el acho de la barra izda para IE9
+         */
         if (getPage().getWebBrowser().isIE()
                 && getPage().getWebBrowser().getBrowserMajorVersion() == 9) {
             menu.setWidth("320px");
         }
 
-        if (!testMode) {
-            Responsive.makeResponsive(this);
-        }
 
+        /*
+        ponemos el título de la página
+        todo: hay que moverlo a cuando cargamos una url
+         */
         getPage().setTitle(getApp().getName());
+
+        /*
+        fijamos el componente root como contenido de la página y lo ajustamos al 100% del ancho de la página
+         */
         setContent(root);
         root.setWidth("100%");
 
+
+        /*
+        creamos un navigator
+         */
+        navigator = new Navigator(this, viewDisplay);
+
+
+        /*
+        añadimos el componente menú
+         */
         root.addMenu(buildMenu(request));
         addStyleName(ValoTheme.UI_WITH_MENU);
 
-        navigator = new Navigator(this, viewDisplay);
 
+        /*
+        buscamos view providers utilizando SPI. Los view providers convierten de url a vista vaadin
+         */
         ServiceLoader<ViewProvider> sl = ServiceLoader.load(ViewProvider.class);
 
         for (ViewProvider p : sl) navigator.addProvider(new com.vaadin.navigator.ViewProvider() {
@@ -205,34 +249,28 @@ public class ValoThemeUI extends UI {
         });
 
 
-        //navigator.addView("common", CommonParts.class);
-
-        String f = Page.getCurrent().getUriFragment();
-        System.out.println("Page.getCurrent().getUriFragment()=" + f);
-        if (f == null || f.equals("")) {
-            //navigator.navigateTo("common");
-            boolean hayPartePublica = false;
-            for (AbstractArea a : getApp().getAreas()) {
-                hayPartePublica |= a.isPublicAccess();
-            }
-            if (!hayPartePublica) openLoginDialog();
-            else {
-                AbstractView h;
-                if ((h = getApp().getPublicHome()) != null) {
-                    addView((ValoThemeUI) UI.getCurrent(), h);
-                }
-            }
-        }
-
+        /*
+        actualizar los settings (datos del usuario en la parte izda)
+         */
         refreshSettings();
 
+        /*
+        ponemos una vista por defecto
+         */
         navigator.setErrorView(HomeView.class);
 
+        /*
+        añadimos un listener para cuando cambia la url. Aquí es donde se gestiona la navegación
+         */
         navigator.addViewChangeListener(new ViewChangeListener() {
 
             @Override
             public boolean beforeViewChange(ViewChangeEvent event) {
-                return true;
+                /*
+                aquí controlamos si el usuario tiene acceso a esta vista
+                 */
+                boolean ok = true;
+                return ok;
             }
 
             @Override
@@ -285,13 +323,18 @@ public class ValoThemeUI extends UI {
                                 lv.set("_data_currentpageindex", page);
                             List<String> errors = lv.getForm().validate();
                             if (errors.size() > 0) {
-                                MateuUI.notifyErrors(errors);
+                                io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
                             } else {
                                 lv.rpc();
                             }
                         }
 
                     }
+
+                    getViewDisplay().removeAllComponents();
+                    getViewDisplay().addComponent(v.getViewComponent());
+
+                    refreshMenu(((ViewLayout) v).getView().getArea(), ((ViewLayout) v).getView().getMenu());
 
                 }
 
@@ -300,27 +343,36 @@ public class ValoThemeUI extends UI {
                         .hasNext();) {
                     it.next().removeStyleName("selected");
                 }
-                for (Entry<String, String> item : menuItems.entrySet()) {
-                    if (event.getViewName().equals(item.getKey())) {
-                        for (Iterator<Component> it = menuItemsLayout
-                                .iterator(); it.hasNext();) {
-                            Component c = it.next();
-                            if (c.getCaption() != null
-                                    && c.getCaption().startsWith(
-                                            item.getValue())) {
-                                c.addStyleName("selected");
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
                 menu.removeStyleName("valo-menu-visible");
+
             }
         });
 
+
+        /*
+        si hemos entrado por la raíz y no hay contenidos públicos, entonces pedir el login inmediatamente
+         */
+        String f = Page.getCurrent().getUriFragment();
+        System.out.println("Page.getCurrent().getUriFragment()=" + f);
+        if (f == null || f.equals("")) {
+            boolean hayPartePublica = false;
+            for (AbstractArea a : getApp().getAreas()) {
+                hayPartePublica |= a.isPublicAccess();
+            }
+            if (!hayPartePublica) openLoginDialog();
+        }
+
+
     }
 
+
+
+    /**
+     * convierte nuestro view de mateu-ui a una view de vaadin
+     *
+     * @param view
+     * @return
+     */
     public View getVaadinView(AbstractView view) {
         System.out.println("getVaadinView(" + ((view != null)?view.getClass().getName():"null") + ")");
 
@@ -375,22 +427,41 @@ public class ValoThemeUI extends UI {
     }
 
 
+    /**
+     * inicialización del port, para saber si estamos con javafx o vaadin.
+     *
+     * también guarda nuestra app en la sesión de vaadin
+     *
+     * todo: comprobar que la sesión de vaadin y no la sesión http es donde queremos guardar la app
+     *
+     * @param app
+     */
     private void setApp(AbstractApplication app) {
         app.setPort(AbstractApplication.PORT_VAADIN);
         VaadinSession.getCurrent().setAttribute("app", app);
     }
 
+    /**
+     * recupera la app de la sesión
+     *
+     * @return
+     */
     public AbstractApplication getApp() {
         return (AbstractApplication) VaadinSession.getCurrent().getAttribute("app");
     }
 
-
-    public static void addView(ValoThemeUI ui, AbstractView view) {
+    /**
+     * abre una vista. La colocará en el lado derecho
+     *
+     * @param ui
+     * @param view
+     */
+    public static void addView(MyUI ui, AbstractView view) {
 
         System.out.println("abriendo vista " + view.getClass().getName() + "::" + view.getViewId());
 
+        ViewLayout v = new ViewLayout(view);
         if (view instanceof AbstractDialog) {
-            ViewLayout v = new ViewLayout(view);
 
             AbstractDialog d = (AbstractDialog) view;
 
@@ -411,7 +482,7 @@ public class ValoThemeUI extends UI {
                 ok = new Button("Add record", e -> {
                     List<String> errors = v.getView().getForm().validate();
                     if (errors.size() > 0) {
-                        MateuUI.notifyErrors(errors);
+                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
                     } else {
                         //if (d.isCloseOnOk()) subWindow.close();
                         ((AbstractAddRecordDialog)view).addAndClean(v.getView().getForm().getData());
@@ -421,7 +492,7 @@ public class ValoThemeUI extends UI {
                 ok = new Button(d.getOkText(), e -> {
                     List<String> errors = v.getView().getForm().validate();
                     if (errors.size() > 0) {
-                        MateuUI.notifyErrors(errors);
+                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
                     } else {
                         if (d.isCloseOnOk()) subWindow.close();
                         ((AbstractDialog)view).onOk(v.getView().getForm().getData());
@@ -459,7 +530,7 @@ public class ValoThemeUI extends UI {
                 Button prev = new Button("Previous", e -> {
                     List<String> errors = v.getView().getForm().validate();
                     if (errors.size() > 0) {
-                        MateuUI.notifyErrors(errors);
+                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
                     } else {
 
                         if (pos.getValue() > 0) {
@@ -476,7 +547,7 @@ public class ValoThemeUI extends UI {
                 Button next = new Button("Next", e -> {
                     List<String> errors = v.getView().getForm().validate();
                     if (errors.size() > 0) {
-                        MateuUI.notifyErrors(errors);
+                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
                     } else {
 
                         if (pos.getValue() < lv.getListSize() - 1) {
@@ -525,14 +596,12 @@ public class ValoThemeUI extends UI {
 
         } else {
 
-            String viewId = view.getViewId();
+            System.out.println("añadiendo vista al contenedor de vistas");
 
-            if (MateuUI.getApp().getPosicion() != null) viewId = "pos" + MateuUI.getApp().getPosicion().getId() + ".." + viewId;
-            if (MateuUI.getApp().getArea() != null) viewId = "area" + MateuUI.getApp().getArea().getId() + ".." + viewId;
+            ui.getViewDisplay().removeAllComponents();
+            ui.getViewDisplay().addComponent(v);
 
-            System.out.println("navigating to " + viewId);
-
-            ui.navigator.navigateTo(viewId);
+            ui.refreshMenu(v.getArea(), v.getMenu());
 
         }
 
@@ -540,7 +609,11 @@ public class ValoThemeUI extends UI {
 
     }
 
-
+    /**
+     * ni idea de para que sirve esto. Viene de vadin
+     *
+     * @return
+     */
     private boolean browserCantRenderFontsConsistently() {
         // PhantomJS renders font correctly about 50% of the time, so
         // disable it to have consistent screenshots
@@ -554,10 +627,13 @@ public class ValoThemeUI extends UI {
                         .getWebBrowser().getBrowserMajorVersion() <= 9);
     }
 
-    static boolean isTestMode() {
-        return ((ValoThemeUI) getCurrent()).testMode;
-    }
 
+    /**
+     * construye el menu
+     *
+     * @param request
+     * @return
+     */
     CssLayout buildMenu(VaadinRequest request) {
 
         HorizontalLayout top = new HorizontalLayout();
@@ -598,11 +674,16 @@ public class ValoThemeUI extends UI {
         menu.addComponent(menuItemsLayout);
 
 
-        refreshMenu();
+        refreshMenu(null, null);
 
         return menu;
     }
 
+    /**
+     * actualiza los settings (la parte que muestra la sesión del usuario)
+     *
+     *
+     */
     private void refreshSettings() {
         VaadinSession s = VaadinSession.getCurrent();
 
@@ -630,7 +711,7 @@ public class ValoThemeUI extends UI {
 
 
             MenuItem settingsItem = settings.addItem("",
-                    foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):new ClassResource("profile-pic-300px.jpg"),
+                    foto = (getApp().getUserData().getPhoto() != null)?new ExternalResource(getApp().getUserData().getPhoto()):sinfoto,
                     null);
 
             settingsItem.addItem("Edit Profile", new MenuBar.Command() {
@@ -656,15 +737,9 @@ public class ValoThemeUI extends UI {
                 @Override
                 public void menuSelected(MenuItem menuItem) {
                     VaadinSession.getCurrent().setAttribute("usuario", null);
-                    clearViews();
-                    getApp().setArea(null);
-                    getApp().setPosicion(null);
                     refreshSettings();
-                    refreshMenu();
-                    AbstractView h;
-                    if ((h = getApp().getPublicHome()) != null) {
-                        addView((ValoThemeUI) UI.getCurrent(), h);
-                    } else navigator.navigateTo("");
+                    refreshMenu(null, null);
+                    if (!"".equals(navigator.getState())) navigator.navigateTo("");
                 }
             });
 
@@ -673,97 +748,88 @@ public class ValoThemeUI extends UI {
 
     }
 
-    private void refreshMenu() {
+    /**
+     * construye el menú
+     */
+    public void refreshMenu(AbstractArea area, MenuEntry menu) {
 
-        VaadinSession s = VaadinSession.getCurrent();
-        menuItemsLayout.removeAllComponents();
+        if (area != null && area.equals(getAreaActual())) {
 
-        if (s.getAttribute("usuario") == null) {
+            // no cambia el area. Solo puede cambiar el menu
 
-            System.out.println("***** NO AUTENTICADO.");
+            if ((menu == null && getMenuActual() == null) || (menu != null && menu.equals(getMenuActual()))) {
 
-            Label label = null;
-            int count = -1;
-            for (AbstractArea a : getApp().getAreas()) {
+                // no cambia nada. no hacemos nada
 
-                boolean isPublic = a.isPublicAccess();
-
-                if (!getApp().isAuthenticationNeeded() || isPublic) {
-                    label = new Label(a.getName(), ContentMode.HTML);
-                    label.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
-                    label.addStyleName(ValoTheme.LABEL_H4);
-                    label.setSizeUndefined();
-                    menuItemsLayout.addComponent(label);
-                    for (AbstractModule m : a.getModules()) {
-                        for (MenuEntry e : m.getMenu()) {
-
-                            addMenu(e);
-
-                        }
-                    }
-
-                }
-
+            } else {
+                setMenuActual(menu);
             }
+
         } else {
 
-            System.out.println("***** AUTENTICADO. USUARIO=" + s.getAttribute("usuario"));
+            // cambia el area. debemos reconstruir el menu
 
+            setAreaActual(area);
 
-            divIndicadorAreaActual = new VerticalLayout();
-            divIndicadorAreaActual.setSpacing(false);
-            divIndicadorAreaActual.addStyleName("divIndicadorAreaActual");
+            VaadinSession s = VaadinSession.getCurrent();
 
-            List<Pair> areas = new ArrayList<>();
+            boolean autentico = s.getAttribute("usuario") != null;
+
+            List<AbstractArea> areas = new ArrayList<>();
+
             for (AbstractArea a : getApp().getAreas()) {
-                boolean isPublic = a.isPublicAccess();
-
-                if (!isPublic) {
-
-                    areas.add(new Pair(a, a.getName()));
-
-                    if (getArea() == null) {
-                        setArea(a);
+                if (autentico) {
+                    if (!a.isPublicAccess()) {
+                        if (area == null) area = a;
+                        areas.add(a);
                     }
-
+                } else {
+                    if (!getApp().isAuthenticationNeeded() || a.isPublicAccess()) {
+                        if (area == null) area = a;
+                        areas.add(a);
+                    }
                 }
             }
 
-            if (getArea() == null && getApp().getAreas().size() > 0) setArea(getApp().getAreas().get(0));
+            /**
+             * area no puede ser null
+             */
+            if (area != null) {
+                menuItemsLayout.removeAllComponents();
 
-            divRestoAreas = new VerticalLayout();
-            Label lx;
-            divRestoAreas.addComponent(lx = new Label("Other available areas:"));
-            lx.addStyleName("labelotrasareas");
-            divRestoAreas.setSpacing(false);
-            divRestoAreas.addStyleName("divRestoAreas");
+                divIndicadorAreaActual = new VerticalLayout();
+                divIndicadorAreaActual.setSpacing(false);
+                divIndicadorAreaActual.addStyleName("divIndicadorAreaActual");
 
-            if (areas.size() > 1) {
+                if (areas.size() > 1) {
 
-                divIndicadorAreaActual.addComponent(new Label("You are at " + ((getArea() != null)?getArea().getName():"--")));
-
-                for (AbstractArea x : getApp().getAreas()) if (!x.equals(getArea())) {
                     Button b;
-                    divRestoAreas.addComponent(b = new Button(x.getName(), new ClickListener() {
+                    AbstractArea finalArea = area;
+                    divIndicadorAreaActual.addComponent(b = new Button("You are at " + ((area != null)?area.getName():"--"), new ClickListener() {
                         @Override
                         public void buttonClick(ClickEvent clickEvent) {
-                            setArea(x);
-                            refreshMenu();
+                            navigator.navigateTo(getApp().getAreaId(finalArea) + "/changearea");
                         }
                     }));
                     b.addStyleName(ValoTheme.BUTTON_LINK);
                     b.addStyleName("linkotrasareas");
+
+                    menuItemsLayout.addComponent(divIndicadorAreaActual);
                 }
 
-
+                buildMenuOptions(area);
             }
 
-            if (getArea() != null) refreshMenu(areas, getArea());
 
+            setMenuActual(menu);
         }
+
 
     }
 
+    /**
+     * are el diálogo para autenticarse
+     */
     private void openLoginDialog() {
 
 
@@ -801,7 +867,7 @@ public class ValoThemeUI extends UI {
             @Override
             public void buttonClick(ClickEvent clickEvent) {
                 e.setValue("Asking for email...");
-                MateuUI.getBaseService().forgotPassword(l.getValue(), new AsyncCallback<Void>() {
+                io.mateu.ui.core.client.app.MateuUI.getBaseService().forgotPassword(l.getValue(), new AsyncCallback<Void>() {
 
                     @Override
                     public void onFailure(Throwable caught) {
@@ -822,7 +888,7 @@ public class ValoThemeUI extends UI {
             @Override
             public void buttonClick(ClickEvent clickEvent) {
                 e.setValue("Authenticating...");
-                MateuUI.getBaseService().authenticate(l.getValue(), p.getValue(), new AsyncCallback<UserData>() {
+                io.mateu.ui.core.client.app.MateuUI.getBaseService().authenticate(l.getValue(), p.getValue(), new AsyncCallback<UserData>() {
 
                     @Override
                     public void onFailure(Throwable caught) {
@@ -835,15 +901,9 @@ public class ValoThemeUI extends UI {
                         getApp().setUserData(result);
                         VaadinSession.getCurrent().setAttribute("usuario", "admin");
                         subWindow.close();
-                        getApp().setArea(null);
-                        getApp().setPosicion(null);
-                        refreshSettings();
-                        refreshMenu();
 
-                        AbstractView h;
-                        if ((h = getApp().getPrivateHome()) != null) {
-                            addView((ValoThemeUI) UI.getCurrent(), h);
-                        }
+                        refreshSettings();
+                        refreshMenu(null, null);
 
                     }
                 });
@@ -873,15 +933,10 @@ public class ValoThemeUI extends UI {
         l.focus();
     }
 
-    private void clearViews() {
-        ValoThemeUI ui = (ValoThemeUI) UI.getCurrent();
-        for (int x : ui.viewsIdsInNavigator.values()) {
-            ui.navigator.removeView("view_" + x);
-        }
-        ui.viewsIdsInNavigator.clear();
-        viewDisplay.removeAllComponents();
-    }
-
+    /**
+     * abre el diálogo para cambiar el password
+     *
+     */
     private void changePassword() {
         // Create a sub-window and set the content
         Window subWindow = new Window("Change password");
@@ -925,7 +980,7 @@ public class ValoThemeUI extends UI {
                 else {
                     e.setValue("Changing password...");
 
-                    MateuUI.getBaseService().changePassword(getApp().getUserData().getLogin(), l.getValue(), p.getValue(), new AsyncCallback<Void>() {
+                    io.mateu.ui.core.client.app.MateuUI.getBaseService().changePassword(getApp().getUserData().getLogin(), l.getValue(), p.getValue(), new AsyncCallback<Void>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -967,6 +1022,10 @@ public class ValoThemeUI extends UI {
         l.focus();
     }
 
+    /**
+     * abre el diálogo para editar el perfil
+     *
+     */
     private void editProfile() {
         // Create a sub-window and set the content
         Window subWindow = new Window("My profile");
@@ -1004,7 +1063,7 @@ public class ValoThemeUI extends UI {
             @Override
             public void buttonClick(ClickEvent clickEvent) {
                 e.setValue("Authenticating...");
-                MateuUI.getBaseService().updateProfile(getApp().getUserData().getLogin(), l.getValue(), p.getValue(), null, new AsyncCallback<Void>() {
+                io.mateu.ui.core.client.app.MateuUI.getBaseService().updateProfile(getApp().getUserData().getLogin(), l.getValue(), p.getValue(), null, new AsyncCallback<Void>() {
 
                     @Override
                     public void onFailure(Throwable caught) {
@@ -1017,7 +1076,7 @@ public class ValoThemeUI extends UI {
                         getApp().getUserData().setName(l.getValue());
                         getApp().getUserData().setEmail(p.getValue());
                         subWindow.close();
-                        refreshMenu();
+                        refreshSettings();
                     }
                 });
             }
@@ -1047,6 +1106,11 @@ public class ValoThemeUI extends UI {
         l.focus();
     }
 
+    /**
+     * abre el diálogo para cambiar la foto
+     *
+     *
+     */
     private void uploadFoto() {
         // Create a sub-window and set the content
         Window subWindow = new Window("My photo");
@@ -1171,7 +1235,7 @@ public class ValoThemeUI extends UI {
                 try {
                     FileLocator loc = receiver.getFileLocator();
 
-                    MateuUI.getBaseService().updateFoto(getApp().getUserData().getLogin(), loc, new AsyncCallback<Void>() {
+                    io.mateu.ui.core.client.app.MateuUI.getBaseService().updateFoto(getApp().getUserData().getLogin(), loc, new AsyncCallback<Void>() {
 
                         @Override
                         public void onFailure(Throwable caught) {
@@ -1192,7 +1256,7 @@ public class ValoThemeUI extends UI {
 
                 } catch (IOException e1) {
                     e1.printStackTrace();
-                    MateuUI.alert("" + e1.getClass().getName() + ":" + e1.getMessage());
+                    io.mateu.ui.core.client.app.MateuUI.alert("" + e1.getClass().getName() + ":" + e1.getMessage());
                 }
 
             }
@@ -1222,14 +1286,19 @@ public class ValoThemeUI extends UI {
         upload.focus();
     }
 
-    private void refreshMenu(List<Pair> areas, AbstractArea a) {
-
-        menuItemsLayout.removeAllComponents();
-
-        if (areas.size() > 1) menuItemsLayout.addComponent(divIndicadorAreaActual);
+    /**
+     * crea el menú pa un área concreta
+     *
+     * @param a
+     */
+    private void buildMenuOptions(AbstractArea a) {
 
         Label label = null;
 
+
+        // recger la opción de menú selecionada de la url
+        String s = navigator.getState();
+        System.out.println("state=" + s);
 
         for (AbstractModule m : a.getModules()) {
 
@@ -1239,92 +1308,63 @@ public class ValoThemeUI extends UI {
             label.setSizeUndefined();
             menuItemsLayout.addComponent(label);
 
-
             for (MenuEntry e : m.getMenu()) {
 
-                addMenu(e);
+                addMenu(a, e);
 
             }
         }
-
-        if (areas.size() > 1) menuItemsLayout.addComponent(divRestoAreas);
     }
 
-    private void setArea(AbstractArea a) {
-        //VaadinSession.getCurrent().setAttribute("area", a);
-        MateuUI.getApp().setArea(a);
-    }
-
-    private AbstractArea getArea() {
-        //return (AbstractArea) VaadinSession.getCurrent().getAttribute("area");
-        return MateuUI.getApp().getArea();
+    public void changeToArea(AbstractArea a) {
+        //todo: calcular la url y cargarla
     }
 
 
+    /**
+     * construye una opción del menú
+     *
+     */
+    private void addMenu(AbstractArea area, MenuEntry e) {
 
-    private void addItem(MenuItem parent, MenuEntry e) {
-        if (e instanceof AbstractMenu) {
-            //for (MenuEntry ee : ((AbstractMenu)e).getEntries()) addMenu(ee); // antes, menú plano sin submenús
-
-            MenuItem dropdown = parent.addItem(e.getName(), null);
-
-            for (MenuEntry ee : ((AbstractMenu)e).getEntries()) addItem(dropdown, ee);
-
-        }
-
-        if (e instanceof AbstractAction) {
-
-            parent.addItem(e.getName(), new MenuBar.Command() {
-                @Override
-                public void menuSelected(MenuItem menuItem) {
-                    ((AbstractAction)e).run();
-                }
-            });
-        }
-    }
-    private void addMenu(MenuEntry e) {
+        Button b = null;
 
         if (e instanceof AbstractMenu) {
-            Button b = new Button(e.getName(), new Button.ClickListener() {
+            b = new Button(e.getName(), new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    getApp().setPosicion(e);
-                    MateuUI.openView(new MenuView(e.getName(), getApp().getMenuLocator(e)), event.isAltKey() || event.isCtrlKey());
-                    refreshMenu();
+                    setAreaActual(area);
+                    setMenuActual(e);
+                    Page.getCurrent().open("#!" + getApp().getAreaId(area) + "/" + getApp().getMenuId(e) + "/menuhome", (event.isAltKey() || event.isCtrlKey())?"_blank":Page.getCurrent().getWindowName());
                 }
             });
             b.setCaption(b.getCaption()
                     + " <span class=\"valo-menu-badge\">" + ((AbstractMenu) e).getEntries().size() + "</span>"
             );
-            b.setCaptionAsHtml(true);
-            b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-
-            if (getApp().getPosicion() != null && getApp().getPosicion().equals(e)) b.addStyleName("posicionactual");
-
-            //b.setIcon(testIcon.get());  // sin iconos en el menú
-            menuItemsLayout.addComponent(b);
         }
 
         if (e instanceof AbstractAction) {
 
-            Button b = new Button(e.getName(), new Button.ClickListener() {
+            b = new Button(e.getName(), new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    getApp().setPosicion(e);
+                    setAreaActual(area);
+                    setMenuActual(e);
                     ((AbstractAction)e).setModifierPressed(event.isAltKey() || event.isCtrlKey()).run();
-                    refreshMenu();
                 }
             });
-            b.setCaption(b.getCaption()
-            //        + " <span class=\"valo-menu-badge\">123</span>"
-            );
+
+        }
+
+        if (b != null) {
             b.setCaptionAsHtml(true);
             b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 
-            if (getApp().getPosicion() != null && getApp().getPosicion().equals(e)) b.addStyleName("posicionactual");
-
             //b.setIcon(testIcon.get());  // sin iconos en el menú
             menuItemsLayout.addComponent(b);
+
+            botonesMenu.put(e, b);
+
         }
 
 

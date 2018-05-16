@@ -15639,4 +15639,5 @@ div.v-layout.v-horizontal.v-widget {
 
 .quonext .lasteditedlink {
 	width: 40px;
+	cursor: pointer;
 }

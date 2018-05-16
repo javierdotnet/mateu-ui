@@ -1,7 +1,9 @@
 package io.mateu.ui.core.shared;
 
 import com.google.auto.service.AutoService;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.io.BaseEncoding;
 import io.mateu.ui.core.client.app.*;
 import io.mateu.ui.core.client.views.*;
 
@@ -120,8 +122,15 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                         String vn = (String) data.get("resto");
                         if (vn.startsWith("/")) vn = vn.substring(1);
-                        if (vn.contains("?")) vn = vn.substring(0, vn.indexOf("?"));
-                        if (vn.contains("/")) vn = vn.substring(0, vn.indexOf("/"));
+                        String parametros = "";
+                        if (vn.contains("?")) {
+                            parametros = vn.substring(vn.indexOf("?") + 1);
+                            vn = vn.substring(0, vn.indexOf("?"));
+                        }
+                        if (vn.contains("/")) {
+                            parametros = vn.substring(vn.indexOf("/") + 1);
+                            vn = vn.substring(0, vn.indexOf("/"));
+                        }
 
 
                         if (vn.contains("$")) {
@@ -153,6 +162,8 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                         } else if (o instanceof AbstractView) {
 
                             view = (AbstractView) o;
+
+                            view.setParametros(parametros);
 
                             if (view instanceof AbstractCRUDView) {
                                 ((AbstractCRUDView) view).addListener(new CRUDListener() {

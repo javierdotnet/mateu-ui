@@ -23,6 +23,16 @@ public abstract class AbstractView {
     private List<AbstractAction> actions;
     private List<AbstractAction> links;
     private List<ViewListener> listeners = new ArrayList<>();
+    private Data initialData = new Data();
+    private String parametros;
+
+    public Data getInitialData() {
+        return initialData;
+    }
+
+    public void setInitialData(Data initialData) {
+        this.initialData = initialData;
+    }
 
     public AbstractArea getArea() {
         return area;
@@ -112,7 +122,7 @@ public abstract class AbstractView {
     }
 
     public Data initializeData() {
-        return new Data();
+        return getInitialData();
     }
 
 
@@ -142,5 +152,13 @@ public abstract class AbstractView {
 
     public void setAll(Data data) {
         getForm().setAll(data);
+    }
+
+    public void setParametros(String parametros) {
+        this.parametros = parametros;
+    }
+
+    public String getParametros() {
+        return parametros;
     }
 }

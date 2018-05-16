@@ -75,7 +75,17 @@ public class MyUI extends UI {
 
     public void search(AbstractListView lv, int page) {
         //miguel: buscar
-        String u = lv.getViewIdBase() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());
+        String u = "";
+        if (lv.getArea() != null) {
+            if (!"".equals(u)) u += "/";
+            u += lv.getArea().getId();
+        }
+        if (lv.getMenu() != null) {
+            if (!"".equals(u)) u += "/";
+            u += lv.getMenu().getId();
+        }
+        if (!"".equals(u)) u += "/";
+        u += lv.getViewIdBase() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());
         if (page != 0) u += "/" + page;
         navigator.navigateTo(u);
     }
@@ -300,7 +310,7 @@ public class MyUI extends UI {
                         Data data = null;
 
                         int page = 0;
-                        String s = event.getParameters();
+                        String s = ((ViewLayout) v).getView().getParametros();
                         if (!Strings.isNullOrEmpty(s)) {
 
                             String d = s;

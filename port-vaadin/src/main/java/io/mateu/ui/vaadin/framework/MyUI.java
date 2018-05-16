@@ -836,9 +836,9 @@ public class MyUI extends UI {
                     getViewDisplay().removeAllComponents();
                     refreshSettings();
 
-                    linkFavoritos.setVisible(false);
-                    linkUltimosRegistros.setVisible(false);
-                    linkNuevoFavorito.setVisible(false);
+                    if (MateuUI.getApp().isFavouritesAvailable()) linkFavoritos.setVisible(false);
+                    if (MateuUI.getApp().isLastEditedAvailable()) linkUltimosRegistros.setVisible(false);
+                    if (MateuUI.getApp().isFavouritesAvailable()) linkNuevoFavorito.setVisible(false);
 
                     refreshMenu(null, null);
                     addView(MyUI.this, getApp().getPublicHome());
@@ -1005,9 +1005,9 @@ public class MyUI extends UI {
                         VaadinSession.getCurrent().setAttribute("usuario", "admin");
                         subWindow.close();
 
-                        linkFavoritos.setVisible(true);
-                        linkUltimosRegistros.setVisible(true);
-                        linkNuevoFavorito.setVisible(true);
+                        if (MateuUI.getApp().isFavouritesAvailable()) linkFavoritos.setVisible(true);
+                        if (MateuUI.getApp().isLastEditedAvailable()) linkUltimosRegistros.setVisible(true);
+                        if (MateuUI.getApp().isFavouritesAvailable()) linkNuevoFavorito.setVisible(true);
 
                         refreshSettings();
                         refreshMenu(null, null);

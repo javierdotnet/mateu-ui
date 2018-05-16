@@ -69,6 +69,10 @@ public class MyUI extends UI {
          sinfoto = new ClassResource("profile-pic-300px.jpg");
     }
 
+    private Button linkFavoritos;
+    private Button linkUltimosRegistros;
+    private Button linkNuevoFavorito;
+
     public void search(AbstractListView lv, int page) {
         //miguel: buscar
         String u = lv.getViewIdBase() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());
@@ -207,7 +211,6 @@ public class MyUI extends UI {
 
         /*
         ponemos el título de la página
-        todo: hay que moverlo a cuando cargamos una url
          */
         getPage().setTitle(getApp().getName());
 
@@ -288,12 +291,6 @@ public class MyUI extends UI {
 
                     if (((ViewLayout) v).getView() instanceof AbstractEditorView) {
                         Object id = null;
-                        String s = event.getParameters();
-                        if (s != null) {
-                            if (s.startsWith("s")) id = s.substring(1);
-                            else if (s.startsWith("l")) id = Long.parseLong(s.substring(1));
-                            else if (s.startsWith("i")) id = Integer.parseInt(s.substring(1));
-                        }
                         if (id != null) {
                             ((AbstractEditorView) ((ViewLayout) v).getView()).setInitialId(id);
                             ((AbstractEditorView) ((ViewLayout) v).getView()).load();
@@ -335,6 +332,8 @@ public class MyUI extends UI {
                     getViewDisplay().addComponent(v.getViewComponent());
 
                     refreshMenu(((ViewLayout) v).getView().getArea(), ((ViewLayout) v).getView().getMenu());
+
+                    getPage().setTitle(((ViewLayout) v).getView().getTitle());
 
                 }
 
@@ -458,154 +457,159 @@ public class MyUI extends UI {
      */
     public static void addView(MyUI ui, AbstractView view) {
 
-        System.out.println("abriendo vista " + view.getClass().getName() + "::" + view.getViewId());
-
-        ViewLayout v = new ViewLayout(view);
-        if (view instanceof AbstractDialog) {
-
-            AbstractDialog d = (AbstractDialog) view;
-
-            // Create a sub-window and set the content
-            Window subWindow = new Window(((AbstractDialog)view).getTitle());
-
-            HorizontalLayout footer = new HorizontalLayout();
-            footer.setWidth("100%");
-            footer.setSpacing(true);
-            footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-
-            Label footerText = new Label("");
-            footerText.setSizeUndefined();
-
-
-            Button ok;
-            if (d instanceof AbstractAddRecordDialog) {
-                ok = new Button("Add record", e -> {
-                    List<String> errors = v.getView().getForm().validate();
-                    if (errors.size() > 0) {
-                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
-                    } else {
-                        //if (d.isCloseOnOk()) subWindow.close();
-                        ((AbstractAddRecordDialog)view).addAndClean(v.getView().getForm().getData());
-                    }
-                });
-            } else {
-                ok = new Button(d.getOkText(), e -> {
-                    List<String> errors = v.getView().getForm().validate();
-                    if (errors.size() > 0) {
-                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
-                    } else {
-                        if (d.isCloseOnOk()) subWindow.close();
-                        ((AbstractDialog)view).onOk(v.getView().getForm().getData());
-                    }
-                });
-            }
-            ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-            ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-
-            footer.addComponents(footerText);
-
-            for (AbstractAction a : d.getActions()) {
-                Button b = new Button(a.getName(), e -> {
-                    a.run();
-                });
-                //b.addStyleName(ValoTheme.BUTTON_);
-                //b.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-                if ("previous".equalsIgnoreCase(a.getName())) {
-                    b.setIcon(VaadinIcons.ANGLE_LEFT);
-                } else if ("next".equalsIgnoreCase(a.getName())) {
-                    b.setIcon(VaadinIcons.ANGLE_RIGHT);
-                }
-                footer.addComponent(b);
-            }
-
-
-            if (d instanceof AbstractListEditorDialog) {
-                AbstractListEditorDialog lv = (AbstractListEditorDialog) d;
-
-                Property<Integer> pos = new SimpleObjectProperty<>();
-
-                pos.setValue(lv.getInitialPos());
-
-
-                Button prev = new Button("Previous", e -> {
-                    List<String> errors = v.getView().getForm().validate();
-                    if (errors.size() > 0) {
-                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
-                    } else {
-
-                        if (pos.getValue() > 0) {
-                            lv.setData(pos.getValue(), view.getForm().getData());
-                            pos.setValue(pos.getValue() - 1);
-                            view.getForm().setData(lv.getData(pos.getValue()));
-                        }
-
-                    }
-                });
-                prev.setIcon(VaadinIcons.ANGLE_LEFT);
-                footer.addComponent(prev);
-
-                Button next = new Button("Next", e -> {
-                    List<String> errors = v.getView().getForm().validate();
-                    if (errors.size() > 0) {
-                        io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
-                    } else {
-
-                        if (pos.getValue() < lv.getListSize() - 1) {
-                            lv.setData(pos.getValue(), view.getForm().getData());
-                            pos.setValue(pos.getValue() + 1);
-                            view.getForm().setData(lv.getData(pos.getValue()));
-                        }
-
-                    }
-                });
-                next.setIcon(VaadinIcons.ANGLE_RIGHT);
-                footer.addComponent(next);
-
-                pos.addListener(new ChangeListener<Integer>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-                        if (newValue <= 0) {
-                            prev.setEnabled(false);
-                        } else {
-                            prev.setEnabled(true);
-                        }
-                        if (newValue < lv.getListSize() - 1) {
-                            next.setEnabled(true);
-                        } else {
-                            next.setEnabled(false);
-                        }
-                    }
-                });
-
-            }
-
-            footer.addComponents(ok); //, cancel);
-            footer.setExpandRatio(footerText, 1);
-
-            v.addComponent(footer);
-
-            subWindow.setContent(v);
-
-            // Center it in the browser window
-            subWindow.center();
-
-            subWindow.setModal(true);
-
-            // Open it in the UI
-            ui.addWindow(subWindow);
-
+        if (view == null) {
+            System.out.println("abriendo vista null");
+            ui.getViewDisplay().removeAllComponents();
         } else {
 
-            System.out.println("añadiendo vista al contenedor de vistas");
+            System.out.println("abriendo vista " + view.getClass().getName() + "::" + view.getViewId());
 
-            ui.getViewDisplay().removeAllComponents();
-            ui.getViewDisplay().addComponent(v);
+            ViewLayout v = new ViewLayout(view);
+            if (view instanceof AbstractDialog) {
 
-            ui.refreshMenu(v.getArea(), v.getMenu());
+                AbstractDialog d = (AbstractDialog) view;
+
+                // Create a sub-window and set the content
+                Window subWindow = new Window(((AbstractDialog)view).getTitle());
+
+                HorizontalLayout footer = new HorizontalLayout();
+                footer.setWidth("100%");
+                footer.setSpacing(true);
+                footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+
+                Label footerText = new Label("");
+                footerText.setSizeUndefined();
+
+
+                Button ok;
+                if (d instanceof AbstractAddRecordDialog) {
+                    ok = new Button("Add record", e -> {
+                        List<String> errors = v.getView().getForm().validate();
+                        if (errors.size() > 0) {
+                            io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
+                        } else {
+                            //if (d.isCloseOnOk()) subWindow.close();
+                            ((AbstractAddRecordDialog)view).addAndClean(v.getView().getForm().getData());
+                        }
+                    });
+                } else {
+                    ok = new Button(d.getOkText(), e -> {
+                        List<String> errors = v.getView().getForm().validate();
+                        if (errors.size() > 0) {
+                            io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
+                        } else {
+                            if (d.isCloseOnOk()) subWindow.close();
+                            ((AbstractDialog)view).onOk(v.getView().getForm().getData());
+                        }
+                    });
+                }
+                ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
+                ok.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+
+                footer.addComponents(footerText);
+
+                for (AbstractAction a : d.getActions()) {
+                    Button b = new Button(a.getName(), e -> {
+                        a.run();
+                    });
+                    //b.addStyleName(ValoTheme.BUTTON_);
+                    //b.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+                    if ("previous".equalsIgnoreCase(a.getName())) {
+                        b.setIcon(VaadinIcons.ANGLE_LEFT);
+                    } else if ("next".equalsIgnoreCase(a.getName())) {
+                        b.setIcon(VaadinIcons.ANGLE_RIGHT);
+                    }
+                    footer.addComponent(b);
+                }
+
+
+                if (d instanceof AbstractListEditorDialog) {
+                    AbstractListEditorDialog lv = (AbstractListEditorDialog) d;
+
+                    Property<Integer> pos = new SimpleObjectProperty<>();
+
+                    pos.setValue(lv.getInitialPos());
+
+
+                    Button prev = new Button("Previous", e -> {
+                        List<String> errors = v.getView().getForm().validate();
+                        if (errors.size() > 0) {
+                            io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
+                        } else {
+
+                            if (pos.getValue() > 0) {
+                                lv.setData(pos.getValue(), view.getForm().getData());
+                                pos.setValue(pos.getValue() - 1);
+                                view.getForm().setData(lv.getData(pos.getValue()));
+                            }
+
+                        }
+                    });
+                    prev.setIcon(VaadinIcons.ANGLE_LEFT);
+                    footer.addComponent(prev);
+
+                    Button next = new Button("Next", e -> {
+                        List<String> errors = v.getView().getForm().validate();
+                        if (errors.size() > 0) {
+                            io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
+                        } else {
+
+                            if (pos.getValue() < lv.getListSize() - 1) {
+                                lv.setData(pos.getValue(), view.getForm().getData());
+                                pos.setValue(pos.getValue() + 1);
+                                view.getForm().setData(lv.getData(pos.getValue()));
+                            }
+
+                        }
+                    });
+                    next.setIcon(VaadinIcons.ANGLE_RIGHT);
+                    footer.addComponent(next);
+
+                    pos.addListener(new ChangeListener<Integer>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+                            if (newValue <= 0) {
+                                prev.setEnabled(false);
+                            } else {
+                                prev.setEnabled(true);
+                            }
+                            if (newValue < lv.getListSize() - 1) {
+                                next.setEnabled(true);
+                            } else {
+                                next.setEnabled(false);
+                            }
+                        }
+                    });
+
+                }
+
+                footer.addComponents(ok); //, cancel);
+                footer.setExpandRatio(footerText, 1);
+
+                v.addComponent(footer);
+
+                subWindow.setContent(v);
+
+                // Center it in the browser window
+                subWindow.center();
+
+                subWindow.setModal(true);
+
+                // Open it in the UI
+                ui.addWindow(subWindow);
+
+            } else {
+
+                System.out.println("añadiendo vista al contenedor de vistas");
+
+                ui.getViewDisplay().removeAllComponents();
+                ui.getViewDisplay().addComponent(v);
+
+                ui.refreshMenu(v.getArea(), v.getMenu());
+
+            }
 
         }
-
-
 
     }
 
@@ -659,8 +663,17 @@ public class MyUI extends UI {
         showMenu.setIcon(FontAwesome.LIST);
         menu.addComponent(showMenu);
 
-        Label title = new Label("<h3><strong>" + getApp().getName() + "</strong></h3>",
-                ContentMode.HTML);
+        //Label title = new Label("<h3><strong>" + getApp().getName() + "</strong></h3>", ContentMode.HTML);
+
+        Button title = new Button(getApp().getName(), new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                Page.getCurrent().open("#!", (event.isAltKey() || event.isCtrlKey()) ? "_blank" : Page.getCurrent().getWindowName());
+            }
+        });
+        title.addStyleName(ValoTheme.BUTTON_LINK);
+        title.addStyleName("tituloapp");
+
         title.setSizeUndefined();
         top.addComponent(title);
         top.setExpandRatio(title, 1);
@@ -669,6 +682,88 @@ public class MyUI extends UI {
         settings.addStyleName("user-menu");
         settings.addStyleName("mi-user-menu");
         menu.addComponent(settings);
+
+
+        HorizontalLayout navlinks = new HorizontalLayout();
+        navlinks.setSpacing(true);
+
+        {
+            Button nav = new Button(VaadinIcons.ARROWS_CROSS, new ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    Page.getCurrent().open("#!nav", (event.isAltKey() || event.isCtrlKey()) ? "_blank" : Page.getCurrent().getWindowName());
+                }
+            });
+            nav.addStyleName(ValoTheme.BUTTON_LINK);
+            nav.setDescription("Search inside menu");
+            nav.addStyleName("navlink");
+
+            navlinks.addComponent(nav);
+        }
+
+        if (MateuUI.getApp().isFavouritesAvailable()) {
+            Button nav = new Button(VaadinIcons.USER_STAR, new ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    Page.getCurrent().open("#!favourites", (event.isAltKey() || event.isCtrlKey()) ? "_blank" : Page.getCurrent().getWindowName());
+                }
+            });
+            nav.addStyleName(ValoTheme.BUTTON_LINK);
+            nav.addStyleName("navlink");
+            nav.setDescription("My favourites");
+            nav.setVisible(MateuUI.getApp().getUserData() != null);
+
+            linkFavoritos = nav;
+
+            navlinks.addComponent(nav);
+        }
+
+        if (MateuUI.getApp().isLastEditedAvailable()) {
+            Button nav = new Button(VaadinIcons.RECORDS, new ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    Page.getCurrent().open("#!lastedited", (event.isAltKey() || event.isCtrlKey()) ? "_blank" : Page.getCurrent().getWindowName());
+                }
+            });
+            nav.addStyleName(ValoTheme.BUTTON_LINK);
+            nav.addStyleName("navlink");
+            nav.setDescription("Last edited records");
+            nav.setVisible(MateuUI.getApp().getUserData() != null);
+
+            linkUltimosRegistros = nav;
+
+            navlinks.addComponent(nav);
+        }
+
+        HorizontalLayout aux = new HorizontalLayout(navlinks);
+        aux.setSpacing(false);
+        aux.addStyleName("contenedoriconosnav");
+        menu.addComponent(aux);
+
+
+        if (MateuUI.getApp().isFavouritesAvailable()) {
+            aux = new HorizontalLayout();
+            {
+                Button nav = new Button(VaadinIcons.STAR, new ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        System.out.println(Page.getCurrent().getUriFragment());
+                        System.out.println(Page.getCurrent().getLocation());
+                    }
+                });
+                nav.addStyleName(ValoTheme.BUTTON_LINK);
+                nav.addStyleName("navlink");
+                nav.setDescription("Add current page to my favourites");
+                nav.setVisible(MateuUI.getApp().getUserData() != null);
+
+                linkNuevoFavorito = nav;
+
+                aux.addComponent(nav);
+            }
+            aux.setSpacing(false);
+            aux.addStyleName("contenedoriconosnav");
+            menu.addComponent(aux);
+        }
 
         menuItemsLayout.setPrimaryStyleName("valo-menuitems");
         menu.addComponent(menuItemsLayout);
@@ -737,8 +832,16 @@ public class MyUI extends UI {
                 @Override
                 public void menuSelected(MenuItem menuItem) {
                     VaadinSession.getCurrent().setAttribute("usuario", null);
+                    getApp().setUserData(null);
+                    getViewDisplay().removeAllComponents();
                     refreshSettings();
+
+                    linkFavoritos.setVisible(false);
+                    linkUltimosRegistros.setVisible(false);
+                    linkNuevoFavorito.setVisible(false);
+
                     refreshMenu(null, null);
+                    addView(MyUI.this, getApp().getPublicHome());
                     if (!"".equals(navigator.getState())) navigator.navigateTo("");
                 }
             });
@@ -902,9 +1005,14 @@ public class MyUI extends UI {
                         VaadinSession.getCurrent().setAttribute("usuario", "admin");
                         subWindow.close();
 
+                        linkFavoritos.setVisible(true);
+                        linkUltimosRegistros.setVisible(true);
+                        linkNuevoFavorito.setVisible(true);
+
                         refreshSettings();
                         refreshMenu(null, null);
-
+                        addView(MyUI.this, getApp().getPrivateHome());
+                        if (!"".equals(navigator.getState())) navigator.navigateTo("");
                     }
                 });
             }

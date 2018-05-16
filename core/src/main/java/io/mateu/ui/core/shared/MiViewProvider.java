@@ -18,9 +18,15 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
         if (viewAndParameters == null) return data;
 
         if ("".equals(viewAndParameters)) {
-
             data.put("selector", "home");
-
+        } else if ("nav".equals(viewAndParameters)) {
+            data.put("selector", "nav");
+        } else if ("searchinapp".equals(viewAndParameters)) {
+            data.put("selector", "searchinapp");
+        } else if ("favourites".equals(viewAndParameters)) {
+            data.put("selector", "favourites");
+        } else if ("lastedited".equals(viewAndParameters)) {
+            data.put("selector", "lastedited");
         } else {
 
             String[] ts = viewAndParameters.split("/");
@@ -85,7 +91,9 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
         // el siguiente elemento lo utilizamos para saber si es nuestro
         String selector = (String) data.get("selector");
         if (selector != null) {
-            if (!(selector.equals("mui") || selector.equals("changearea") || selector.equals("areahome") || selector.equals("menuhome") || selector.equals("home"))) return null;
+            if (!(selector.equals("mui") || selector.equals("changearea") || selector.equals("areahome")
+                    || selector.equals("menuhome") || selector.equals("home")
+                    || selector.equals("nav") || selector.equals("searchinapp") || selector.equals("favourites") || selector.equals("lastedited"))) return null;
             else return viewAndParameters;
         } else return null;
     }
@@ -177,6 +185,14 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                         view = new ChangeAreaView("Change app area", (AbstractArea)data.get("area"));
                     } else if ("areahome".equals(selector)) {
                         view = new AreaHomeView(((AbstractArea)data.get("area")).getName());
+                    } else if ("nav".equals(selector)) {
+                        view = new NavView();
+                    } else if ("searchinapp".equals(selector)) {
+                        view = new SearchInAppView();
+                    } else if ("favourites".equals(selector)) {
+                        view = new FavouritesView();
+                    } else if ("lastedited".equals(selector)) {
+                        view = new LastEditedView();
                     }
 
                 }
@@ -186,8 +202,13 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
             }
 
 
-        view.setArea((AbstractArea) data.get("area"));
-        view.setMenu((MenuEntry) data.get("menu"));
+            if (view != null) {
+
+                view.setArea((AbstractArea) data.get("area"));
+                view.setMenu((MenuEntry) data.get("menu"));
+
+            }
+
 
         return view;
     }

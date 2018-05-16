@@ -3,6 +3,7 @@ package io.mateu.ui.core.client.app;
 import com.google.common.collect.Lists;
 import io.mateu.ui.App;
 import io.mateu.ui.core.client.views.AbstractView;
+import io.mateu.ui.core.shared.Data;
 import io.mateu.ui.core.shared.UserData;
 
 import java.util.ArrayList;
@@ -28,6 +29,30 @@ public abstract class AbstractApplication implements App {
     private Map<String, MenuEntry> menuIdsReversed;
     private Map<MenuEntry, List<MenuEntry>> menuPaths;
     List<AbstractArea> areas = null;
+
+    public boolean isSearchAvailable() {
+        return false;
+    }
+
+    public boolean isFavouritesAvailable() {
+        return false;
+    }
+
+    public boolean isLastEditedAvailable() {
+        return false;
+    }
+
+    public void getFavourites(UserData user, Callback<Data> callback) {
+        callback.onFailure(new Exception("Favourites are not available for this app."));
+    }
+
+    public void search(UserData user, Callback<Data> callback) {
+        callback.onFailure(new Exception("Search is not available for this app."));
+    }
+
+    public void getLastEdited(UserData user, Callback<Data> callback) {
+        callback.onFailure(new Exception("Search is not available for this app."));
+    }
 
 
     public abstract String getName();

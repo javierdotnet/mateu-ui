@@ -15485,7 +15485,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .quonext .posicionactual {
-	color: #d18100;
+	color: #d18100 !important;
 }
 
 .quonext .listaopcionesmenu {
@@ -15500,6 +15500,11 @@ div.v-layout.v-horizontal.v-widget {
 .quonext .contenedorsubmenu {
 	padding: 0px;
 	padding-left: 10px;
+}
+
+.quonext .tituloarea {
+	font-weight: bold;
+	font-size: 18px;
 }
 
 .quonext .titulosubmenuprincipal {
@@ -15556,4 +15561,82 @@ div.v-layout.v-horizontal.v-widget {
 
 .quonext .editor_linkpestanya_seleccionado {
 	border-right-color: #d18100;
+}
+
+.quonext .tituloapp, .quonext .tituloapp:active {
+	color: lightgray;
+	text-decoration: none;
+	height: inherit !important;
+	font-size: 14px;
+}
+
+.quonext .tituloapp:hover {
+	color: white;
+}
+
+.quonext .tituloapp:focus:after {
+	box-shadow: none;
+}
+
+.quonext .v-slot-tituloapp {
+	height: inherit !important;
+}
+
+.quonext .linkotrasareas {
+	text-decoration: none;
+	color: lightgray;
+	padding: 0px;
+}
+
+.quonext .linkotrasareas:hover {
+	color: white;
+}
+
+.quonext .linkotrasareas:focus:after {
+	box-shadow: none;
+}
+
+.quonext .user-menu > .v-menubar-menuitem:focus {
+	outline: none;
+}
+
+.quonext .navlink {
+	text-decoration: none;
+	text-align: center;
+	width: 100%;
+	color: lightgray;
+	padding: 0px;
+}
+
+.quonext .navlink:hover {
+	color: white;
+}
+
+.quonext .navlink:focus:after {
+	box-shadow: none;
+}
+
+.quonext .contenedoriconosnav {
+	width: 100%;
+	text-align: center;
+}
+
+.quonext .lasteditedicon {
+	width: 25px;
+}
+
+.quonext .v-slot-lasteditedicon {
+	height: 28px;
+}
+
+.quonext .lasteditedname {
+	width: 300px;
+}
+
+.quonext .lasteditedwhen {
+	width: 120px;
+}
+
+.quonext .lasteditedlink {
+	width: 40px;
 }

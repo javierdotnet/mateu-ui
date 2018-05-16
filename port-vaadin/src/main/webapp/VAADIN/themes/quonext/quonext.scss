@@ -706,9 +706,8 @@
   }
 
   .posicionactual {
-    color: #d18100;
+    color: #d18100 !important;
   }
-
 
 
 
@@ -724,6 +723,11 @@
   .contenedorsubmenu {
     padding: 0px;
     padding-left: 10px;
+  }
+
+  .tituloarea {
+    font-weight: bold;
+    font-size: 18px;
   }
 
   .titulosubmenuprincipal {
@@ -819,5 +823,83 @@
 
   */
 
+
+  .tituloapp, .tituloapp:active {
+    color: lightgray;
+    text-decoration: none;
+    height: inherit !important;
+    font-size: 14px;
+  }
+
+  .tituloapp:hover {
+    color: white;
+  }
+
+  .tituloapp:focus:after {
+    box-shadow: none;
+  }
+
+  .v-slot-tituloapp {
+    height: inherit !important;
+  }
+
+
+  .linkotrasareas {
+    text-decoration: none;
+    color: lightgray;
+    padding: 0px;
+  }
+
+  .linkotrasareas:hover {
+    color: white;
+  }
+
+  .linkotrasareas:focus:after {
+    box-shadow: none;
+  }
+
+  .user-menu > .v-menubar-menuitem:focus {
+    outline: none;
+  }
+
+
+  .navlink {
+    text-decoration: none;
+    text-align: center;
+    width: 100%;
+    color: lightgray;
+    padding: 0px;
+  }
+
+  .navlink:hover {
+    color: white;
+  }
+
+  .navlink:focus:after {
+    box-shadow: none;
+  }
+
+
+  .contenedoriconosnav {
+    width: 100%;
+    text-align: center;
+  }
+
+
+  .lasteditedicon {
+    width: 25px;
+  }
+  .v-slot-lasteditedicon {
+    height: 28px;
+  }
+  .lasteditedname {
+    width: 300px;
+  }
+  .lasteditedwhen {
+    width: 120px;
+  }
+  .lasteditedlink {
+    width: 40px;
+  }
 }
 

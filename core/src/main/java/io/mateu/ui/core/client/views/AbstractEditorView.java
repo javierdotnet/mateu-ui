@@ -135,7 +135,7 @@ public abstract class AbstractEditorView extends AbstractView {
         });
     }
 
-    private Object getId() {
+    public Object getId() {
         if (getForm().getData().get("_id") != null) return getForm().getData().get("_id");
         else return getInitialId();
     }

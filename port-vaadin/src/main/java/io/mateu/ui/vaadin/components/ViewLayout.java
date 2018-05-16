@@ -13,6 +13,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -142,6 +143,9 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 }
                 ViewLayout.this.dataStore.set("_title", t);
+                ViewLayout.this.dataStore.set("_sourceuri", "#" + Page.getCurrent().getUriFragment());
+
+                UI.getCurrent().getPage().setTitle(t);
 
                 if (firstField != null && firstField instanceof com.vaadin.ui.AbstractField) {
                     io.mateu.ui.core.client.app.MateuUI.runInUIThread(new Runnable() {
@@ -539,7 +543,7 @@ public class ViewLayout extends VerticalLayout implements View {
             } else if (c instanceof Tabs && ((Tabs) c).isFullWidth()) {
                 if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);
-            } else if (c instanceof MenuField) {
+            } else if (c instanceof MenuField || c instanceof NavField || c instanceof SearchInAppField || c instanceof FavouritesField || c instanceof LastEditedField) {
                 if (layout instanceof HorizontalLayout) layout = (Layout) layout.getParent();
                 add(layout, (AbstractField) c);
             } else {
@@ -717,6 +721,14 @@ public class ViewLayout extends VerticalLayout implements View {
             cs.add(l = new Label(((Separator) field).getText()));
             l.addStyleName("separador");
 
+        } else if (field instanceof NavField) {
+            cs.add(new SearchInMenuLayout());
+        } else if (field instanceof SearchInAppField) {
+            cs.add(new SearchInMenuLayout());
+        } else if (field instanceof FavouritesField) {
+            cs.add(new FavouritesLayout());
+        } else if (field instanceof LastEditedField) {
+            cs.add(new LastEditedLayout());
         } else if (field instanceof  ChangeAreaField) {
             ChangeAreaField mf = (ChangeAreaField) field;
 
@@ -730,7 +742,26 @@ public class ViewLayout extends VerticalLayout implements View {
             l.addStyleName("listaopcionesmenu");
             l.setWidthUndefined();
 
+            VaadinSession s = VaadinSession.getCurrent();
+
+            boolean autentico = s.getAttribute("usuario") != null;
+
+            List<AbstractArea> areas = new ArrayList<>();
+
             for (AbstractArea a : io.mateu.ui.core.client.app.MateuUI.getApp().getAreas()) {
+                if (autentico) {
+                    if (!a.isPublicAccess()) {
+                        if (area == null) area = a;
+                        areas.add(a);
+                    }
+                } else {
+                    if (!io.mateu.ui.core.client.app.MateuUI.getApp().isAuthenticationNeeded() || a.isPublicAccess()) {
+                        if (area == null) area = a;
+                        areas.add(a);
+                    }
+                }
+            }
+            for (AbstractArea a : areas) {
 
 
                 Component c = null;
@@ -744,7 +775,7 @@ public class ViewLayout extends VerticalLayout implements View {
                 });
 
                 b.setCaptionAsHtml(true);
-                b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+                b.setPrimaryStyleName(ValoTheme.BUTTON_LINK);
                 b.addStyleName("accionsubmenu");
                 //b.setIcon(testIcon.get());  // sin iconos en el menú
                 c = b;
@@ -2539,7 +2570,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     //        + " <span class=\"valo-menu-badge\">123</span>"
             );
             b.setCaptionAsHtml(true);
-            b.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+            b.setPrimaryStyleName(ValoTheme.BUTTON_LINK);
             b.addStyleName("accionsubmenu");
             //b.setIcon(testIcon.get());  // sin iconos en el menú
             c = b;

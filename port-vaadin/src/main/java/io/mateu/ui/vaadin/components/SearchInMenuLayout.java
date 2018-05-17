@@ -67,7 +67,7 @@ public class SearchInMenuLayout extends VerticalLayout {
             CssLayout la = new CssLayout();
             for (AbstractModule m : a.getModules()) {
                 for (MenuEntry e : m.getMenu()) {
-                    addMenuEntry(la, e, text);
+                    addMenuEntry(la, a, e, text);
                 }
             }
 
@@ -84,7 +84,7 @@ public class SearchInMenuLayout extends VerticalLayout {
         }
     }
 
-    private void addMenuEntry(Layout contenedor, MenuEntry e, String text) {
+    private void addMenuEntry(Layout contenedor, AbstractArea a, MenuEntry e, String text) {
         VerticalLayout l = new VerticalLayout();
         l.addStyleName("listaopcionesmenu");
         l.setWidthUndefined();
@@ -102,7 +102,7 @@ public class SearchInMenuLayout extends VerticalLayout {
             lz.setWidthUndefined();
 
             for (MenuEntry ez : ((AbstractMenu) e).getEntries()) {
-                addMenuEntry(lz, ez, ("".equals(text) || e.getName().toLowerCase().contains(text))?"":text);
+                addMenuEntry(lz, a, ez, ("".equals(text) || e.getName().toLowerCase().contains(text))?"":text);
             }
 
             if (lz.getComponentCount() > 0) lx.addComponent(lz);
@@ -125,6 +125,8 @@ public class SearchInMenuLayout extends VerticalLayout {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         //navigator.navigateTo(item.getKey());
+                        ((MyUI)UI.getCurrent()).setAreaActual(a);
+                        ((MyUI)UI.getCurrent()).setMenuActual(e);
                         ((AbstractAction)e).setModifierPressed(event.isAltKey() || event.isCtrlKey()).run();
                     }
                 });

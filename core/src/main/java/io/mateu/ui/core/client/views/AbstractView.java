@@ -25,6 +25,15 @@ public abstract class AbstractView {
     private List<ViewListener> listeners = new ArrayList<>();
     private Data initialData = new Data();
     private String parametros;
+    private boolean granted;
+
+    public boolean isGranted() {
+        return granted;
+    }
+
+    public void setGranted(boolean granted) {
+        this.granted = granted;
+    }
 
     public Data getInitialData() {
         return initialData;

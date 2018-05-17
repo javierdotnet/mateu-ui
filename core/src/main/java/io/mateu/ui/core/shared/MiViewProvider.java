@@ -163,6 +163,8 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                             view = (AbstractView) o;
 
+                            view.setGranted(data.get("area") != null && data.get("menu") != null);
+
                             view.setParametros(parametros);
 
                             if (view instanceof AbstractCRUDView) {
@@ -189,21 +191,31 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                             // buscamos la home pública
                             view = app.getPublicHome();
                         }
+
+                        view.setGranted(true);
+
                     } else if ("menuhome".equals(selector)) {
                         MenuEntry e = (MenuEntry)data.get("menu");
                         view = new MenuView(e.getName(), e.getId());
+                        view.setGranted(true);
                     } else if ("changearea".equals(selector)) {
                         view = new ChangeAreaView("Change app area", (AbstractArea)data.get("area"));
+                        view.setGranted(true);
                     } else if ("areahome".equals(selector)) {
                         view = new AreaHomeView(((AbstractArea)data.get("area")).getName());
+                        view.setGranted(true);
                     } else if ("nav".equals(selector)) {
                         view = new NavView();
+                        view.setGranted(true);
                     } else if ("searchinapp".equals(selector)) {
                         view = new SearchInAppView();
+                        view.setGranted(true);
                     } else if ("favourites".equals(selector)) {
                         view = new FavouritesView();
+                        view.setGranted(true);
                     } else if ("lastedited".equals(selector)) {
                         view = new LastEditedView();
+                        view.setGranted(true);
                     }
 
                 }

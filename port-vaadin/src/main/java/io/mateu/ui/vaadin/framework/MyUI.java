@@ -283,6 +283,17 @@ public class MyUI extends UI {
                 aquí controlamos si el usuario tiene acceso a esta vista
                  */
                 boolean ok = true;
+
+                View v = event.getNewView();
+                if (v instanceof ViewLayout) {
+                    ViewLayout vl = (ViewLayout) v;
+
+                    if (!vl.getView().isGranted()) { // esta opción no está en nuestro menú, así que pedimos login
+                        openLoginDialog();
+                        ok = false;
+                    }
+                }
+
                 return ok;
             }
 
@@ -294,9 +305,7 @@ public class MyUI extends UI {
                     
                     ViewLayout vl = (ViewLayout) v;
 
-                    if (vl.getArea() == null || vl.getMenu() == null) { // esta opción no está en nuestro menú, así que pedimos login
-                        openLoginDialog();
-                    } else {
+                    {
 
 
                         vl.getView().addListener(new ViewListener() {

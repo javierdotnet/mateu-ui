@@ -1343,6 +1343,12 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
+            // si es obligatorio y solo hay una opción, entonces la seleccionamos
+            if (rf.isRequired() && rf.getValues().size() == 1) {
+                p.setValue(rf.getValues().get(0));
+                og.setSelectedItem(rf.getValues().get(0));
+            }
+
             cs.add(og);
 
         } else if (field instanceof io.mateu.ui.core.client.components.fields.DateField) {
@@ -1582,6 +1588,13 @@ public class ViewLayout extends VerticalLayout implements View {
                     p.setValue(valueChangeEvent.getValue());
                 }
             });
+
+
+            // si es obligatorio y solo hay una opción, entonces la seleccionamos
+            if (rf.isRequired() && rf.getValues().size() == 1) {
+                p.setValue(rf.getValues().get(0));
+                og.setSelectedItem(rf.getValues().get(0));
+            }
 
             cs.add(og);
 
@@ -2234,6 +2247,13 @@ public class ViewLayout extends VerticalLayout implements View {
                             if (o.equals(v)) og.setSelectedItem(o);
                         }
 
+                        // si es obligatorio y solo hay una opción, entonces la seleccionamos
+                        if (rf.isRequired() && ldp.getItems().size() == 1) {
+                            p.setValue(ldp.getItems().iterator().next());
+                            og.setSelectedItem(ldp.getItems().iterator().next());
+                        }
+
+
                     }
                 });
 
@@ -2301,6 +2321,12 @@ public class ViewLayout extends VerticalLayout implements View {
                         Object v = p.getValue();
                         for (Pair o : ldp.getItems()) {
                             if (o.equals(v)) og.setSelectedItem(o);
+                        }
+
+                        // si es obligatorio y solo hay una opción, entonces la seleccionamos
+                        if (rf.isRequired() && ldp.getItems().size() == 1) {
+                            p.setValue(ldp.getItems().iterator().next());
+                            og.setSelectedItem(ldp.getItems().iterator().next());
                         }
 
                     }

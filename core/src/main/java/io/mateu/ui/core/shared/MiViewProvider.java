@@ -96,7 +96,8 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
             if (!(selector.equals("mui") || selector.equals("changearea") || selector.equals("areahome")
                     || selector.equals("menuhome") || selector.equals("home")
                     || selector.equals("nav") || selector.equals("searchinapp") || selector.equals("favourites") || selector.equals("lastedited"))) {
-                if (data.get("area") == null && data.get("menu") == null) {
+                if (!viewAndParameters.contains("/mui/")) {
+                    System.out.println("no reconocemos el selector ero contiene /mui/, así que es nuestro pero no estamos autorizados");
                     return viewAndParameters; // si no existe el menú (no estamos autorizados) devolvemos el churro para quedarnos la petición y seguir el proceso
                 } else return null;
             } else return viewAndParameters;
@@ -120,7 +121,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                     if ("mui".equals(selector)) {
 
-                        // si no tenemos areay menú es que no estamos autorizados
+                        // si no tenemos area y menú es que no estamos autorizados
                         if (data.get("area") == null || data.get("menu") == null) return new ForbiddenView();
 
                         Object o = null;
@@ -221,7 +222,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                         view.setGranted(true);
                     } else {
                         // si estamos aquí es que no reconocemos el selector (por no haber reconocido el area / menu). Devolvemos forbidden
-                        if (data.get("area") == null || data.get("menu") == null) return new ForbiddenView();
+                        return new ForbiddenView();
                     }
 
                 }

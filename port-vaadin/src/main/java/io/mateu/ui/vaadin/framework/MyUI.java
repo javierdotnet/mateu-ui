@@ -1031,8 +1031,9 @@ public class MyUI extends UI {
 
                         refreshSettings();
                         refreshMenu(null, null);
-                        addView(MyUI.this, getApp().getPrivateHome());
-                        Page.getCurrent().reload();
+                        System.out.println("STATE:" + navigator.getState());
+                        System.out.println("URIFRAGMENT:" + Page.getCurrent().getUriFragment());
+                        navigator.navigateTo(navigator.getState());
                     }
                 });
             }

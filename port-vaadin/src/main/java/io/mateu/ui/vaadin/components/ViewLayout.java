@@ -76,6 +76,8 @@ public class ViewLayout extends VerticalLayout implements View {
     private AbstractArea area;
     private MenuEntry menu;
 
+    private HorizontalLayout sumsl;
+
     public AbstractArea getArea() {
         return area;
     }
@@ -146,6 +148,8 @@ public class ViewLayout extends VerticalLayout implements View {
                 ViewLayout.this.dataStore.set("_sourceuri", "#" + Page.getCurrent().getUriFragment());
 
                 UI.getCurrent().getPage().setTitle(t);
+
+                refrescarSums(newData.getList("_data_sums"));
 
                 if (firstField != null && firstField instanceof com.vaadin.ui.AbstractField) {
                     io.mateu.ui.core.client.app.MateuUI.runInUIThread(new Runnable() {
@@ -325,6 +329,10 @@ public class ViewLayout extends VerticalLayout implements View {
 
             buildToolBar();
 
+            addComponent(sumsl = new HorizontalLayout());
+            sumsl.setSpacing(false);
+            sumsl.setSizeUndefined();
+
         }
 
 
@@ -372,6 +380,28 @@ public class ViewLayout extends VerticalLayout implements View {
             });
         }
 
+    }
+
+    private void refrescarSums(List<Data> sums) {
+        sumsl.removeAllComponents();
+        if (sums != null) {
+            for (Data sum : sums) {
+
+                HorizontalLayout box = new HorizontalLayout();
+                box.setSpacing(false);
+                box.setSizeUndefined();
+                box.addStyleName("sum");
+
+                Label l;
+                box.addComponent(l = new Label("" + sum.get("name") + ": "));
+
+                box.addComponent(l = new Label("" + sum.get("value")));
+                l.addStyleName("sumvalue");
+
+
+                sumsl.addComponent(box);
+            }
+        }
     }
 
     public void startWaiting() {
@@ -657,34 +687,39 @@ public class ViewLayout extends VerticalLayout implements View {
 
         if (view instanceof AbstractListView) {
 
-            HorizontalLayout h = new HorizontalLayout();
-            h.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
-            //h.setSpacing(true);
-            //h.setMargin(true);
-            //h.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-            h.setMargin(new MarginInfo(false, false, true, false));
-            h.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+            if (view.getForm().getComponentsSequence().size() > 0) {
 
-            h.setSpacing(true);
+                HorizontalLayout h = new HorizontalLayout();
+                h.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
+                //h.setSpacing(true);
+                //h.setMargin(true);
+                //h.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+                h.setMargin(new MarginInfo(false, false, true, false));
+                h.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
 
-            //h.addComponent(f);
+                h.setSpacing(true);
+
+                //h.addComponent(f);
 
 
-            int mfih = ((AbstractListView) view).getMaxFieldsInHeader();
-            if (mfih < 100) mfih = 100;
-            int posField = 0;
-            for (io.mateu.ui.core.client.components.Component c : view.getForm().getComponentsSequence()) {
-                if (c instanceof AbstractField) {
+                int mfih = ((AbstractListView) view).getMaxFieldsInHeader();
+                if (mfih < 100) mfih = 100;
+                int posField = 0;
+                for (io.mateu.ui.core.client.components.Component c : view.getForm().getComponentsSequence()) {
+                    if (c instanceof AbstractField) {
 
-                    add(h, (AbstractField) c, true, true);
+                        add(h, (AbstractField) c, true, true);
 
-                    posField++;
-                    if (posField >= mfih) break;
+                        posField++;
+                        if (posField >= mfih) break;
+                    }
                 }
+
+                addComponent(h);
+
             }
 
-            addComponent(h);
-        }
+         }
     }
 
     private void add(Layout where, AbstractField c) {

@@ -17478,3 +17478,18 @@ div.v-layout.v-horizontal.v-widget {
 	width: 40px;
 	cursor: pointer;
 }
+
+.mateu .sum {
+	background-color: darkred;
+	border-radius: 2px;
+	padding: 4px 16px 4px 16px;
+	margin-right: 10px;
+	color: whitesmoke;
+	font-size: 14px;
+}
+
+.mateu .sumvalue {
+	font-size: 14px;
+	font-weight: bold;
+	margin-left: 12px;
+}

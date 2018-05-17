@@ -30,6 +30,16 @@ public abstract class AbstractListView extends AbstractView implements ListView 
         return null;
     }
 
+    private List<Data> sums = new ArrayList<>();
+
+    public List<Data> getSums() {
+        return sums;
+    }
+
+    public void setSums(List<Data> sums) {
+        this.sums = sums;
+    }
+
     public boolean isSearchOnOpen() {
         return true;
     }

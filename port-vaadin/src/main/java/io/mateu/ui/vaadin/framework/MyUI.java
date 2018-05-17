@@ -75,14 +75,17 @@ public class MyUI extends UI {
 
     public void search(AbstractListView lv, int page) {
         //miguel: buscar
+
+        AbstractApplication app = MateuUI.getApp();
+
         String u = "";
         if (lv.getArea() != null) {
             if (!"".equals(u)) u += "/";
-            u += lv.getArea().getId();
+            u += app.getAreaId(lv.getArea());
         }
         if (lv.getMenu() != null) {
             if (!"".equals(u)) u += "/";
-            u += lv.getMenu().getId();
+            u += app.getMenuId(lv.getMenu());
         }
         if (!"".equals(u)) u += "/";
         u += lv.getViewIdBase() + "/" + BaseEncoding.base64().encode(lv.getForm().getData().strip("_data").toString().getBytes());

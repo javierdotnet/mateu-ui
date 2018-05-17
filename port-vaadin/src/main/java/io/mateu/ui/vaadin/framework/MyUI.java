@@ -288,62 +288,70 @@ public class MyUI extends UI {
 
             @Override
             public void afterViewChange(ViewChangeEvent event) {
-
+                
                 View v = event.getNewView();
                 if (v instanceof ViewLayout) {
+                    
+                    ViewLayout vl = (ViewLayout) v;
 
-                    ((ViewLayout) v).getView().addListener(new ViewListener() {
-                        @Override
-                        public void onClose() {
-                            UI.getCurrent().getPage().getJavaScript().execute("history.back()");
-                        }
-                    });
+                    if (vl.getArea() == null || vl.getMenu() == null) { // esta opción no está en nuestro menú, así que pedimos login
+                        openLoginDialog();
+                    } else {
 
-                    if (((ViewLayout) v).getView() instanceof AbstractEditorView) {
-                        Object id = null;
-                        if (id != null) {
-                            ((AbstractEditorView) ((ViewLayout) v).getView()).setInitialId(id);
-                            ((AbstractEditorView) ((ViewLayout) v).getView()).load();
-                        }
-                    } else if (((ViewLayout) v).getView() instanceof AbstractListView) {
-                        AbstractListView lv = (AbstractListView) ((ViewLayout) v).getView();
-                        Data data = null;
 
-                        int page = 0;
-                        String s = ((ViewLayout) v).getView().getParametros();
-                        if (!Strings.isNullOrEmpty(s)) {
+                        vl.getView().addListener(new ViewListener() {
+                            @Override
+                            public void onClose() {
+                                UI.getCurrent().getPage().getJavaScript().execute("history.back()");
+                            }
+                        });
 
-                            String d = s;
-                            if (s.contains("/")) {
-                                d = s.split("/")[0];
-                                page = Integer.parseInt(s.split("/")[1]);
+                        if (vl.getView() instanceof AbstractEditorView) {
+                            Object id = null;
+                            if (id != null) {
+                                ((AbstractEditorView) vl.getView()).setInitialId(id);
+                                ((AbstractEditorView) vl.getView()).load();
+                            }
+                        } else if (vl.getView() instanceof AbstractListView) {
+                            AbstractListView lv = (AbstractListView) vl.getView();
+                            Data data = null;
+
+                            int page = 0;
+                            String s = vl.getView().getParametros();
+                            if (!Strings.isNullOrEmpty(s)) {
+
+                                String d = s;
+                                if (s.contains("/")) {
+                                    d = s.split("/")[0];
+                                    page = Integer.parseInt(s.split("/")[1]);
+                                }
+
+                                data = new Data(new String(BaseEncoding.base64().decode(d)));
                             }
 
-                            data = new Data(new String(BaseEncoding.base64().decode(d)));
-                        }
+                            if (data != null) {
+                                lv.setData(data);
+                            }
 
-                        if (data != null) {
-                            lv.setData(data);
-                        }
-
-                        if (lv.isSearchOnOpen() || (data != null && data.getPropertyNames().size() > 0)) {
+                            if (lv.isSearchOnOpen() || (data != null && data.getPropertyNames().size() > 0)) {
                                 lv.set("_data_currentpageindex", page);
-                            List<String> errors = lv.getForm().validate();
-                            if (errors.size() > 0) {
-                                io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
-                            } else {
-                                lv.rpc();
+                                List<String> errors = lv.getForm().validate();
+                                if (errors.size() > 0) {
+                                    io.mateu.ui.core.client.app.MateuUI.notifyErrors(errors);
+                                } else {
+                                    lv.rpc();
+                                }
                             }
+
                         }
 
+                        getViewDisplay().removeAllComponents();
+                        getViewDisplay().addComponent(v.getViewComponent());
+
+                        refreshMenu(((ViewLayout) v).getView().getArea(), ((ViewLayout) v).getView().getMenu());
+
+                        getPage().setTitle(((ViewLayout) v).getView().getTitle());
                     }
-
-                    getViewDisplay().removeAllComponents();
-                    getViewDisplay().addComponent(v.getViewComponent());
-
-                    refreshMenu(((ViewLayout) v).getView().getArea(), ((ViewLayout) v).getView().getMenu());
-
-                    getPage().setTitle(((ViewLayout) v).getView().getTitle());
 
                 }
 

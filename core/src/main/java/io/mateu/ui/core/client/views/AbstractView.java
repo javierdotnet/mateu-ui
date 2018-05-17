@@ -25,7 +25,7 @@ public abstract class AbstractView {
     private List<ViewListener> listeners = new ArrayList<>();
     private Data initialData = new Data();
     private String parametros;
-    private boolean granted;
+    private boolean granted = true;
 
     public boolean isGranted() {
         return granted;

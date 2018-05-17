@@ -1032,7 +1032,7 @@ public class MyUI extends UI {
                         refreshSettings();
                         refreshMenu(null, null);
                         addView(MyUI.this, getApp().getPrivateHome());
-                        if (!"".equals(navigator.getState())) navigator.navigateTo("");
+                        Page.getCurrent().reload();
                     }
                 });
             }

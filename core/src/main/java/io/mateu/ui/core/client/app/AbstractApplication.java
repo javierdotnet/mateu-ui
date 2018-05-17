@@ -79,6 +79,7 @@ public abstract class AbstractApplication implements App {
 
 
     public String getAreaId(AbstractArea area) {
+        if (areaIds == null) buildAreaAndMenuIds();
         return areaIds.get(area);
     }
 
@@ -88,6 +89,7 @@ public abstract class AbstractApplication implements App {
     }
 
     public String getMenuId(MenuEntry menu) {
+        if (menuIds == null) buildAreaAndMenuIds();
         return menuIds.get(menu);
     }
 

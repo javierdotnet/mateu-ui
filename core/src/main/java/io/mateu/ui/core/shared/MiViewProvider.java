@@ -97,7 +97,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                     || selector.equals("menuhome") || selector.equals("home")
                     || selector.equals("nav") || selector.equals("searchinapp") || selector.equals("favourites") || selector.equals("lastedited"))) {
                 if (data.get("area") == null && data.get("menu") == null) {
-                    return viewAndParameters;
+                    return viewAndParameters; // si no existe el menú (no estamos autorizados) devolvemos el churro para quedarnos la petición y seguir el proceso
                 } else return null;
             } else return viewAndParameters;
         } else return null;
@@ -120,6 +120,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                     if ("mui".equals(selector)) {
 
+                        // si no tenemos areay menú es que no estamos autorizados
                         if (data.get("area") == null || data.get("menu") == null) return new ForbiddenView();
 
                         Object o = null;
@@ -166,8 +167,6 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                         } else if (o instanceof AbstractView) {
 
                             view = (AbstractView) o;
-
-                            view.setGranted(data.get("area") != null && data.get("menu") != null);
 
                             view.setParametros(parametros);
 
@@ -220,6 +219,9 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                     } else if ("lastedited".equals(selector)) {
                         view = new LastEditedView();
                         view.setGranted(true);
+                    } else {
+                        // si estamos aquí es que no reconocemos el selector (por no haber reconocido el area / menu). Devolvemos forbidden
+                        if (data.get("area") == null || data.get("menu") == null) return new ForbiddenView();
                     }
 
                 }

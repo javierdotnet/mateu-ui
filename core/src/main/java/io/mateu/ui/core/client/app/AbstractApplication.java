@@ -109,7 +109,11 @@ public abstract class AbstractApplication implements App {
 
     public List<AbstractArea> getAreas() {
         if (areas == null) {
-            areas = buildAreas();
+            areas = new ArrayList<>();
+            boolean autentico = MateuUI.getApp().getUserData() != null;
+            for (AbstractArea a : buildAreas()) {
+                if ((!autentico && a.isPublicAccess()) || (autentico && !a.isPublicAccess())) areas.add(a);
+            }
             buildAreaAndMenuIds();
         }
         return areas;

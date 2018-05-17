@@ -123,8 +123,8 @@ public class MyUI extends UI {
         this.menuActual = menuActual;
         for (MenuEntry e : botonesMenu.keySet()) {
             Button b = botonesMenu.get(e);
-            if (menuActual == null || !(menuActual.equals(e) || getApp().getPath(menuActual).contains(e))) b.removeStyleName("posicionactual");
-            if (menuActual != null && (menuActual.equals(e) || getApp().getPath(menuActual).contains(e))) b.addStyleName("posicionactual");
+            if (menuActual == null || !(menuActual.equals(e) || (getApp().getPath(menuActual) != null && getApp().getPath(menuActual).contains(e)))) b.removeStyleName("posicionactual");
+            if (menuActual != null && (menuActual.equals(e) || (getApp().getPath(menuActual) != null && getApp().getPath(menuActual).contains(e)))) b.addStyleName("posicionactual");
         }
     }
 

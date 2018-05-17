@@ -921,11 +921,12 @@ public class MyUI extends UI {
                 }
             }
 
+
+            menuItemsLayout.removeAllComponents();
             /**
              * area no puede ser null
              */
             if (area != null) {
-                menuItemsLayout.removeAllComponents();
 
                 divIndicadorAreaActual = new VerticalLayout();
                 divIndicadorAreaActual.setSpacing(false);

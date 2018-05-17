@@ -31,7 +31,7 @@ public class ComponentsModule extends AbstractModule {
         return Arrays.asList((MenuEntry) new AbstractMenu("Views") {
 
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 return Arrays.asList((MenuEntry) new AbstractAction("EditorView") {
                     @Override
                     public void run() {
@@ -67,7 +67,7 @@ public class ComponentsModule extends AbstractModule {
         }, (MenuEntry) new AbstractMenu("Components") {
 
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 return Arrays.asList((MenuEntry) new AbstractAction("All fields") {
                     @Override
                     public void run() {
@@ -133,7 +133,7 @@ public class ComponentsModule extends AbstractModule {
         }, (MenuEntry) new AbstractMenu("Trees") {
 
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 return Arrays.asList((MenuEntry) new AbstractAction("Tree") {
                     @Override
                     public void run() {
@@ -150,7 +150,7 @@ public class ComponentsModule extends AbstractModule {
         }, (MenuEntry) new AbstractMenu("Dates") {
 
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 return Arrays.asList((MenuEntry) new AbstractAction("Date & datetime") {
                     @Override
                     public void run() {
@@ -167,7 +167,7 @@ public class ComponentsModule extends AbstractModule {
         }, (MenuEntry) new AbstractMenu("Fares") {
 
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 return Arrays.asList((MenuEntry) new AbstractAction("Fares") {
                     @Override
                     public void run() {
@@ -179,7 +179,7 @@ public class ComponentsModule extends AbstractModule {
 
         }, (MenuEntry) new AbstractMenu("More components") {
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 return Arrays.asList((MenuEntry) new AbstractAction("View pdf") {
                     @Override
                     public void run() {

@@ -27,19 +27,19 @@ public class AboutModule extends AbstractModule {
         l.add(new AbstractMenu("Submenus") {
 
             @Override
-            public List<MenuEntry> getEntries() {
+            public List<MenuEntry> buildEntries() {
                 List<MenuEntry> l = new ArrayList<>();
 
                 l.add(new AbstractMenu("Submenu 1") {
 
                     @Override
-                    public List<MenuEntry> getEntries() {
+                    public List<MenuEntry> buildEntries() {
                         List<MenuEntry> l = new ArrayList<>();
 
                         l.add(new AbstractMenu("Submenu 3") {
 
                             @Override
-                            public List<MenuEntry> getEntries() {
+                            public List<MenuEntry> buildEntries() {
                                 List<MenuEntry> l = new ArrayList<>();
 
                                 l.add(new AbstractAction("Action") {
@@ -74,7 +74,7 @@ public class AboutModule extends AbstractModule {
                         l.add(new AbstractMenu("Submenu 4") {
 
                             @Override
-                            public List<MenuEntry> getEntries() {
+                            public List<MenuEntry> buildEntries() {
                                 List<MenuEntry> l = new ArrayList<>();
 
                                 l.add(new AbstractAction("Action") {
@@ -99,7 +99,7 @@ public class AboutModule extends AbstractModule {
                 l.add(new AbstractMenu("Submenu 2") {
 
                     @Override
-                    public List<MenuEntry> getEntries() {
+                    public List<MenuEntry> buildEntries() {
                         List<MenuEntry> l = new ArrayList<>();
 
                         l.add(new AbstractAction("Action") {

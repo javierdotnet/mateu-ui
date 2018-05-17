@@ -11,6 +11,7 @@ public abstract class AbstractMenu implements MenuEntry {
     private String id = UUID.randomUUID().toString();
 
     private String name;
+    private List<MenuEntry> entries;
 
     public AbstractMenu(String name) {
         this.name = name;
@@ -20,8 +21,14 @@ public abstract class AbstractMenu implements MenuEntry {
         return name;
     }
 
-    public abstract List<MenuEntry> getEntries();
+    public List<MenuEntry> getEntries() {
+        if (entries == null) {
+            entries = buildEntries();
+        }
+        return entries;
+    }
 
+    public abstract List<MenuEntry> buildEntries();
 
     @Override
     public int hashCode() {

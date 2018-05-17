@@ -60,15 +60,9 @@ public abstract class AbstractApplication implements App {
     public boolean isAuthenticationNeeded() {
 
         boolean hasPrivateContent = false;
-        for (AbstractArea a : getAreas()) {
+        for (AbstractArea a : buildAreas()) {
             if (!a.isPublicAccess()) {
                 hasPrivateContent = true;
-            }
-            if (!hasPrivateContent) for (AbstractModule m : a.buildModules()) {
-                if (!a.isPublicAccess()) {
-                    hasPrivateContent = true;
-                    break;
-                }
             }
             if (hasPrivateContent) break;
         }

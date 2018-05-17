@@ -95,9 +95,13 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
         if (selector != null) {
             if (!(selector.equals("mui") || selector.equals("changearea") || selector.equals("areahome")
                     || selector.equals("menuhome") || selector.equals("home")
-                    || selector.equals("nav") || selector.equals("searchinapp") || selector.equals("favourites") || selector.equals("lastedited"))) return null;
-            else return viewAndParameters;
+                    || selector.equals("nav") || selector.equals("searchinapp") || selector.equals("favourites") || selector.equals("lastedited"))) {
+                if (data.get("area") == null && data.get("menu") == null) {
+                    return "prohibido";
+                } else return null;
+            } else return viewAndParameters;
         } else return null;
+
     }
 
     @Override
@@ -108,6 +112,8 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
         Map<Object, Object> data = parse(viewName);
 
+
+        if ("prohibido".equals(viewName)) return new ForbiddenView();
 
 
             try {

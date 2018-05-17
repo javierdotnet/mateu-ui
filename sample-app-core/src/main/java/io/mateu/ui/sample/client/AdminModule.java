@@ -2,6 +2,7 @@ package io.mateu.ui.sample.client;
 
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.AbstractModule;
+import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.client.app.MenuEntry;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class AdminModule extends AbstractModule {
         return Arrays.asList((MenuEntry) new AbstractAction("My profile") {
             @Override
             public void run() {
-
+                MateuUI.getClientSideHelper().openView(new AboutView(), isModifierPressed());
             }
         }, (MenuEntry) new AbstractAction("Change password") {
             @Override

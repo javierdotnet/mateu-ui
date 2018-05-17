@@ -7,6 +7,7 @@ public class ForbiddenView extends BaseView {
 
     public ForbiddenView() {
         super("Forbidden");
+        setGranted(false);
     }
 
     @Override

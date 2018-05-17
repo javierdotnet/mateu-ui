@@ -131,7 +131,7 @@ public abstract class AbstractApplication implements App {
 
             for (AbstractModule m : a.getModules()) {
                 for (MenuEntry e : m.getMenu()) {
-                    buildMenuIds(id, new ArrayList<>(), e);
+                    buildMenuIds(id + "__", new ArrayList<>(), e);
                 }
             }
         }

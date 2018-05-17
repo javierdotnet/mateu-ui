@@ -122,24 +122,23 @@ public abstract class AbstractApplication implements App {
         menuPaths = new HashMap<>();
 
         for (AbstractArea a : getAreas()) {
-            String id = a.getName().toLowerCase().replaceAll(" ", "_");
+            String id = a.getName().toLowerCase().replaceAll(" ", "");
             int pos = 0;
             String idbase = id;
             while (areaIdsReversed.containsKey(id)) id = idbase + pos++;
-            a.setId(id);
             areaIds.put(a, id);
             areaIdsReversed.put(id, a);
 
             for (AbstractModule m : a.getModules()) {
                 for (MenuEntry e : m.getMenu()) {
-                    buildMenuIds("", new ArrayList<>(), e);
+                    buildMenuIds(id, new ArrayList<>(), e);
                 }
             }
         }
     }
 
     private void buildMenuIds(String prefijo, List<MenuEntry> incomingPath, MenuEntry e) {
-        String id = e.getName().toLowerCase().replaceAll(" ", "_");
+        String id = e.getName().toLowerCase().replaceAll(" ", "");
 
         int pos = 0;
         String mid = prefijo + id;
@@ -147,7 +146,6 @@ public abstract class AbstractApplication implements App {
         while (!"void".equals(mid) && menuIdsReversed.containsKey(mid)) {
             mid = idbase + pos++;
         }
-        e.setId(mid);
         menuIds.put(e, mid);
         menuIdsReversed.put(mid, e);
         List<MenuEntry> path = menuPaths.get(e);

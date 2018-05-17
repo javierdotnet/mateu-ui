@@ -120,7 +120,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                     if ("mui".equals(selector)) {
 
-                        if (data.get("area") != null && data.get("menu") != null) return new ForbiddenView();
+                        if (data.get("area") == null || data.get("menu") == null) return new ForbiddenView();
 
                         Object o = null;
 

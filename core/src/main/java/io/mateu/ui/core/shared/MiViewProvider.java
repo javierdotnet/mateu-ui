@@ -192,7 +192,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                             view = app.getPublicHome();
                         }
 
-                        view.setGranted(true);
+                        if (view != null) view.setGranted(true);
 
                     } else if ("menuhome".equals(selector)) {
                         MenuEntry e = (MenuEntry)data.get("menu");

@@ -155,7 +155,7 @@ public abstract class AbstractApplication implements App {
         path.addAll(incomingPath);
 
         if (e instanceof AbstractMenu) {
-            prefijo += id + "/";
+            prefijo += id + "__";
             List<MenuEntry> outgoingPath = new ArrayList<>(path);
             outgoingPath.add(e);
             for (MenuEntry x : ((AbstractMenu) e).getEntries()) {

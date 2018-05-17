@@ -72,11 +72,11 @@ public class Servlet extends VaadinServlet {
                     String u = "";
                     if (view.getArea() != null) {
                         if (!"".equals(u)) u += "/";
-                        u += view.getArea().getId();
+                        u += ui.getApp().getAreaId(view.getArea());
                     }
                     if (view.getMenu() != null) {
                         if (!"".equals(u)) u += "/";
-                        u += view.getMenu().getId();
+                        u += ui.getApp().getMenuId(view.getMenu());
                     }
                     if (!"".equals(u)) u += "/";
                     u += view.getViewId();

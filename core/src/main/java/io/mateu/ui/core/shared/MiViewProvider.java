@@ -38,7 +38,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
             int pos = 0;
             // la posición 0 es el id del área
             if (ts.length > 0) {
-                AbstractArea area = MateuUI.getApp().getArea(ts[0]);
+                AbstractArea area = MateuUI.getApp().getArea(ts[pos]);
                 if (area != null) {
                     data.put("area", area);
 
@@ -47,27 +47,19 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                     pos++;
                 }
             }
-            // buscamos hasta completar una opción de menú que no sea un submenú
-            boolean found = false;
-            int posx = pos;
-            String mid = "";
-            MenuEntry  m = null;
-            while (posx < ts.length && (!found || m != null)) {
-                if (!"".equals(mid)) mid += "/";
-                mid += ts[posx];
-                m = MateuUI.getApp().getMenu(mid);
-                if (m != null) {
 
-                    data.put("menu", m);
-
-                    found = true;
-                    pos = posx++ + 1;
+            // la posición 1 es el id del menu
+            if (ts.length > 1) {
+                MenuEntry menu = MateuUI.getApp().getMenu(ts[pos]);
+                if (menu != null) {
+                    data.put("menu", menu);
 
                     if (!"".equals(coords)) coords += "/";
-                    coords += mid;
-
-                } else posx++;
+                    coords += ts[pos];
+                    pos++;
+                }
             }
+
 
             // el siguiente elemento lo utilizamos para saber si es nuestro
             if (pos < ts.length) {

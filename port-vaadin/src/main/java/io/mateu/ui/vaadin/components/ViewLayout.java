@@ -38,7 +38,10 @@ import io.mateu.ui.core.client.components.fields.grids.columns.AbstractColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.DataColumn;
 import io.mateu.ui.core.client.components.fields.grids.columns.LinkColumn;
 import io.mateu.ui.core.client.views.*;
+import io.mateu.ui.core.server.BaseServiceImpl;
+import io.mateu.ui.core.server.ServerSideHelper;
 import io.mateu.ui.core.shared.*;
+import io.mateu.ui.sample.client.EditorView;
 import io.mateu.ui.vaadin.data.DataStore;
 import io.mateu.ui.vaadin.data.ViewNodeDataStore;
 import io.mateu.ui.vaadin.framework.MyUI;
@@ -77,6 +80,14 @@ public class ViewLayout extends VerticalLayout implements View {
     private MenuEntry menu;
 
     private HorizontalLayout sumsl;
+
+    private HorizontalLayout posicionamiento;
+    private Button botonPrincipio;
+    private Button botonAnterior;
+    private Button botonSiguiente;
+    private Button botonFinal;
+    private Label posicion;
+    private Button botonListado;
 
     public AbstractArea getArea() {
         return area;
@@ -143,6 +154,8 @@ public class ViewLayout extends VerticalLayout implements View {
                         if (text == null) text = "" + id;
                         t += " " + text;
                     }
+
+                    refrescarPosicionamiento();
                 }
                 ViewLayout.this.dataStore.set("_title", t);
                 ViewLayout.this.dataStore.set("_sourceuri", "#" + Page.getCurrent().getUriFragment());
@@ -327,6 +340,69 @@ public class ViewLayout extends VerticalLayout implements View {
                 }
             });
 
+
+            addComponent(posicionamiento = new HorizontalLayout());
+            
+            posicionamiento.addComponent(botonPrincipio = new Button(VaadinIcons.FAST_BACKWARD, new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    try {
+                        irAPrincipio();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            }));
+
+            posicionamiento.addComponent(botonAnterior = new Button(VaadinIcons.STEP_BACKWARD, new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    try {
+                        irAAnterior();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            }));
+
+            posicionamiento.addComponent(botonSiguiente = new Button(VaadinIcons.STEP_FORWARD, new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    try {
+                        irASiguiente();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            }));
+
+            posicionamiento.addComponent(botonFinal = new Button(VaadinIcons.FAST_FORWARD, new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    try {
+                        irAFinal();
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }
+            }));
+
+            posicionamiento.addComponent(posicion = new Label());
+
+            posicionamiento.addComponent(botonListado = new Button(VaadinIcons.TABLE, new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    ((MyUI)UI.getCurrent()).navigator.navigateTo(((AbstractEditorView)view).getListFragment());
+                }
+            }));
+
+
+            posicionamiento.setSpacing(false);
+            posicionamiento.setSizeUndefined();
+            posicionamiento.setVisible(false);
+
+            refrescarPosicionamiento();
+
             buildToolBar();
 
             addComponent(sumsl = new HorizontalLayout());
@@ -380,6 +456,66 @@ public class ViewLayout extends VerticalLayout implements View {
             });
         }
 
+    }
+
+    private void irAFinal() throws Throwable {
+        AbstractEditorView ev = (AbstractEditorView) view;
+        int pos = ev.getListCount();
+        ev.setInitialId(getIdAtPos(ev.getListQl(), pos));
+        ev.setListPos(pos);
+        ev.setListPage(pos / ev.getListRowsPerPage());
+        MateuUI.openView(ev);
+    }
+
+    private Object getIdAtPos(String listQl, int listPos) throws Throwable {
+        return ServerSideHelper.getServerSideApp().selectPage(listQl, listPos, 1)[0][0];
+    }
+
+    private void irASiguiente() throws Throwable {
+        AbstractEditorView ev = (AbstractEditorView) view;
+        int pos = ev.getListPos() + 1;
+        ev.setInitialId(getIdAtPos(ev.getListQl(), pos));
+        ev.setListPos(pos);
+        ev.setListPage(pos / ev.getListRowsPerPage());
+        MateuUI.openView(ev);
+    }
+
+    private void irAAnterior() throws Throwable {
+        AbstractEditorView ev = (AbstractEditorView) view;
+        int pos = ev.getListPos() - 1;
+        ev.setInitialId(getIdAtPos(ev.getListQl(), pos));
+        ev.setListPos(pos);
+        ev.setListPage(pos / ev.getListRowsPerPage());
+        MateuUI.openView(ev);
+    }
+
+    private void irAPrincipio() throws Throwable {
+        AbstractEditorView ev = (AbstractEditorView) view;
+        int pos = 0;
+        ev.setInitialId(getIdAtPos(ev.getListQl(), pos));
+        ev.setListPos(pos);
+        ev.setListPage(pos / ev.getListRowsPerPage());
+        MateuUI.openView(ev);
+    }
+
+    private void refrescarPosicionamiento() {
+        if (view instanceof AbstractEditorView) {
+            AbstractEditorView ev = (AbstractEditorView) view;
+
+            if (!Strings.isNullOrEmpty(ev.getListQl())) {
+
+                botonPrincipio.setEnabled(ev.getListPos() > 0);
+                botonAnterior.setEnabled(ev.getListPos() > 0);
+                botonSiguiente.setEnabled(ev.getListPos() < ev.getListCount() - 1);
+                botonFinal.setEnabled(ev.getListPos() < ev.getListCount() - 1);
+                posicion.setValue(" This is record " + (ev.getListPos() + 1) + " of " + ev.getListCount() + " of your last query.");
+
+                posicionamiento.setVisible(true);
+            } else {
+                posicionamiento.setVisible(false);
+            }
+
+        }
     }
 
     private void refrescarSums(List<Data> sums) {
@@ -824,7 +960,7 @@ public class ViewLayout extends VerticalLayout implements View {
             CssLayout contenedor;
             cs.add(contenedor = new CssLayout());
             contenedor.setWidth("100%");
-            for (MenuEntry e : mf.getMenu().getEntries()) {
+            for (MenuEntry e : ((AbstractMenu)view.getMenu()).getEntries()) {
                 addMenuEntry(contenedor, e);
             }
         } else if (field instanceof CalendarField) {

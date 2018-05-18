@@ -1467,7 +1467,7 @@ public class MyUI extends UI {
                 public void buttonClick(Button.ClickEvent event) {
                     setAreaActual(area);
                     setMenuActual(e);
-                    Page.getCurrent().open("#!" + getApp().getAreaId(area) + "/" + getApp().getMenuId(e) + "/menuhome", (event.isAltKey() || event.isCtrlKey())?"_blank":Page.getCurrent().getWindowName());
+                    Page.getCurrent().open("#!" + getApp().getAreaId(area) + "/" + getApp().getMenuId(e) + "/menu", (event.isAltKey() || event.isCtrlKey())?"_blank":Page.getCurrent().getWindowName());
                 }
             });
             b.setCaption(b.getCaption()

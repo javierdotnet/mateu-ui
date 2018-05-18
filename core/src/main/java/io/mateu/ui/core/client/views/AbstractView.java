@@ -122,7 +122,7 @@ public abstract class AbstractView {
     public String getViewId() {
         String i = getViewIdBase();
         Data d = getData();
-        if (d != null && !d.getPropertyNames().isEmpty()) i += "/" + BaseEncoding.base64().encode(getData().toString().getBytes());
+        if (d != null && !d.getPropertyNames().isEmpty()) i += ".." + BaseEncoding.base64().encode(getData().toString().getBytes());
         return i;
     }
 

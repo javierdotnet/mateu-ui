@@ -82,19 +82,34 @@ public abstract class AbstractCRUDView extends AbstractSqlListView {
 
     public void open(String propertyId, Data data, boolean inNewTab) {
         try {
-            openEditor(getNewEditorView().setInitialId(data.get(propertyId)), inNewTab);
+            AbstractEditorView ev = getNewEditorView().setInitialId(data.get(propertyId));
+            ev.setListFragment((String) get("_fragment"));
+            ev.setListQl(getSql());
+            ev.setListPage((Integer) get("_data_currentpageindex"));
+            ev.setListRowsPerPage(getRowsPerPage());
+            ev.setListPos(data.getInt("_pos"));
+            ev.setListCount((Integer) get("_data_totalrows"));
+            openEditor(ev, inNewTab);
         } catch (Throwable e) {
             MateuUI.notifyError(e.getMessage());
         }
     }
 
-    public void open(Object id, boolean inNewTab) {
+    /*
+    public void open(Object id, boolean inNewTab, int posInGrid) {
         try {
-            openEditor(getNewEditorView().setInitialId(id), inNewTab);
+            AbstractEditorView ev = getNewEditorView();
+            ev.setInitialId(id);
+            ev.setListQl(getSql());
+            ev.setListPage((Integer) get("_data_currentpageindex"));
+            ev.setListPos(((Integer) get("_data_currentpageindex")) * getRowsPerPage() + posInGrid);
+            ev.setListCount((Integer) get("_data_totalrows"));
+            openEditor(ev, inNewTab);
         } catch (Throwable e) {
             MateuUI.notifyError(e.getMessage());
         }
     }
+    */
 
     public abstract List<AbstractColumn> createExtraColumns();
 

@@ -287,6 +287,11 @@ public class Servlet extends VaadinServlet {
                 // Open it in the UI
                 UI.getCurrent().addWindow(subWindow);
             }
+
+            @Override
+            public String getCurrentFragment() {
+                return ((MyUI)UI.getCurrent()).navigator.getState();
+            }
         });
 
     }

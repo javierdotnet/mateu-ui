@@ -86,7 +86,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
         String selector = (String) data.get("selector");
         if (selector != null) {
             if (!(selector.equals("mui") || selector.equals("changearea") || selector.equals("areahome")
-                    || selector.equals("menuhome") || selector.equals("home")
+                    || selector.equals("menu") || selector.equals("home")
                     || selector.equals("nav") || selector.equals("searchinapp") || selector.equals("favourites") || selector.equals("lastedited"))) {
                 if (viewAndParameters.contains("/mui/")) {
                     System.out.println("no reconocemos el selector pero contiene /mui/, así que es nuestro pero no estamos autorizados");
@@ -122,12 +122,19 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
                         if (vn.startsWith("/")) vn = vn.substring(1);
                         String parametros = "";
                         if (vn.contains("?")) {
-                            parametros = vn.substring(vn.indexOf("?") + 1);
+                            parametros = vn.substring(vn.indexOf("?") + 1) + parametros;
                             vn = vn.substring(0, vn.indexOf("?"));
                         }
                         if (vn.contains("/")) {
-                            parametros = vn.substring(vn.indexOf("/") + 1);
+                            if (!"".equals(parametros)) parametros = "?" + parametros;
+                            parametros = vn.substring(vn.indexOf("/") + 1) + parametros;
                             vn = vn.substring(0, vn.indexOf("/"));
+                        }
+
+                        String datos = "";
+                        if (vn.contains("..")) {
+                            datos = vn.split("\\.\\.")[1];
+                            vn = vn.split("\\.\\.")[0];
                         }
 
 
@@ -161,15 +168,56 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                             view = (AbstractView) o;
 
+                            if (!Strings.isNullOrEmpty(datos)) {
+                                view.setInitialData(new Data(BaseEncoding.base64().decode(datos)));
+                            }
+
                             view.setParametros(parametros);
 
                             if (view instanceof AbstractCRUDView) {
                                 ((AbstractCRUDView) view).addListener(new CRUDListener() {
                                     @Override
                                     public void openEditor(AbstractEditorView e, boolean inNewTab) {
+                                        e.setListFragment(MateuUI.getCurrentFragment());
                                         MateuUI.openView(e, inNewTab);
                                     }
                                 });
+                            } else if (view instanceof AbstractEditorView) {
+
+                                String s = parametros;
+
+                                if (s.contains("?")) {
+                                    s = s.substring(0, s.indexOf("?"));
+                                    parametros = parametros.substring(parametros.indexOf("?") + 1);
+                                }
+
+                                Object id = null;
+                                if (!Strings.isNullOrEmpty(s)) {
+                                    if (s.startsWith("s")) id = s.substring(1);
+                                    else if (s.startsWith("l")) id = Long.parseLong(s.substring(1));
+                                    else if (s.startsWith("i")) id = Integer.parseInt(s.substring(1));
+                                }
+
+                                AbstractEditorView ev = (AbstractEditorView) view;
+
+                                ev.setInitialId(id);
+
+                                if (!Strings.isNullOrEmpty(parametros)) {
+                                    String[] t = parametros.split("&");
+                                    for (String p : t) if (p.contains("=")) {
+                                        String k = p.split("=")[0];
+                                        String v = p.split("=")[1];
+                                        if ("q".equals(k)) ev.setListQl(new String(BaseEncoding.base64().decode(v)));
+                                        else if ("pos".equals(k)) ev.setListPos(Integer.parseInt(v));
+                                        else if ("count".equals(k)) ev.setListCount(Integer.parseInt(v));
+                                        else if ("rpp".equals(k)) ev.setListRowsPerPage(Integer.parseInt(v));
+                                        else if ("page".equals(k)) ev.setListPage(Integer.parseInt(v));
+                                        else if ("listfragment".equals(k)) ev.setListFragment(new String(BaseEncoding.base64().decode(v)));
+                                    } else {
+                                        System.out.println("parámetro " + p + " sin valor");
+                                    }
+                                }
+
                             }
 
                         } else {
@@ -190,15 +238,16 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                         if (view != null) view.setGranted(true);
 
-                    } else if ("menuhome".equals(selector)) {
+                    } else if ("menu".equals(selector)) {
                         MenuEntry e = (MenuEntry)data.get("menu");
                         view = new MenuView(e.getName(), e.getId());
                         view.setGranted(true);
+                    } else if ("areahome".equals(selector)) {
+                        AbstractArea a = (AbstractArea) data.get("area");
+                        view = new AreaView(a.getName(), a.getId());
+                        view.setGranted(true);
                     } else if ("changearea".equals(selector)) {
                         view = new ChangeAreaView("Change app area", (AbstractArea)data.get("area"));
-                        view.setGranted(true);
-                    } else if ("areahome".equals(selector)) {
-                        view = new AreaHomeView(((AbstractArea)data.get("area")).getName());
                         view.setGranted(true);
                     } else if ("nav".equals(selector)) {
                         view = new NavView();

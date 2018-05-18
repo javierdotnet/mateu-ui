@@ -1,5 +1,7 @@
 package io.mateu.ui.core.client.views;
 
+import com.google.common.base.Strings;
+import com.google.common.io.BaseEncoding;
 import io.mateu.ui.core.client.app.AbstractAction;
 import io.mateu.ui.core.client.app.MateuUI;
 import io.mateu.ui.core.shared.AsyncCallback;
@@ -18,6 +20,61 @@ public abstract class AbstractEditorView extends AbstractView {
     private Object initialId;
     private List<EditorViewListener> editorViewListeners = new ArrayList<>();
     private boolean usedForRefField;
+
+    private String listFragment;
+    private String listQl;
+    private int listPos;
+    private int listCount;
+    private int listPage;
+    private int listRowsPerPage;
+
+    public String getListFragment() {
+        return listFragment;
+    }
+
+    public void setListFragment(String listFragment) {
+        this.listFragment = listFragment;
+    }
+
+    public int getListRowsPerPage() {
+        return listRowsPerPage;
+    }
+
+    public void setListRowsPerPage(int listRowsPerPage) {
+        this.listRowsPerPage = listRowsPerPage;
+    }
+
+    public int getListPage() {
+        return listPage;
+    }
+
+    public void setListPage(int listPage) {
+        this.listPage = listPage;
+    }
+
+    public String getListQl() {
+        return listQl;
+    }
+
+    public void setListQl(String listQl) {
+        this.listQl = listQl;
+    }
+
+    public int getListPos() {
+        return listPos;
+    }
+
+    public void setListPos(int listPos) {
+        this.listPos = listPos;
+    }
+
+    public int getListCount() {
+        return listCount;
+    }
+
+    public void setListCount(int listCount) {
+        this.listCount = listCount;
+    }
 
     @Override
     public List<AbstractAction> createActions() {
@@ -96,7 +153,8 @@ public abstract class AbstractEditorView extends AbstractView {
 
     @Override
     public String getViewId() {
-        String id = super.getViewId();
+        String id = super.getViewIdBase();
+
         if (getInitialId() != null) {
             Object iid = getInitialId();
             String s = "" + iid;
@@ -105,6 +163,20 @@ public abstract class AbstractEditorView extends AbstractView {
             else if (iid instanceof Integer) s = "i" + s;
             id += "/" + s;
         }
+
+        if (!Strings.isNullOrEmpty(getListQl())) {
+
+            id += "?";
+
+            id += "q=" + BaseEncoding.base64().encode(getListQl().getBytes());
+            id += "&pos=" + getListPos();
+            id += "&count=" + getListCount();
+            id += "&rpp=" + getListRowsPerPage();
+            id += "&page=" + getListPage();
+            if (!Strings.isNullOrEmpty(getListFragment())) id += "&listfragment=" + BaseEncoding.base64().encode(getListFragment().getBytes());
+
+        }
+
         return id;
     }
 

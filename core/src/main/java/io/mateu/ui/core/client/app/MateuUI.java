@@ -128,4 +128,8 @@ public class MateuUI {
     public static void openViewInDialog(AbstractView view) {
         getClientSideHelper().openViewInDialog(view);
     }
+
+    public static String getCurrentFragment() {
+        return getClientSideHelper().getCurrentFragment();
+    }
 }

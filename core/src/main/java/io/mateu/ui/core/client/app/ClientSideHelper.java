@@ -1,6 +1,5 @@
 package io.mateu.ui.core.client.app;
 
-import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.views.AbstractWizard;
 import io.mateu.ui.core.shared.Data;
@@ -46,4 +45,6 @@ public interface ClientSideHelper {
     void open(AbstractWizard wizard, boolean inNewTab);
 
     void openViewInDialog(AbstractView view);
+
+    String getCurrentFragment();
 }

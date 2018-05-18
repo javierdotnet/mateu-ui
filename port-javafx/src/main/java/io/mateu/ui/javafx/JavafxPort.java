@@ -721,6 +721,11 @@ public class JavafxPort extends Application {
                 });
 
             }
+
+            @Override
+            public String getCurrentFragment() {
+                return null;
+            }
         });
 
         //primaryStage.setFullScreen(true);

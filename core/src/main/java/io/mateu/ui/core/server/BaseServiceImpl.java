@@ -42,9 +42,11 @@ public class BaseServiceImpl implements BaseService {
 
         d.getList("_data");
 
+        int pos = 0;
         for (Object[] l : ServerSideHelper.getServerSideApp().selectPage(sql, fromRow, rowsPerPage)) {
             Data r;
             d.getList("_data").add(r = new Data());
+            r.set("_pos", fromRow + pos++);
             if (l != null) for (int i = 0; i < l.length; i++) {
                 r.set((i == 0)?"_id":"col" + i, l[i]);
             }

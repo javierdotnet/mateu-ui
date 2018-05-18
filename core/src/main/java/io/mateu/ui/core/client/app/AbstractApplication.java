@@ -168,7 +168,6 @@ public abstract class AbstractApplication implements App {
     public void setUserData(UserData userData) {
         this.userData = userData;
         this.areas = null;
-        buildAreaAndMenuIds();
     }
 
     public UserData getUserData() {

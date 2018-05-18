@@ -529,6 +529,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
     private void refrescarSums(List<Data> sums) {
         sumsl.removeAllComponents();
+        DecimalFormat df = new DecimalFormat("#,###,###,###,###,###.00");
         if (sums != null) {
             for (Data sum : sums) {
 
@@ -540,7 +541,14 @@ public class ViewLayout extends VerticalLayout implements View {
                 Label l;
                 box.addComponent(l = new Label("" + sum.get("name") + ": "));
 
-                box.addComponent(l = new Label("" + sum.get("value")));
+                String sv = "0";
+
+                if (sum.get("value") != null) {
+                    if (sum.get("value") instanceof  Double) sv = df.format(sum.get("value"));
+                    else sv = "" + sum.get("value");
+                }
+
+                box.addComponent(l = new Label(sv));
                 l.addStyleName("sumvalue");
 
 

@@ -58,6 +58,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.*;
 import java.util.*;
 
@@ -530,6 +531,7 @@ public class ViewLayout extends VerticalLayout implements View {
     private void refrescarSums(List<Data> sums) {
         sumsl.removeAllComponents();
         DecimalFormat df = new DecimalFormat("#,###,###,###,###,###.00");
+        df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.GERMANY));
         if (sums != null) {
             for (Data sum : sums) {
 

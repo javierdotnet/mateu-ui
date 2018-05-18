@@ -460,7 +460,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
     private void irAFinal() throws Throwable {
         AbstractEditorView ev = (AbstractEditorView) view;
-        int pos = ev.getListCount();
+        int pos = ev.getListCount() - 1;
         ev.setInitialId(getIdAtPos(ev.getListQl(), pos));
         ev.setListPos(pos);
         ev.setListPage(pos / ev.getListRowsPerPage());

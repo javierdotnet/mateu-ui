@@ -342,6 +342,7 @@ public class ViewLayout extends VerticalLayout implements View {
 
 
             addComponent(posicionamiento = new HorizontalLayout());
+            posicionamiento.addStyleName("posicionamiento");
             
             posicionamiento.addComponent(botonPrincipio = new Button(VaadinIcons.FAST_BACKWARD, new Button.ClickListener() {
                 @Override
@@ -353,6 +354,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 }
             }));
+            botonPrincipio.addStyleName("posicionamientoboton");
 
             posicionamiento.addComponent(botonAnterior = new Button(VaadinIcons.STEP_BACKWARD, new Button.ClickListener() {
                 @Override
@@ -364,6 +366,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 }
             }));
+            botonAnterior.addStyleName("posicionamientoboton");
 
             posicionamiento.addComponent(botonSiguiente = new Button(VaadinIcons.STEP_FORWARD, new Button.ClickListener() {
                 @Override
@@ -375,6 +378,8 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 }
             }));
+            botonSiguiente.addStyleName("posicionamientoboton");
+
 
             posicionamiento.addComponent(botonFinal = new Button(VaadinIcons.FAST_FORWARD, new Button.ClickListener() {
                 @Override
@@ -386,8 +391,11 @@ public class ViewLayout extends VerticalLayout implements View {
                     }
                 }
             }));
+            botonFinal.addStyleName("posicionamientoboton");
 
             posicionamiento.addComponent(posicion = new Label());
+            posicion.addStyleName("posicionamientoposicion");
+
 
             posicionamiento.addComponent(botonListado = new Button(VaadinIcons.TABLE, new Button.ClickListener() {
                 @Override
@@ -395,6 +403,7 @@ public class ViewLayout extends VerticalLayout implements View {
                     ((MyUI)UI.getCurrent()).navigator.navigateTo(((AbstractEditorView)view).getListFragment());
                 }
             }));
+            botonListado.addStyleName("posicionamientoboton");
 
 
             posicionamiento.setSpacing(false);

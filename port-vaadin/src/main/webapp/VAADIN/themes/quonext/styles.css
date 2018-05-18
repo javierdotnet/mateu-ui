@@ -15657,3 +15657,31 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: bold;
 	margin-left: 12px;
 }
+
+.quonext .posicionamiento {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.quonext .v-button .posicionamientoboton {
+	margin-right: 10px;
+	background-color: lightgrey;
+	margin-right: 4px;
+	border-radius: 2px;
+	color: #464646;
+	border: none;
+	background-image: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.quonext .v-button .posicionamientoboton:focus:after {
+	border: inherit;
+	-webkit-box-shadow: inherit;
+	box-shadow: inherit;
+}
+
+.quonext .posicionamientoposicion {
+	margin-right: 10px;
+}

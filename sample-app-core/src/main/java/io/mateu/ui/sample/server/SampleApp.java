@@ -93,4 +93,9 @@
         public void updateFoto(String login, FileLocator foto) {
 
         }
+
+        @Override
+        public Object selectIdAtPos(String listQl, int listPos) throws Throwable {
+            return selectPage(listQl, listPos, 1)[0][0];
+        }
     }

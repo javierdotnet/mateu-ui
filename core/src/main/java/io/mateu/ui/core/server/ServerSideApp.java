@@ -56,6 +56,8 @@ public interface ServerSideApp {
     String getXslfoForListing()throws Throwable;
 
     void updateFoto(String login, FileLocator foto)throws Throwable;
+
+    Object selectIdAtPos(String listQl, int listPos) throws Throwable;
 }
 
 

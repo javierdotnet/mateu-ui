@@ -468,7 +468,7 @@ public class ViewLayout extends VerticalLayout implements View {
     }
 
     private Object getIdAtPos(String listQl, int listPos) throws Throwable {
-        return ServerSideHelper.getServerSideApp().selectPage(listQl, listPos, 1)[0][0];
+        return ServerSideHelper.getServerSideApp().selectIdAtPos(listQl, listPos);
     }
 
     private void irASiguiente() throws Throwable {

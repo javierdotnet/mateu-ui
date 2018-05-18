@@ -108,7 +108,6 @@ public abstract class AbstractApplication implements App {
             for (AbstractArea a : buildAreas()) {
                 if ((!autentico && a.isPublicAccess()) || (autentico && !a.isPublicAccess())) areas.add(a);
             }
-            buildAreaAndMenuIds();
         }
         return areas;
     }
@@ -168,6 +167,7 @@ public abstract class AbstractApplication implements App {
     public void setUserData(UserData userData) {
         this.userData = userData;
         this.areas = null;
+        buildAreaAndMenuIds();
     }
 
     public UserData getUserData() {

@@ -299,7 +299,7 @@ public class MyUI extends UI {
                     ViewLayout vl = (ViewLayout) v;
 
                     if (!vl.getView().isGranted()) { // esta opción no está en nuestro menú, así que pedimos login
-                        openLoginDialog();
+                        openLoginDialog(false);
                     } else {
 
 
@@ -380,7 +380,7 @@ public class MyUI extends UI {
             for (AbstractArea a : getApp().getAreas()) {
                 hayPartePublica |= a.isPublicAccess();
             }
-            if (!hayPartePublica) openLoginDialog();
+            if (!hayPartePublica) openLoginDialog(true);
         }
 
 
@@ -816,7 +816,7 @@ public class MyUI extends UI {
                     public void menuSelected(MenuItem menuItem) {
 
 
-                        openLoginDialog();
+                        openLoginDialog(true);
 
                     }
                 });
@@ -956,7 +956,7 @@ public class MyUI extends UI {
     /**
      * are el diálogo para autenticarse
      */
-    private void openLoginDialog() {
+    private void openLoginDialog(boolean gohome) {
 
 
         // Create a sub-window and set the content
@@ -1036,7 +1036,7 @@ public class MyUI extends UI {
                         refreshMenu(null, null);
                         System.out.println("STATE:" + navigator.getState());
                         System.out.println("URIFRAGMENT:" + Page.getCurrent().getUriFragment());
-                        navigator.navigateTo(navigator.getState());
+                        navigator.navigateTo((gohome)?"":navigator.getState());
                     }
                 });
             }

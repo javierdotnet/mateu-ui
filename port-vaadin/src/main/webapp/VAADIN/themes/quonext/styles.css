@@ -15083,7 +15083,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 16px;
 	margin-left: 15px;
 	padding: 5px;
-	border-radius: 10px;
+	border-radius: 4px;
 	font-weight: bold;
 }
 
@@ -15663,10 +15663,9 @@ div.v-layout.v-horizontal.v-widget {
 	margin-bottom: 10px;
 }
 
-.quonext .v-button .posicionamientoboton {
-	margin-right: 10px;
-	background-color: lightgrey;
+.quonext .v-button.posicionamientoboton {
 	margin-right: 4px;
+	background-color: #abc9d1;
 	border-radius: 2px;
 	color: #464646;
 	border: none;
@@ -15676,12 +15675,12 @@ div.v-layout.v-horizontal.v-widget {
 	text-shadow: none;
 }
 
-.quonext .v-button .posicionamientoboton:focus:after {
+.quonext .v-button.posicionamientoboton:focus:after {
 	border: inherit;
 	-webkit-box-shadow: inherit;
 	box-shadow: inherit;
 }
 
 .quonext .posicionamientoposicion {
-	margin-right: 10px;
+	margin-right: 4px;
 }

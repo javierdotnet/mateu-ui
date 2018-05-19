@@ -49,6 +49,14 @@
 
 	<dependencies>
 
+		<!-- para que coja la versión 2.0.1 y no haya duplicados -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>6.0.9.Final</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

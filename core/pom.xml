@@ -4,7 +4,7 @@
 
   <groupId>io.mateu.ui</groupId>
   <artifactId>core</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.0.1</version>
     <build>
         <plugins>
             <plugin>
@@ -66,7 +66,7 @@
     <dependency>
           <groupId>io.mateu.ui</groupId>
           <artifactId>code-generation</artifactId>
-          <version>1.0-SNAPSHOT</version>
+          <version>0.0.1</version>
           <!--<optional>true</optional>-->
           <scope>compile</scope>
       </dependency>

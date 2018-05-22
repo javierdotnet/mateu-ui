@@ -12,8 +12,10 @@
     <artifactId>vaadin-client-compiled</artifactId>
     <name>vaadin-client-compiled</name>
     <packaging>jar</packaging>
+    <version>0.0.1</version>
 
     <properties>
+        <vaadin.version>${parent.version}</vaadin.version>
         <widgetset.name>com.vaadin.DefaultWidgetSet</widgetset.name>
         <widgetset.style>OBF</widgetset.style>
         <widgetset.local.workers>6</widgetset.local.workers>
@@ -26,21 +28,21 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
-            <version>${project.version}</version>
+            <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-shared</artifactId>
-            <version>${project.version}</version>
+            <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
-            <version>${project.version}</version>
+            <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -48,7 +50,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiler</artifactId>
-            <version>${project.version}</version>
+            <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
 

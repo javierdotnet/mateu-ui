@@ -5,7 +5,7 @@
 	<groupId>io.mateu.ui</groupId>
 	<artifactId>vaadin.widgets</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>MyComponent Add-on</name>
 
 	<prerequisites>

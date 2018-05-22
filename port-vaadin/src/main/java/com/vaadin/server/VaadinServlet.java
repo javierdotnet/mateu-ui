@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.VaadinServletConfiguration.InitParameterName;
 import com.vaadin.sass.internal.ScssStylesheet;
@@ -419,6 +420,16 @@ public class VaadinServlet extends HttpServlet implements Constants {
     @Override
     protected void service(HttpServletRequest request,
                            HttpServletResponse response) throws ServletException, IOException {
+
+        //miguel
+        if (Strings.isNullOrEmpty(System.getProperty("tmpurl"))) {
+            String u = request.getRequestURL().toString();
+            u = u.substring(0, u.length() - request.getServletPath().length());
+            if (!u.endsWith("/")) u += "/";
+            System.setProperty("tmpurl", u + "tmp");
+        }
+
+
         // Handle context root request without trailing slash, see #9921
         if (handleContextRootWithoutSlash(request, response)) {
             return;

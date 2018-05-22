@@ -142,6 +142,7 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
 
+
         /*
         inicializamos la configuración del tooltip para las ayudas
          */

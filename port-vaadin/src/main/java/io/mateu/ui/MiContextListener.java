@@ -32,10 +32,6 @@ public class MiContextListener  implements ServletContextListener {
             System.setProperty("tmpdir", servletContextEvent.getServletContext().getRealPath("/tmp"));
         }
 
-        if (Strings.isNullOrEmpty(System.getProperty("tmpurl"))) {
-            System.setProperty("tmpurl", servletContextEvent.getServletContext().getContextPath() + "/tmp");
-        }
-
         ServletContext c = servletContextEvent.getServletContext();
         for (String s : c.getServletRegistrations().keySet()) {
             System.out.println("reg:" + s + ":" + c.getServletRegistration(s).getClassName());

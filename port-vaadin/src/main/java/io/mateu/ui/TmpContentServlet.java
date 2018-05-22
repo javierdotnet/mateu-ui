@@ -11,13 +11,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-@WebServlet(value = "/tmp/", loadOnStartup = 10)
+@WebServlet(value = "/tmp/*", loadOnStartup = 10)
 public class TmpContentServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
         // reads input file from an absolute path
-        File downloadFile = new File(request.getPathTranslated());
+        File downloadFile = new File(request.getServletContext().getRealPath("/tmp/") + request.getPathInfo());
         FileInputStream inStream = new FileInputStream(downloadFile);
 
         // if you want to use a relative path to context root:

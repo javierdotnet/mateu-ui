@@ -2,8 +2,13 @@ package io.mateu.ui.core.shared;
 
 import com.google.common.collect.Lists;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -116,8 +121,8 @@ public class Jsonizer {
 
                         lineaActual = new StringBuffer();
 
-                       back();
-                       setEstado(INSIDEVALUE, null);
+                        back();
+                        setEstado(INSIDEVALUE, null);
 
                     } break;
 
@@ -259,6 +264,15 @@ public class Jsonizer {
                 else if ("false".equals(s)) valor = false;
                 else if ("null".equals(s)) valor = null;
                 else if (s.endsWith("l")) valor = Long.parseLong(s.replaceAll("l", ""));
+                else if (s.endsWith("ldt")) valor = LocalDateTime.parse(s.replaceAll("ldt", ""), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                else if (s.endsWith("ld")) valor = LocalDate.parse(s.replaceAll("ld", ""), DateTimeFormatter.ofPattern("yyyyMMdd"));
+                else if (s.endsWith("d")) {
+                    try {
+                        valor = new SimpleDateFormat("yyyyMMddHHmmss").parse(s.replaceAll("d", ""));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
                 else if (s.contains("-")) valor = LocalDate.parse(s);
                 else valor = Integer.parseInt(s);
 
@@ -392,6 +406,12 @@ public class Jsonizer {
             sb.append("]");
         } else if (o instanceof Long) {
             return "" + o + "l";
+        } else if (o instanceof LocalDateTime) {
+            return "" + ((LocalDateTime) o).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + "ldt";
+        } else if (o instanceof LocalDate) {
+            return "" + ((LocalDate) o).format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "ld";
+        } else if (o instanceof Date) {
+            return "" + new SimpleDateFormat("yyyyMMddHHmmss").format((Date) o) + "d";
         } else {
             return "" + o;
         }

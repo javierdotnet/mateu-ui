@@ -2283,7 +2283,8 @@ public class ViewLayout extends VerticalLayout implements View {
                     if (data.get("_selected") == null) {
                         data.set("_selected", "en");
                     }
-                    tf.setValue((data.get(data.get("_selected")) != null)?data.get(data.get("_selected")):"");
+                    if (data.get(data.get("_selected")) != null) tf.setValue(data.get(data.get("_selected")));
+                    else tf.clear();
                     lc.setValue(data.get("_selected"));
                 }
             });
@@ -2352,7 +2353,8 @@ public class ViewLayout extends VerticalLayout implements View {
                     if (data.get("_selected") == null) {
                         data.set("_selected", "en");
                     }
-                    tf.setValue((data.get(data.get("_selected")) != null)?data.get(data.get("_selected")):"");
+                    if (data.get(data.get("_selected")) != null) tf.setValue(data.get(data.get("_selected")));
+                    else tf.clear();
                     lc.setValue(data.get("_selected"));
                 }
             });
@@ -2630,7 +2632,8 @@ public class ViewLayout extends VerticalLayout implements View {
             p.addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                    ta.setValue((newValue != null)?"" + newValue:null);
+                    if (newValue != null) ta.setValue("" + newValue);
+                    else ta.clear();
                 }
             });
             ta.addValueChangeListener(new HasValue.ValueChangeListener<String>() {

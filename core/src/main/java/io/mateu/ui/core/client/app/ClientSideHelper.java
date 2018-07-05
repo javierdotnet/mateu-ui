@@ -1,5 +1,7 @@
 package io.mateu.ui.core.client.app;
 
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.views.AbstractWizard;
 import io.mateu.ui.core.shared.Data;
@@ -47,4 +49,8 @@ public interface ClientSideHelper {
     void openViewInDialog(AbstractView view);
 
     String getCurrentFragment();
+
+    void showAtCenter(Component vaadinComponent);
+
+    void showInWindow(String caption, Component vaadinComponent, Window.CloseListener closeListener);
 }

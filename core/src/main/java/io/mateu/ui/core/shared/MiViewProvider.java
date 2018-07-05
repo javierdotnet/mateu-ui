@@ -111,7 +111,7 @@ public class MiViewProvider implements io.mateu.ui.core.shared.ViewProvider {
 
                 if (!Strings.isNullOrEmpty(selector)) {
 
-                    if ("mui".equals(selector)) {
+                    if ("mui".equals(selector) || "pmo".equals(selector)) {
 
                         // si no tenemos area y menú es que no estamos autorizados
                         if (data.get("area") == null || data.get("menu") == null) return new ForbiddenView();

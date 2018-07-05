@@ -1,5 +1,7 @@
 package io.mateu.ui.core.client.app;
 
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 import io.mateu.ui.*;
 import io.mateu.ui.core.client.BaseServiceAsync;
 import io.mateu.ui.core.client.views.AbstractEditorView;
@@ -42,6 +44,7 @@ public class MateuUI {
     public static <T> T create(java.lang.Class<?> serviceInterface) {
         return getClientSideHelper().create(serviceInterface);
     }
+
     public static void alert(String msg) {
         getClientSideHelper().alert(msg);
     }
@@ -78,7 +81,7 @@ public class MateuUI {
             Object id = x.get("_id");
             if (id == null) id = x.get("id");
             if (id != null && id instanceof String) {
-                ids += "'" + ((String)id).replaceAll("'", "''") + "'";
+                ids += "'" + ((String) id).replaceAll("'", "''") + "'";
             } else {
                 ids += id;
             }
@@ -106,18 +109,25 @@ public class MateuUI {
         getClientSideHelper().notifyDone(msg);
     }
 
-    public static void open(URL url) { getClientSideHelper().open(url, false); }
+    public static void open(URL url) {
+        getClientSideHelper().open(url, false);
+    }
 
-    public static void open(URL url, boolean inNewTab) { getClientSideHelper().open(url, inNewTab); }
+    public static void open(URL url, boolean inNewTab) {
+        getClientSideHelper().open(url, inNewTab);
+    }
 
-    public static void open(AbstractWizard wizard, boolean inNewTab) { getClientSideHelper().open(wizard, inNewTab); }
+    public static void open(AbstractWizard wizard, boolean inNewTab) {
+        getClientSideHelper().open(wizard, inNewTab);
+    }
 
     public static boolean hasPermission(int permissionId) {
         boolean ok = false;
-        if (getApp().getUserData() != null) for (Integer p : getApp().getUserData().getPermissions()) if (p == permissionId) {
-            ok = true;
-            break;
-        }
+        if (getApp().getUserData() != null) for (Integer p : getApp().getUserData().getPermissions())
+            if (p == permissionId) {
+                ok = true;
+                break;
+            }
         return ok;
     }
 
@@ -131,5 +141,14 @@ public class MateuUI {
 
     public static String getCurrentFragment() {
         return getClientSideHelper().getCurrentFragment();
+    }
+
+    public static void showAtCenter(Component vaadinComponent) {
+        getClientSideHelper().showAtCenter(vaadinComponent);
+    }
+
+
+    public static void showInWindow(String caption, Component vaadinComponent, Window.CloseListener closeListener) {
+        getClientSideHelper().showInWindow(caption, vaadinComponent, closeListener);
     }
 }

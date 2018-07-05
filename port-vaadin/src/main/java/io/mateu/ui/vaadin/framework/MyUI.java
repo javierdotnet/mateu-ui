@@ -135,6 +135,34 @@ public class MyUI extends UI {
         return viewDisplay;
     }
 
+    public static MyUI get() {
+        return (MyUI) UI.getCurrent();
+    }
+
+    public void showAtCenter(Component vaadinComponent) {
+        getViewDisplay().removeAllComponents();
+        getViewDisplay().addComponent(vaadinComponent);
+    }
+
+    public void showInWindow(String caption, Component vaadinComponent, Window.CloseListener closeListener) {
+
+        // Create a sub-window and set the content
+        Window subWindow = new Window(caption);
+
+        subWindow.setContent(vaadinComponent);
+
+        if (closeListener != null) subWindow.addCloseListener(closeListener);
+
+        // Center it in the browser window
+        subWindow.center();
+
+        subWindow.setModal(true);
+
+        // Open it in the UI
+        UI.getCurrent().addWindow(subWindow);
+
+    }
+
     /**
      * por aquí entramos. se llama al inicio, cuando refrescamos la página (si no está anotado @preserveonrefresh) o la abrimos en otra pestaña
      * @param request

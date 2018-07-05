@@ -22,6 +22,10 @@ public abstract class AbstractAction implements MenuEntry, Runnable {
         this.callOnEnterKeyPressed = callOnEnterKeyPressed;
     }
 
+    public boolean showMessageOnDone() {
+        return true;
+    }
+
 
     public String getName() {
         return name;

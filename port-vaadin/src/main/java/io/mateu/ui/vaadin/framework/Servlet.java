@@ -292,6 +292,16 @@ public class Servlet extends VaadinServlet {
             public String getCurrentFragment() {
                 return ((MyUI)UI.getCurrent()).navigator.getState();
             }
+
+            @Override
+            public void showAtCenter(Component vaadinComponent) {
+                MyUI.get().showAtCenter(vaadinComponent);
+            }
+
+            @Override
+            public void showInWindow(String caption, Component vaadinComponent, Window.CloseListener closeListener) {
+                MyUI.get().showInWindow(caption, vaadinComponent, closeListener);
+            }
         });
 
     }

@@ -12,7 +12,6 @@
     <artifactId>vaadin-client-compiled</artifactId>
     <name>vaadin-client-compiled</name>
     <packaging>jar</packaging>
-    <version>0.0.1</version>
 
     <properties>
         <vaadin.version>${parent.version}</vaadin.version>

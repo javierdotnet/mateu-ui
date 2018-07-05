@@ -14,11 +14,8 @@
     <modules>
         <module>code-generation</module>
         <module>core</module>
-        <module>port-javafx</module>
         <module>port-vaadin</module>
         <module>sample-app-core</module>
-        <module>vaadin-widgets</module>
-        <module>vaadin-test-app</module>
         <module>vaadin-client-compiled</module>
     </modules>
 
